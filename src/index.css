@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,19 +18,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+/* a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
-}
+} */
 a:hover {
-  color: #535bf2;
+  color: #1E40AF;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -66,3 +69,43 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@font-face {
+  font-family: Roboto;
+  src: url("../assets/fonts/Roboto-Regular.ttf");
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+:root {
+  --color-primary: #1E40AF;
+  --color-secondary: #F97316;
+  --color-accent: #6347E9;
+  --color-highlight: #3EE6BF;
+  --color-text: rgba(0, 0, 0, 0.8);
+} 
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.text-highlight {
+  color: var(--color-highlight);
+}
+
+.text-default {
+  color: var(--color-text);
+}
+
+
+
