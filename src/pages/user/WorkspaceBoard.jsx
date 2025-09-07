@@ -294,19 +294,19 @@ export default function WorkspaceBoard() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-800">
+        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-900">
           {/* Workspace header */}
           <div className="mb-10">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-md">
+              <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-lg">
                 TF
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                  TaskFow Workspace
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  TaskFlow Workspace
                 </h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                  🔒 Private
+                  🔒 Private workspace
                 </p>
               </div>
             </div>
@@ -314,10 +314,10 @@ export default function WorkspaceBoard() {
 
           {/* Your Boards */}
           <section className="mb-12">
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Your Boards
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <BoardCard
                 title="Project Management"
                 color="from-blue-600 to-indigo-500"
@@ -331,12 +331,15 @@ export default function WorkspaceBoard() {
             </div>
           </section>
 
-          {/* All boards in this Workspace */}
+          {/* Divider */}
+          <div className="border-t border-gray-300 dark:border-gray-700 my-10" />
+
+          {/* All Boards in this Workspace */}
           <section>
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
               All Boards in this Workspace
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               <BoardCard
                 title="Project Management"
                 image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
