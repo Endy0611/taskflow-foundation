@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function WorkspaceSetting() {
+export default function WorkspaceBoard() {
   const [openDropdown, setOpenDropdown] = useState(true);
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -294,91 +294,69 @@ export default function WorkspaceSetting() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
-          <div className="max-w-3xl space-y-8">
-            {/* Workspace header */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-3xl font-bold rounded">
-                S
+        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-800">
+          {/* Workspace header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-md">
+                TF
               </div>
               <div>
-                <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                  Schedula Workspace <PencilRulerIcon />
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                  TaskFow Workspace
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
                   🔒 Private
                 </p>
               </div>
             </div>
-
-            {/* Visibility */}
-            <section>
-              <h2 className="font-semibold mb-1 text-base md:text-lg">
-                Workspace visibility
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                🔒 Private – This Workspace is private. It's not indexed or
-                visible to those outside the Workspace.
-              </p>
-            </section>
-
-            {/* Owners */}
-            <section>
-              <h2 className="font-semibold mb-3 flex justify-between items-center text-base md:text-lg">
-                Workspace owner{" "}
-                <button className="bg-gray-100 dark:bg-gray-700 rounded-sm font-normal text-xs md:text-sm px-3 md:px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600">
-                  Invite Member
-                </button>
-              </h2>
-              <div className="space-y-3">
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-blue-600"
-                  role="Owner"
-                />
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-purple-500"
-                  role="Admin"
-                />
-              </div>
-            </section>
-
-            {/* Members */}
-            <section>
-              <h2 className="font-semibold mb-3 text-base md:text-lg">
-                Members
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UserCard
-                  name="Dorn Dana"
-                  tag="DD"
-                  color="bg-red-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Mon Sreynet"
-                  tag="MS"
-                  color="bg-blue-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Lonh Reaksmey"
-                  tag="LR"
-                  color="bg-purple-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Ong Endy"
-                  tag="OE"
-                  color="bg-teal-500"
-                  role="Member"
-                />
-              </div>
-            </section>
           </div>
+
+          {/* Your Boards */}
+          <section className="mb-12">
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+              Your Boards
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <BoardCard
+                title="Project Management"
+                color="from-blue-600 to-indigo-500"
+              />
+              <BoardCard
+                title="Create new board"
+                color="from-purple-500 to-pink-500"
+                subtitle="9 remaining"
+                isCreate
+              />
+            </div>
+          </section>
+
+          {/* All boards in this Workspace */}
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">
+              All Boards in this Workspace
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <BoardCard
+                title="Project Management"
+                image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+              />
+              <BoardCard
+                title="Java - Expense Tracker"
+                image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+              />
+              <BoardCard
+                title="Document"
+                image="https://images.unsplash.com/photo-1587614295999-6f0de2c48f9f?q=80&w=800&auto=format&fit=crop"
+              />
+              <BoardCard
+                title="Create new board"
+                color="from-blue-500 to-teal-400"
+                subtitle="7 remaining"
+                isCreate
+              />
+            </div>
+          </section>
         </main>
       </div>
 
@@ -477,5 +455,43 @@ function UserCard({ name, tag, color, role }) {
         {role}
       </span>
     </div>
+  );
+}
+
+function BoardCard({ title, subtitle, color, image, isCreate }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, y: -4 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
+    >
+      {image ? (
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-36 object-cover group-hover:opacity-90 transition"
+        />
+      ) : (
+        <div
+          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
+        >
+          {isCreate ? "+" : title}
+        </div>
+      )}
+
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {subtitle}
+          </p>
+        )}
+      </div>
+
+      {/* Glow effect on hover */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
+    </motion.div>
   );
 }

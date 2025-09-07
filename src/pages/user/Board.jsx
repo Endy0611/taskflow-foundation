@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function WorkspaceSetting() {
+export default function Board() {
   const [openDropdown, setOpenDropdown] = useState(true);
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -294,91 +294,136 @@ export default function WorkspaceSetting() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
-          <div className="max-w-3xl space-y-8">
-            {/* Workspace header */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-3xl font-bold rounded">
-                S
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-950">
+          {/* Templates */}
+          <section>
+            <h2 className="text-lg font-semibold mb-3">
+              Start with a template and let TaskFlow handle the rest with
+              customizable workflows
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
+                (title, idx) => (
+                  <div
+                    key={idx}
+                    className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
+                  >
+                    <img
+                      src={`https://picsum.photos/600/400?random=${idx + 1}`}
+                      alt={title}
+                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
+                      {title}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </section>
+
+          {/* Recently Viewed */}
+          <section>
+            <h2 className="text-lg font-semibold mb-3">Recently viewed</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) => (
+                <div
+                  key={idx}
+                  className={`relative rounded-xl overflow-hidden shadow-md border ${
+                    title === "Create new board"
+                      ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                      : "cursor-pointer"
+                  }`}
+                >
+                  {title !== "Create new board" ? (
+                    <>
+                      <img
+                        src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                        alt={title}
+                        className="w-full h-32 object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                        {title}
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-gray-600 dark:text-gray-300 font-medium">
+                      + {title}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Your Workspaces */}
+          <section>
+            <h2 className="text-lg font-semibold mb-3">Your Workspaces</h2>
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 mb-6 border border-gray-200 dark:border-gray-700">
+              {/* Workspace header */}
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                {/* Left: Workspace name */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
+                    S
+                  </div>
+                  <span className="font-semibold">TaskFlow Workspaces</span>
+                </div>
+
+                {/* Right: Actions */}
+                <div className="flex flex-wrap gap-2">
+                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Boards
+                  </button>
+                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Member
+                  </button>
+                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Setting
+                  </button>
+                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Upgrade
+                  </button>
+                </div>
               </div>
-              <div>
-                <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                  Schedula Workspace <PencilRulerIcon />
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1">
-                  🔒 Private
-                </p>
+
+              {/* Workspace boards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {["Boardup", "Create new board"].map((title, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative rounded-xl overflow-hidden shadow-md border ${
+                      title === "Create new board"
+                        ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                        : "cursor-pointer"
+                    }`}
+                  >
+                    {title !== "Create new board" ? (
+                      <>
+                        <img
+                          src={`https://picsum.photos/600/400?random=${
+                            idx + 20
+                          }`}
+                          alt={title}
+                          className="w-full h-32 object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                          {title}
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-gray-600 dark:text-gray-300 font-medium">
+                        + {title}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-
-            {/* Visibility */}
-            <section>
-              <h2 className="font-semibold mb-1 text-base md:text-lg">
-                Workspace visibility
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                🔒 Private – This Workspace is private. It's not indexed or
-                visible to those outside the Workspace.
-              </p>
-            </section>
-
-            {/* Owners */}
-            <section>
-              <h2 className="font-semibold mb-3 flex justify-between items-center text-base md:text-lg">
-                Workspace owner{" "}
-                <button className="bg-gray-100 dark:bg-gray-700 rounded-sm font-normal text-xs md:text-sm px-3 md:px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600">
-                  Invite Member
-                </button>
-              </h2>
-              <div className="space-y-3">
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-blue-600"
-                  role="Owner"
-                />
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-purple-500"
-                  role="Admin"
-                />
-              </div>
-            </section>
-
-            {/* Members */}
-            <section>
-              <h2 className="font-semibold mb-3 text-base md:text-lg">
-                Members
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UserCard
-                  name="Dorn Dana"
-                  tag="DD"
-                  color="bg-red-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Mon Sreynet"
-                  tag="MS"
-                  color="bg-blue-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Lonh Reaksmey"
-                  tag="LR"
-                  color="bg-purple-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Ong Endy"
-                  tag="OE"
-                  color="bg-teal-500"
-                  role="Member"
-                />
-              </div>
-            </section>
-          </div>
+          </section>
         </main>
       </div>
 
@@ -477,5 +522,43 @@ function UserCard({ name, tag, color, role }) {
         {role}
       </span>
     </div>
+  );
+}
+
+function BoardCard({ title, subtitle, color, image, isCreate }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, y: -4 }}
+      transition={{ type: "spring", stiffness: 300 }}
+      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
+    >
+      {image ? (
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-36 object-cover group-hover:opacity-90 transition"
+        />
+      ) : (
+        <div
+          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
+        >
+          {isCreate ? "+" : title}
+        </div>
+      )}
+
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {subtitle}
+          </p>
+        )}
+      </div>
+
+      {/* Glow effect on hover */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
+    </motion.div>
   );
 }
