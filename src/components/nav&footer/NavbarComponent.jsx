@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Bell, SunIcon, MoonIcon } from "lucide-react";
+import { Search, Bell, SunIcon, MoonIcon, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function NavbarComponent({
@@ -23,7 +23,7 @@ export default function NavbarComponent({
           onClick={() => setSidebarOpen((v) => !v)}
         >
           {/* You can swap Menu/X icons here if needed */}
-          <span className="material-icons">menu</span>
+          <span className="material-icons"><Menu/></span>
         </button>
 
         <div className="w-4 h-4 rounded-full bg-green-400" />

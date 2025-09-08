@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 function NavItem({ icon, text }) {

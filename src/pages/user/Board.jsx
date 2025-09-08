@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import TaskDetailComponent from "../../components/random/TaskDetailComponent";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
@@ -267,68 +268,40 @@ export default function WorkspaceBoard() {
   );
 }
 
-function BoardCard({ title, subtitle, color, image, isCreate }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -4 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-36 object-cover group-hover:opacity-90 transition"
-        />
-      ) : (
-        <div
-          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
-        >
-          {isCreate ? "+" : title}
-        </div>
-      )}
+// function BoardCard({ title, subtitle, color, image, isCreate }) {
+//   return (
+//     <motion.div
+//       whileHover={{ scale: 1.05, y: -4 }}
+//       transition={{ type: "spring", stiffness: 300 }}
+//       className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
+//     >
+//       {image ? (
+//         <img
+//           src={image}
+//           alt={title}
+//           className="w-full h-36 object-cover group-hover:opacity-90 transition"
+//         />
+//       ) : (
+//         <div
+//           className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
+//         >
+//           {isCreate ? "+" : title}
+//         </div>
+//       )}
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {subtitle}
-          </p>
-        )}
-      </div>
+//       <div className="p-4">
+//         <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+//           {title}
+//         </h3>
+//         {subtitle && (
+//           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+//             {subtitle}
+//           </p>
+//         )}
+//       </div>
 
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
-    </motion.div>
-  );
-}
-
-/* Reusable NavItem */
-function NavItem({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
-      {icon} {text}
-    </div>
-  );
-}
-
-/* Reusable user card */
-function UserCard({ name, tag, color, role }) {
-  return (
-    <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-400 dark:border-gray-600">
-      <div
-        className={`w-10 h-10 ${color} text-white flex items-center justify-center rounded-full font-medium`}
-      >
-        {tag}
-      </div>
-      <div className="flex-1">
-        <p className="font-medium text-sm md:text-base">{name}</p>
-      </div>
-      <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-        {role}
-      </span>
-    </div>
-  );
-}
+//       {/* Glow effect on hover */}
+//       <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
+//     </motion.div>
+//   );
+// }
