@@ -44,6 +44,13 @@ export const fetchTasks = createAsyncThunk(
   }
 );
 
+export const taskStatus = {
+    TODO: 'todo',
+    IN_PROGRESS: 'in-progress',
+    REVIEW: 'review',
+    COMPLETED: 'completed',
+};
+
 const initialState = {
   tasks: [],
   currentTask: null,
