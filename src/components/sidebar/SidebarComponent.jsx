@@ -1,0 +1,99 @@
+import { useState } from "react";
+import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
+function NavItem({ icon, text }) {
+  return (
+    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
+      {icon} {text}
+    </div>
+  );
+}
+
+export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowModal }) {
+  const [openDropdown, setOpenDropdown] = useState(true);
+
+  return (
+    <aside
+      className={[
+        "transform transition-transform duration-300 will-change-transform",
+        "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
+        "border-r border-gray-300 dark:border-gray-700",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full",
+        "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
+        "top-[56px] md:top-0",
+      ].join(" ")}
+    >
+      <div className="p-4 text-sm">
+        {/* Close (mobile only) */}
+        <div className="flex items-center justify-between md:hidden mb-2">
+          <span className="font-semibold">Menu</span>
+          <button
+            aria-label="Close sidebar"
+            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X />
+          </button>
+        </div>
+
+        {/* Static links */}
+        <div className="space-y-1">
+          <NavItem icon={<Home size={16} />} text="Home" />
+          <NavItem icon={<LayoutGrid size={16} />} text="Boards" />
+          <NavItem icon={<FileText size={16} />} text="Templates" />
+        </div>
+        <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
+
+        {/* Workspace */}
+        <div className="mt-6">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
+            Workspace
+          </h3>
+          <div
+            className={`flex items-center justify-between cursor-pointer p-2 rounded ${
+              openDropdown
+                ? "bg-blue-600 text-white"
+                : "text-gray-800 dark:text-gray-200"
+            } hover:bg-blue-600 hover:text-white`}
+            onClick={() => setOpenDropdown((v) => !v)}
+          >
+            <span className="flex items-center gap-2 font-medium">
+              🌍 TaskFlow
+            </span>
+            {openDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </div>
+
+          <AnimatePresence>
+            {openDropdown && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="overflow-hidden text-gray-600 dark:text-gray-300 rounded-b-lg shadow-lg border border-gray-100 dark:border-gray-700"
+              >
+                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                  Boards
+                </div>
+                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                  Members
+                </div>
+                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                  Settings
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            className="mt-3 text-blue-600 dark:text-blue-400 text-sm hover:bg-blue-600 hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
+            onClick={() => setShowModal(true)}
+          >
+            + Create a Workspace
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
