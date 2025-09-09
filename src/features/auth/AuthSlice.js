@@ -11,9 +11,9 @@ const mockUsers = [
   },
   {
     id: 'user2',
-    email: 'test@example.com',
+    email: 'monsreynet2409@example.com',
     password: 'password123',
-    name: 'Test User',
+    name: 'Mon Sreynet',
     role: 'user'
   }
 ];
