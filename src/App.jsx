@@ -1,4 +1,5 @@
 import React from 'react'
+import Chatbot from './components/Chatbot/Chatbot'
 import TaskDetailComponent from './components/random/TaskDetailComponent'
 // import WorkspaceBoard from './pages/user/WorkspaceBoard'
 // import Board from './pages/user/Board'
@@ -15,7 +16,8 @@ export default function App() {
     {/* <WorkspaceSetting/> */}
       {/* <WorkspaceBoard/> */}
       {/* <Board/> */}
-      <TaskDetailComponent/>
+      {/* <TaskDetailComponent/> */}
+      <Chatbot/>
     </>
     
   )
