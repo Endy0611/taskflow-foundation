@@ -1,3 +1,13 @@
+import React from 'react'
+
+export default function RegisterPage() {
+  return (
+    <div>
+      
+    </div>
+  )
+}
+
 // import { useState } from "react";
 // import { motion } from "framer-motion";
 // import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
