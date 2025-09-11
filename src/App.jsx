@@ -8,8 +8,9 @@ import React from 'react'
 // import CreateCardModal from './components/task/CreateCardModal'
 // import LabelModal from './components/task/LabelModal'
 // import MemberModal from './components/task/MemberModal'
-import LoginPage from './pages/auth/LoginPage'
-import RegisterPage from './pages/auth/RegisterPage'
+// import LoginPage from './pages/auth/LoginPage'
+// import RegisterPage from './pages/auth/RegisterPage'
+import Template from './pages/Template/Template'
 
 export default function App() {
   return (
@@ -29,7 +30,8 @@ export default function App() {
       <MemberModal/>
     </div> */}
     {/* <LoginPage/> */}
-    <RegisterPage/>
+    {/* <RegisterPage/> */}
+    <Template/>
     </>
     
   )
