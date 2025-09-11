@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+>>>>>>> 31bb767a5d33e6ac4d63da55f16bda3ad0af46be
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -18,7 +26,7 @@
   color: #646cff;
   text-decoration: inherit;
 } */
-a:hover {
+/* a:hover {
   color: #1E40AF;
 }
 
@@ -31,13 +39,34 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
+} */
 
+<<<<<<< HEAD
 
 button:hover {
   border-color: #646cff;
 }
 
+=======
+/* button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+} */
+/* button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+} */
+>>>>>>> 31bb767a5d33e6ac4d63da55f16bda3ad0af46be
 
 @media (prefers-color-scheme: light) {
   :root {
