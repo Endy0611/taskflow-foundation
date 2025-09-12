@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 function NavItem({ icon, text }) {
   return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
+    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-[#2563EB] rounded px-2 py-3">
       {icon} {text}
     </div>
   );
@@ -53,9 +53,9 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
           <div
             className={`flex items-center justify-between cursor-pointer p-2 rounded ${
               openDropdown
-                ? "bg-blue-600 text-white"
+                ? "bg-[#1E40AF] text-white"
                 : "text-gray-800 dark:text-gray-200"
-            } hover:bg-blue-600 hover:text-white`}
+            } hover:bg-[#2563EB] hover:text-white`}
             onClick={() => setOpenDropdown((v) => !v)}
           >
             <span className="flex items-center gap-2 font-medium">
@@ -87,7 +87,7 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
           </AnimatePresence>
 
           <button
-            className="mt-3 text-blue-600 dark:text-blue-400 text-sm hover:bg-blue-600 hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
+            className="mt-3 text-[#1E40AF] dark:text-white text-sm hover:bg-[#2563EB] hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
             onClick={() => setShowModal(true)}
           >
             + Create a Workspace

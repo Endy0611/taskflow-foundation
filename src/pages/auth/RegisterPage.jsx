@@ -1,24 +1,7 @@
-<<<<<<< HEAD
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
-=======
-import React from 'react'
-
-export default function RegisterPage() {
-  return (
-    <div>
-      
-    </div>
-  )
-}
-
-// import { useState } from "react";
-// import { motion } from "framer-motion";
-// import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
-// import bgImage from "../../assets/backgrounds/glassBg.png";
->>>>>>> 31bb767a5d33e6ac4d63da55f16bda3ad0af46be
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
