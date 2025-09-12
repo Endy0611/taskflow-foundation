@@ -10,7 +10,7 @@ import React from 'react'
 // import MemberModal from './components/task/MemberModal'
 // import LoginPage from './pages/auth/LoginPage'
 // import RegisterPage from './pages/auth/RegisterPage'
-import Template from './pages/Template/Template'
+import TemplatePage from './pages/template/TemplatePage'
 
 export default function App() {
   return (
@@ -31,7 +31,7 @@ export default function App() {
     </div> */}
     {/* <LoginPage/> */}
     {/* <RegisterPage/> */}
-    <Template/>
+    <TemplatePage/>
     </>
     
   )
