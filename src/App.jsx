@@ -17,7 +17,7 @@ export default function App() {
       {/* <WorkspaceBoard/> */}
       {/* <Board/> */}
       {/* <TaskDetailComponent/> */}
-      <Chatbot/>
+      <Chatbot />
     </>
     
   )

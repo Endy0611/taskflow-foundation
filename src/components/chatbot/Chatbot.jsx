@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Send, Bot } from "lucide-react"; // Import Lucide icons
+import { X, Send, Bot } from "lucide-react"; // Import Lucide icons";
 
 const TaskFlowChatbot = () => {
   const [messages, setMessages] = useState([
@@ -70,7 +70,7 @@ const TaskFlowChatbot = () => {
     <div className="bg-gray-100 flex items-center justify-center h-screen">
       <div className="w-96 h-[600px] bg-white rounded-lg shadow-lg flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between bg-blue-600 text-white p-4 rounded-t-lg">
+        <div className="flex items-center justify-between bg-primary text-white p-4 rounded-t-lg">
           <div className="flex items-center space-x-2">
             <Bot className="w-6 h-6 text-orange-400" />
             <span className="font-semibold">TaskFlowBot</span>
@@ -93,7 +93,7 @@ const TaskFlowChatbot = () => {
               <div
                 className={`p-3 rounded-lg max-w-xs ${
                   msg.type === "user"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-500 text-black"
                     : "bg-gray-200"
                 }`}
               >
@@ -105,11 +105,11 @@ const TaskFlowChatbot = () => {
         </div>
 
         {/* Input */}
-        <div className="p-2 border-t border-gray-300 flex items-center space-x-2 bg-blue-500">
+        <div className="p-2 border-t text-black-800 border-gray-300 flex items-center space-x-2 bg-blue-500">
           <input
             type="text"
             placeholder="Text your message..."
-            className="flex-1 p-2 border-none text-amber-50 rounded-lg focus:outline-none"
+            className="flex-1 p-2 border-none rounded-lg focus:outline-none"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
