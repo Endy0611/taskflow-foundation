@@ -11,9 +11,15 @@ const mockUsers = [
   },
   {
     id: 'user2',
+<<<<<<< HEAD
+    email: 'test@example.com',
+    password: 'password123',
+    name: 'Test User',
+=======
     email: 'monsreynet2409@example.com',
     password: 'password123',
     name: 'Mon Sreynet',
+>>>>>>> 31bb767a5d33e6ac4d63da55f16bda3ad0af46be
     role: 'user'
   }
 ];
