@@ -11,6 +11,7 @@ import React from 'react'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 
+export default function App() {
   return (
     <>
     {/* <div>

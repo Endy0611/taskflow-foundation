@@ -1,28 +1,9 @@
-<<<<<<< HEAD
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
 import loginImage from "../../assets/general/Login-pic.png";
-=======
-import React from 'react'
-
-export default function LoginPage() {
-  return (
-    <div>
-      
-    </div>
-  )
-}
-
-// import { useState } from "react";
-// import { motion } from "framer-motion";
-// import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-// import { FcGoogle } from "react-icons/fc";
-// import { FaFacebook, FaGithub } from "react-icons/fa";
-// import bgImage from "../../assets/backgrounds/glassBg.png";
->>>>>>> 31bb767a5d33e6ac4d63da55f16bda3ad0af46be
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
