@@ -10,6 +10,8 @@ import RegisterPage from './pages/Auth/RegisterPage'
 // import LabelModal from './components/task/LabelModal'
 // import MemberModal from './components/task/MemberModal'
 // import LoginPage from './pages/auth/LoginPage'
+// import RegisterPage from './pages/auth/RegisterPage'
+import TemplatePage from './pages/template/TemplatePage'
 
 export default function App() {
   return (
@@ -29,7 +31,8 @@ export default function App() {
       <MemberModal/>
     </div> */}
     {/* <LoginPage/> */}
-    <RegisterPage />
+    {/* <RegisterPage/> */}
+    <TemplatePage/>
     </>
     
   )
