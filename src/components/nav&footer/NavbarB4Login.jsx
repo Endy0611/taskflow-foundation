@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import HomePage from "../../pages/borad/HomePage.jsx";
 
 export default function NavbarB4Login() {
   const [isDarkMode, setIsDarkMode] = useState(true); 
@@ -32,16 +33,16 @@ export default function NavbarB4Login() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <a href="#home" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
+          <a href="home" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
             Home
           </a>
-          <a href="#features" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
+          <a href="features" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
             Features
           </a>
           <a href="#templates" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
             Templates
           </a>
-          <a href="#templates" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
+          <a href="about" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
             About Us
           </a>
         </div>

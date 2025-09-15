@@ -1,4 +1,5 @@
 import React from 'react'
+import RegisterPage from './pages/Auth/RegisterPage'
 // import TaskDetailComponent from './components/task/TaskDetailComponent'
 // import WorkspaceBoard from './pages/user/WorkspaceBoard'
 // import Board from './pages/user/Board'
