@@ -1,13 +1,24 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
-import WorkspaceSetting from "./pages/user/WorkspaceSetting";
-import Board from "./pages/user/Board";
 import RegisterPage from "./pages/auth/RegisterPage";
+import GuestHomePage from "./GuestUser/HomePage";
+import FeaturePage from "./GuestUser/FeaturePage";
+import AboutUs from "./GuestUser/AboutUs";
 
 function App() {
   return (
-    <></>
+    <>
+      <Routes>
+        <Route element={<GuestHomePage />}>
+          <Route path="/" element={<GuestHomePage/>} />
+          <Route path="/products" element={<FeaturePage />} />
+          <Route path="/products/:id" element={<AboutUs />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </>
   );
 }
 
