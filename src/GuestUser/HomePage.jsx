@@ -4,7 +4,7 @@ import NavbarB4Login from "../components/nav&footer/NavbarB4Login";
 const GuestHomePage = () => {
   return (
     <>
-      <NavbarB4Login />
+   
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
         <div className="bg-orange-50 py-16 px-4 sm:px-6 lg:px-8">
@@ -358,7 +358,7 @@ const GuestHomePage = () => {
         </div>
 
         {/* CTA Section */}
-        <section className="w-full bg-blue-400 py-12 px-6 text-center">
+        <section className="w-full bg-gray-100 py-12 px-6 text-center">
           <h2 className="text-2xl text-primary font-bold mb-4">
             Get started with TaskFlow today
           </h2>
@@ -368,7 +368,7 @@ const GuestHomePage = () => {
               placeholder="Enter your Email"
               className="px-4 py-2 rounded-lg border w-full sm:w-64"
             />
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <button className="px-6 py-2 bg-primary text-white rounded-lg  transition">
               Sign up · It’s free!
             </button>
           </div>
