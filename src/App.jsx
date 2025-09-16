@@ -1,39 +1,28 @@
-import React from 'react'
-import RegisterPage from './pages/Auth/RegisterPage'
-// import TaskDetailComponent from './components/task/TaskDetailComponent'
-// import WorkspaceBoard from './pages/user/WorkspaceBoard'
-// import Board from './pages/user/Board'
-// import NavbarB4Login from './components/nav&footer/NavbarB4Login'
-// import WorkspaceSetting from './pages/user/WorkspaceSetting'
-// import ChecklistModal from './components/task/ChecklistModal'
-// import CreateCardModal from './components/task/CreateCardModal'
-// import LabelModal from './components/task/LabelModal'
-// import MemberModal from './components/task/MemberModal'
-// import LoginPage from './pages/auth/LoginPage'
-// import RegisterPage from './pages/auth/RegisterPage'
-import TemplatePage from './pages/template/TemplatePage'
+// App.js
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import GuestHomePage from "./GuestUser/HomePage";
+import FeaturePage from "./GuestUser/FeaturePage";
+import AboutUs from "./GuestUser/AboutUs";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import RootLayout from "./components/layout/RootLayout";
 
-export default function App() {
+function App() {
   return (
-    <>
-    {/* <div>
-      <NavbarB4Login />
-    </div> */}
-   
-    {/* <WorkspaceSetting/>
-    <WorkspaceBoard/>
-    <Board/>
-    <TaskDetailComponent/>
-    <div className="flex gap-10">
-      <ChecklistModal/>
-      <CreateCardModal/>
-      <LabelModal/>
-      <MemberModal/>
-    </div> */}
-    {/* <LoginPage/> */}
-    {/* <RegisterPage/> */}
-    <TemplatePage/>
-    </>
-    
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route element={<RootLayout />}>
+
+          <Route path="/" element={<GuestHomePage />} />
+          <Route path="/features" element={<FeaturePage />} />
+          <Route path="/about" element={<AboutUs />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="*" element={<h1>404 Page Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;

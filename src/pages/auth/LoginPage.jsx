@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
 import loginImage from "../../assets/general/Login-pic.png";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +27,8 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  const navLink = useNavigate();
 
   const handleOAuth = (provider) => {
     alert(`Continue with ${provider} clicked!`);
@@ -192,7 +195,7 @@ export default function LoginPage() {
                 </span>
               ) : (
                 <>
-                  <span>Sign in</span>
+                  <span onClick={()=> navigator("/WorkspaceSetting")}>Sign in</span>
                 </>
               )}
             </button>
@@ -206,7 +209,7 @@ export default function LoginPage() {
           </div>
 
           {/* Social logins - Updated to match the reference image */}
-          <div className="flex text-white">
+          <div className="flex text-white ">
             <button
               onClick={() => handleOAuth("Google")}
               className="flex flex-col w-full items-center justify-center gap-3"
@@ -227,7 +230,7 @@ export default function LoginPage() {
               onClick={() => handleOAuth("GitHub")}
               className="flex flex-col w-full items-center justify-center gap-3"
             >
-              <FaGithub className="h-15 w-15 text-black rounded-full bg-white" />
+              <FaGithub className="h-15 w-15 text-black rounded-full " />
               <span className="text-sm font-medium">Github</span>
             </button>
           </div>
@@ -237,6 +240,7 @@ export default function LoginPage() {
             <a
               href="#"
               className="font-medium text-white underline-offset-4 hover:underline"
+              onClick={()=> navLink("/register")}
             >
               Create one
             </a>

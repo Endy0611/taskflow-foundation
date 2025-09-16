@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function FeaturesPage() {
+export default function FeaturePage() {
     return (
         <div className="flex flex-col items-center w-full bg-gray-50">
             {/* Hero Section */}
