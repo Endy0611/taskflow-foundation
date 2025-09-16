@@ -1,12 +1,22 @@
 import { useState } from "react";
 import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { NavLink } from "react-router-dom";
+import Board from "../../pages/user/Board";
 
-function NavItem({ icon, text }) {
+function NavItem({ icon, text, to }) {
   return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-[#2563EB] rounded px-2 py-3">
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer rounded px-2 py-3 
+        hover:text-white hover:bg-[#2563EB] ${
+          isActive ? "bg-[#1E40AF] text-white" : ""
+        }`
+      }
+    >
       {icon} {text}
-    </div>
+    </NavLink>
   );
 }
 
@@ -39,7 +49,7 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
 
         {/* Static links */}
         <div className="space-y-1">
-          <NavItem icon={<Home size={16} />} text="Home" />
+          <NavItem icon={<Home size={16} />} text="Home" to="../../pages/user/Board.jsx" />
           <NavItem icon={<LayoutGrid size={16} />} text="Boards" />
           <NavItem icon={<FileText size={16} />} text="Templates" />
         </div>
