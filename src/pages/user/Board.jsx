@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
-import TaskDetailComponent from "../../components/random/TaskDetailComponent";
+// import TaskDetailComponent from "../../components/task/TaskDetailComponent";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
