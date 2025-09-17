@@ -1,6 +1,6 @@
 import { Pencil } from "lucide-react";
 
-export default function LabelModal() {
+export default function LabelComponent() {
   const labels = [
     { color: "bg-green-500" },
     { color: "bg-yellow-400" },
@@ -13,7 +13,7 @@ export default function LabelModal() {
       <input
         type="text"
         placeholder="Search labels..."
-        className="w-full border rounded-md px-2 py-1 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="w-full border rounded-md px-2 py-1 mb-3 focus:outline-none"
       />
       <h3 className="text-sm text-gray-500 mb-2">Labels</h3>
       <div className="space-y-2">

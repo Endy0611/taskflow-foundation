@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search, Bell, SunIcon, MoonIcon, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function NavbarComponent({
   darkMode,
@@ -10,6 +11,7 @@ export default function NavbarComponent({
   setShowModal,
 }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
@@ -23,7 +25,9 @@ export default function NavbarComponent({
           onClick={() => setSidebarOpen((v) => !v)}
         >
           {/* You can swap Menu/X icons here if needed */}
-          <span className="material-icons"><Menu/></span>
+          <span className="material-icons">
+            <Menu />
+          </span>
         </button>
 
         <div className="w-4 h-4 rounded-full bg-green-400" />
@@ -127,7 +131,16 @@ export default function NavbarComponent({
                   >
                     ➕ Create Workspace
                   </div>
-                  <div className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600">
+                  <div
+                    className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600"
+                    onClick={() => {
+                      // (Optional) clear localStorage/session before logout
+                      localStorage.clear();
+
+                      // Redirect to login page
+                      navigate("/login");
+                    }}
+                  >
                     🚪 Log out
                   </div>
                 </div>

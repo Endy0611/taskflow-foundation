@@ -4,7 +4,7 @@ import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { PencilRulerIcon } from "lucide-react";
 
-export default function WorkspaceBoard() {
+export default function WorkspaceSetting() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);

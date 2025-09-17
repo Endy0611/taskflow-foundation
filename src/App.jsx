@@ -1,16 +1,30 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import RegisterPage from "./pages/auth/RegisterPage.jsx";
-import LoginPage from "./pages/auth/LoginPage.jsx";
-import ProfilePage from "./pages/profile/ProfilePage.jsx";
-import "./App.css"; // optional
+// App.js
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-export default function App() {
+import FeaturePage from "./pages/GuestUser/FeaturePage";
+import AboutUs from "./pages/GuestUser/AboutUs";
+import RootLayout from "./components/layout/RootLayout";
+import GuestHomePage from "./pages/GuestUser/HomePage";
+import TemplatePage from "./pages/GuestUser/TemplatePage";
+import LoginPage from "./pages/Auth/LoginPage";
+import RegisterPage from "./pages/Auth/RegisterPage";
+
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/register" replace />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="*" element={<Navigate to="/register" replace />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route path="/" element={<GuestHomePage />} />
+          <Route path="/features" element={<FeaturePage />} />
+          <Route path="/templates" element={<TemplatePage />} />
+          <Route path="/about" element={<AboutUs />} />
+        </Route>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="*" element={<h1>404 Page Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;

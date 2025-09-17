@@ -1,4 +1,4 @@
-export default function MemberModal() {
+export default function SearchMemberComponent() {
   const members = [
     { name: "Dara Dorn", initials: "DD", color: "bg-blue-500" },
     { name: "Mon Sreyneat", initials: "MS", color: "bg-orange-500" },
@@ -11,7 +11,7 @@ export default function MemberModal() {
       <input
         type="text"
         placeholder="Search members..."
-        className="w-full border rounded-md px-2 py-1 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="w-full border rounded-md px-2 py-1 mb-3 focus:outline-none"
       />
       <h3 className="text-sm text-gray-500 mb-2">Board members</h3>
       <div className="space-y-2">
