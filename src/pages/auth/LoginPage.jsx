@@ -99,6 +99,7 @@ export default function LoginPage() {
           className="hidden md:block w-[500px] max-w-sm object-contain"
         />
 
+
         {/* Form section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -182,6 +183,7 @@ export default function LoginPage() {
                 Forgot password?
               </a>
             </div>
+
 
             <button
               type="submit"

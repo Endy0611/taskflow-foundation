@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { auth } from "../firebase/firebase-config";
+import { auth } from "./firebase/firebase-config";
 import {
   FacebookAuthProvider,
-  onAuthStateChanged,
+  onAuthStateChanged,-
   signInWithPopup,
   signOut,
 } from "firebase/auth";
 
-const API_BASE = "taskflow-api.istad.co";
+const API_BASE = "https://taskflow-api.istad.co";
 
 export const useLoginWithFacebook = () => {
   const [user, setUser] = useState(null);

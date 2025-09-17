@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth } from "../firebase/firebase-config";
+import { auth } from "./firebase/firebase-config";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -7,7 +7,7 @@ import {
   signOut,
 } from "firebase/auth";
 
-const API_BASE = "taskflow-api.istad.co";
+const API_BASE = "https://taskflow-api.istad.co";
 
 export const useLoginWithGoogle = () => {
   const [user, setUser] = useState(null);
