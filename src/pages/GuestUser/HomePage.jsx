@@ -4,10 +4,9 @@ import NavbarB4Login from "../../components/nav&footer/NavbarB4Login";
 const GuestHomePage = () => {
   return (
     <>
-   
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <div className="bg-orange-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="bg-orange-500 flex justify-between py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center">
             <div className="lg:w-1/2 mb-8 lg:mb-0">
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -25,32 +24,7 @@ const GuestHomePage = () => {
               </p>
             </div>
             <div className="lg:w-1/2">
-              <div className="bg-blue-100 rounded-2xl p-8 relative">
-                <div className="flex items-center justify-center">
-                  <div className="bg-orange-400 rounded-full w-32 h-32 flex items-center justify-center relative">
-                    <span className="text-white text-2xl font-bold">⏰</span>
-                    <div className="absolute -top-4 -left-4 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
-                      ✓
-                    </div>
-                  </div>
-                  <div className="ml-8">
-                    <div className="bg-white rounded-lg p-4 shadow-lg mb-4">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
-                        <span className="text-sm font-medium">
-                          Task completed
-                        </span>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 shadow-lg">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
-                        <span className="text-sm font-medium">In progress</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <img src="/src/assets/home/image1.png" alt="" />
             </div>
           </div>
         </div>
@@ -369,7 +343,7 @@ const GuestHomePage = () => {
               className="px-4 py-2 rounded-lg border w-full sm:w-64"
             />
             <button className="px-6 py-2 bg-primary text-white rounded-lg  transition">
-              Sign up · It’s free!
+              Sign up · It's free!
             </button>
           </div>
           <p className="text-gray-600 mt-2 text-sm">
