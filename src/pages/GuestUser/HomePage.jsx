@@ -24,7 +24,7 @@ const GuestHomePage = () => {
               </p>
             </div>
             <div className="lg:w-1/2">
-              <img src="/src/assets/home/image1.png" alt="" />
+              <img src="/src/assets/home/image1.png" alt="hero" />
             </div>
           </div>
         </div>
