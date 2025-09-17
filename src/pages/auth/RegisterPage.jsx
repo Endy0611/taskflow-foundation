@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +24,8 @@ export default function RegisterPage() {
       [name]: value,
     }));
   };
+
+  const navLink = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -289,7 +292,7 @@ export default function RegisterPage() {
           <p className="mt-6 text-center text-sm text-white/70">
             Have Account?{" "}
             <a
-              href="#"
+              onClick={() => navLink("/login")}
               className="font-medium text-white underline-offset-4 hover:underline inline-flex items-center gap-1"
             >
               <ArrowLeft className="h-4 w-4" /> Back to Login

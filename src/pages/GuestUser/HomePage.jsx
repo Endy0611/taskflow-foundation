@@ -1,5 +1,5 @@
 import React from "react";
-import NavbarB4Login from "../components/nav&footer/NavbarB4Login";
+import NavbarB4Login from "../../components/nav&footer/NavbarB4Login";
 
 const GuestHomePage = () => {
   return (
