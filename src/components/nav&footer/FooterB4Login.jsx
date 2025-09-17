@@ -44,9 +44,9 @@ export default function FooterB4Login() {
         <div className="flex flex-col items-center justify-center">
           <p className="mb-2">Sponsor and Organize by</p>
           <img
-            src="https://istad.co/resources/logo-istad.png"
+            src="/src/assets/logo/istad-logo-white.png"
             alt="ISTAD Logo"
-            className="h-14"
+            className="h-20"
           />
         </div>
       </div>

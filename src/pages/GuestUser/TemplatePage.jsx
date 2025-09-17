@@ -1,5 +1,5 @@
 import { useState } from "react";
-import TemplateSection from "./TemplateSection";
+import TemplateSection from "../template/TemplateSection";
 import {
   templates,
   categories,

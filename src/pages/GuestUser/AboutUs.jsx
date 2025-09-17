@@ -107,7 +107,7 @@ const AboutUs = () => {
         {
             name: "Lonh Raksmey",
             role: "Web Design",
-            img: "src/assets/About/Smey.png",
+            img: "/src/assets/About/Smey.png",
             github: "#",
             linkedin: "#",
             email: "#",
