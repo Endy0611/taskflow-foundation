@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
 import { apiAuth } from "../../Implement/api.js";

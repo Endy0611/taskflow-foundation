@@ -1,5 +1,4 @@
-import { use, useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
