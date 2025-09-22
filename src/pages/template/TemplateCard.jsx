@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+import "../../index.css";
 
 export default function TemplateCard({ template }) {
   return (
@@ -20,14 +21,14 @@ export default function TemplateCard({ template }) {
           <h3 className="text-lg font-semibold text-gray-900">
             {template.title}
           </h3>
-          <span className="px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
+          <span className="px-2 py-1 text-xs font-medium text-primary bg-blue-50 rounded-full">
             {template.category}
           </span>
         </div>
         <p className="text-sm text-gray-600">{template.description}</p>
         <button
           onClick={() => console.log("Template selected:", template.id)}
-          className="mt-4 w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+          className="mt-4 w-full px-4 py-2 text-sm font-medium text-primary bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
         >
           Use Template
         </button>
