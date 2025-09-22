@@ -431,7 +431,7 @@ const GuestHomePage = () => {
 
         {/* Testimonials Section */}
         <motion.section 
-          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-700 mx-20"
+          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-400 mx-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -519,7 +519,7 @@ const GuestHomePage = () => {
 
         {/* Development Team Section */}
         <motion.section 
-          className="py-24 px-6 lg:px-8 bg-white"
+          className="py-24 px-6 lg:px-8 bg-white dark:bg-gray-900"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -555,7 +555,7 @@ const GuestHomePage = () => {
                 Development <span className="text-secondary">Team</span>
               </motion.h2>
               <motion.p 
-                className="text-gray-600 mb-6 leading-relaxed"
+                className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed"
                 variants={fadeInUp}
               >
                 ISTAD is the ideal place for anyone looking to improve their IT
@@ -565,13 +565,13 @@ const GuestHomePage = () => {
                 knowledge-sharing culture.
               </motion.p>
               <motion.h3 
-                className="font-semibold text-gray-900 text-lg"
+                className="font-semibold text-gray-900 dark:text-gray-100 text-lg"
                 variants={fadeInUp}
               >
                 Tith Cholna
               </motion.h3>
               <motion.p 
-                className="text-gray-500 mb-6 text-sm"
+                className="text-gray-500 dark:text-gray-400 mb-6 text-sm"
                 variants={fadeInUp}
               >
                 Student from ISTAD
