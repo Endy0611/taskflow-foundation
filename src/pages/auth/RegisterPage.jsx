@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
 import { apiAuth } from "../../Implement/api.js";
-
+import { motion } from "framer-motion";
 const firstError = (d) => {
   if (!d) return null;
   if (typeof d === "string") return d;

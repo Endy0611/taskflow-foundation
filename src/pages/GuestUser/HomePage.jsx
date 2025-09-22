@@ -55,9 +55,9 @@ const GuestHomePage = () => {
 
   return (
     <>
-      <div className="bg-white">
+      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {/* Hero Section */}
-        <section className="relative h-screen bg-orange-50 overflow-hidden">
+        <section className="relative h-screen bg-orange-50 dark:bg-gray-800 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 py-16 lg:py-48">
               {/* Left: Text */}
@@ -69,7 +69,7 @@ const GuestHomePage = () => {
                 viewport={{ once: true }}
               >
                 <motion.h1 
-                  className="text-3xl sm:text-4xl lg:text-6xl font-extrabold leading-snug text-gray-900"
+                  className="text-3xl sm:text-4xl lg:text-6xl font-extrabold leading-snug text-gray-900 dark:text-gray-100"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
@@ -87,7 +87,7 @@ const GuestHomePage = () => {
                 </motion.h1>
 
                 <motion.p 
-                  className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+                  className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
@@ -141,7 +141,7 @@ const GuestHomePage = () => {
 
         {/* Productivity Section */}
         <motion.div 
-          className="py-20 px-4 sm:px-6 lg:px-8 bg-white"
+          className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -154,13 +154,13 @@ const GuestHomePage = () => {
                 variants={slideInFromLeft}
               >
                 <motion.h2 
-                  className="text-3xl sm:text-4xl font-bold text-blue-600 mb-6"
+                  className="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 dark:text-blue-400"
                   variants={fadeInUp}
                 >
                   Your productivity powerhouse
                 </motion.h2>
                 <motion.p 
-                  className="text-gray-600 text-base sm:text-lg mb-10"
+                  className="text-gray-600 dark:text-gray-300 text-base sm:text-lg mb-10"
                   variants={fadeInUp}
                   transition={{ delay: 0.2 }}
                 >
@@ -196,10 +196,10 @@ const GuestHomePage = () => {
                       whileHover={{ x: 10 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <h3 className="font-semibold text-gray-900 text-lg mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg mb-2">
                         {item.title}
                       </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                         {item.description}
                       </p>
                     </motion.div>
@@ -229,7 +229,7 @@ const GuestHomePage = () => {
 
         {/* Invite Section */}
         <motion.section 
-          className="relative bg-blue-600 pt-14 pb-65 px-6 lg:px-8"
+          className="relative bg-blue-600 dark:bg-blue-700 pt-14 pb-65 px-6 lg:px-8 text-white"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -237,7 +237,7 @@ const GuestHomePage = () => {
         >
           {/* Title + Description */}
           <motion.div 
-            className="max-w-6xl mx-auto text-center text-white"
+            className="max-w-6xl mx-auto text-center"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -250,7 +250,7 @@ const GuestHomePage = () => {
               From message to invite by Gmail
             </motion.h2>
             <motion.p 
-              className="text-blue-100 max-w-2xl mx-auto"
+              className="text-blue-100 dark:text-blue-200 max-w-2xl mx-auto"
               variants={fadeInUp}
             >
               Quickly turn communication from your favorite apps into to-dos,
@@ -268,7 +268,7 @@ const GuestHomePage = () => {
           viewport={{ once: true }}
         >
           <motion.div 
-            className="bg-white rounded-xl shadow-lg w-full p-6 sm:p-10"
+            className="bg-white dark:bg-gray-900 rounded-xl shadow-lg w-full p-6 sm:p-10"
             whileHover={{ boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
           >
             <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-20">
@@ -280,11 +280,11 @@ const GuestHomePage = () => {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
               >
-                <h3 className="text-2xl font-bold text-secondary mb-6">
+                <h3 className="text-2xl font-bold text-secondary dark:text-orange-400 mb-6">
                   Invite by Gmail
                 </h3>
                 <motion.ul 
-                  className="space-y-3 text-gray-700 text-sm leading-relaxed"
+                  className="space-y-3 text-gray-700 dark:text-gray-100 text-sm leading-relaxed"
                   variants={staggerContainer}
                   initial="hidden"
                   whileInView="visible"
@@ -342,19 +342,19 @@ const GuestHomePage = () => {
               variants={staggerContainer}
             >
               <motion.h3 
-                className="text-lg font-semibold text-blue-600 mb-2"
+                className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-2"
                 variants={fadeInUp}
               >
                 Work Smarter
               </motion.h3>
               <motion.h2 
-                className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+                className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4"
                 variants={fadeInUp}
               >
                 Do more with TaskFlow
               </motion.h2>
               <motion.p 
-                className="text-gray-600 max-w-2xl mx-auto"
+                className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
                 variants={fadeInUp}
               >
                 Customize the way you organize with easy integrations,
@@ -395,7 +395,7 @@ const GuestHomePage = () => {
               ].map((card, index) => (
                 <motion.div
                   key={index}
-                  className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-200 hover:shadow-lg transition"
+                  className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-8 text-center border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
                   variants={fadeInScale}
                   whileHover={{ 
                     y: -10,
@@ -410,14 +410,14 @@ const GuestHomePage = () => {
                   >
                     <img src={card.icon} alt="" />
                   </motion.div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-3">
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-3">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                     {card.description}
                   </p>
                   <motion.button 
-                    className="px-5 py-2 rounded-lg border border-blue-600 text-blue-600 bg-white font-medium text-sm hover:bg-blue-50 transition"
+                    className="px-5 py-2 rounded-lg border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 bg-white font-medium text-sm hover:bg-blue-50 dark:hover:bg-gray-800 transition"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -431,7 +431,7 @@ const GuestHomePage = () => {
 
         {/* Testimonials Section */}
         <motion.section 
-          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 mx-20"
+          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-700 mx-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -470,7 +470,7 @@ const GuestHomePage = () => {
               ].map((user, idx) => (
                 <motion.div
                   key={idx}
-                  className="relative bg-white rounded-xl p-8 shadow-md text-center"
+                  className="relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-md text-center"
                   variants={fadeInScale}
                   whileHover={{ 
                     y: -10,
@@ -499,8 +499,8 @@ const GuestHomePage = () => {
                     />
                   </motion.div>
                   <h4 className="font-semibold text-primary">{user.name}</h4>
-                  <p className="text-gray-500 text-sm mb-5">{user.role}</p>
-                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                  <p className="text-gray-500 dark:text-gray-200 text-sm mb-5">{user.role}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed">
                     "{user.text}"
                   </p>
                   <motion.div 
@@ -590,14 +590,14 @@ const GuestHomePage = () => {
 
         {/* CTA Section */}
         <motion.section 
-          className="w-full bg-gray-100 py-24 px-6 text-center"
+          className="w-full bg-gray-100 dark:bg-gray-800 py-24 px-6 text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
           <motion.h2 
-            className="text-3xl font-bold mb-8"
+            className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -615,7 +615,7 @@ const GuestHomePage = () => {
             <motion.input
               type="email"
               placeholder="Enter your Email"
-              className="px-4 py-2 rounded-lg border w-full sm:w-64"
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 w-full sm:w-64"
               whileFocus={{ scale: 1.02 }}
             />
             <motion.button 
@@ -627,7 +627,7 @@ const GuestHomePage = () => {
             </motion.button>
           </motion.div>
           <motion.p 
-            className="text-gray-600 mt-8 text-sm"
+            className="text-gray-600 dark:text-gray-400 mt-8 text-sm"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}

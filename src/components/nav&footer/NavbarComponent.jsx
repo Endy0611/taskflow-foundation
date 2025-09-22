@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Search, Bell, SunIcon, MoonIcon, Menu } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export default function NavbarComponent({

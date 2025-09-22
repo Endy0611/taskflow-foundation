@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
 import loginImage from "../../assets/general/Login-pic.png";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
