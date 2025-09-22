@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { NavLink } from "react-router";
+import "../../index.css"
 
 export default function NavbarB4Login() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -22,7 +23,7 @@ export default function NavbarB4Login() {
   }, [isDarkMode]);
 
   return (
-    <nav className="font-roboto fixed top-0 w-full z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+    <nav className="font-roboto fixed top-0 w-full z-50 bg-white/70 dark:bg-gray-900 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
       <div className=" mx-auto px-6 md:px-20 flex items-center justify-between h-[65px]">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
@@ -44,7 +45,7 @@ export default function NavbarB4Login() {
                 `font-medium px-3 py-2 rounded-lg transition ${
                   isActive
                     ? "text-blue-600 dark:text-blue-400"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    : "text-gray-700 dark:text-gray-200"
                 }`
               }
             >
@@ -55,7 +56,7 @@ export default function NavbarB4Login() {
 
         {/* Right: Buttons + Theme Toggle */}
         <div className="flex items-center gap-3 md:gap-4">
-          <NavLink to="/login" className="hidden md:block text-gray-700 dark:text-gray-200 font-medium px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <NavLink to="/login" className="hidden md:block text-gray-700 dark:text-gray-200 font-medium px-4 py-2 rounded-md transition">
             Log in
           </NavLink>
           <NavLink to="/register" className="hidden md:block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition">
