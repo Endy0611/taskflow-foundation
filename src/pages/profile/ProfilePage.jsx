@@ -1,13 +1,9 @@
+// src/pages/profile/ProfilePage.jsx
 import React, { useRef, useState } from "react";
 import { ArrowLeft, Camera } from "lucide-react";
+import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 
-/**
- * ProfilePage.jsx
- * Single-file React component styled with Tailwind CSS.
- * Drop into your project and route to <ProfilePage />.
- */
 export default function ProfilePage() {
-  // --- demo initial state ---
   const [form, setForm] = useState({
     firstName: "Mon",
     lastName: "Sreynet",
@@ -17,38 +13,36 @@ export default function ProfilePage() {
   });
 
   const [avatar, setAvatar] = useState(
-    "https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=640&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1544006659-f0b21884ced1?q=80&w=640&auto=format&fit=crop"
   );
 
-  // no TS generics in .jsx
   const fileRef = useRef(null);
 
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
-  }
+  };
 
-  function handlePickFile() {
-    fileRef.current?.click();
-  }
+  const handlePickFile = () => fileRef.current?.click();
 
-  function handleFile(e) {
+  const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
     setAvatar(url);
-  }
+  };
 
-  function onSubmit(e) {
+  const onSubmit = (e) => {
     e.preventDefault();
-    // TODO: replace with your API call
     console.log("submit", form);
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
-      {/* Top bar */}
-      <div className="mx-auto max-w-6xl px-4 pt-6">
+      <NavbarComponent />
+
+      {/* HEADER (in container) */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <button
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700"
           onClick={() => window.history.back()}
@@ -64,10 +58,14 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="mx-auto mt-6 max-w-6xl px-4 pb-20">
+      {/* CONTENT (full-height feel, but inside container) */}
+      <form
+        onSubmit={onSubmit}
+        className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-6"
+      >
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Photo card */}
-          <section className="rounded-2xl border border-slate-200 p-6 shadow-sm">
+          {/* PHOTO CARD */}
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex flex-col items-center">
               <div className="relative">
                 <img
@@ -98,67 +96,45 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          {/* Form fields */}
-          <section className="md:col-span-2 rounded-2xl">
+          {/* FORM CARD */}
+          <section className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* First Name */}
-              <div>
-                <label className="mb-1 block text-sm font-medium">First Name</label>
-                <input
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
-                  placeholder="First name"
-                />
-              </div>
-
-              {/* Last Name */}
-              <div>
-                <label className="mb-1 block text-sm font-medium">Last Name</label>
-                <input
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
-                  placeholder="Last name"
-                />
-              </div>
-
-              {/* Username */}
-              <div>
-                <label className="mb-1 block text-sm font-medium">Username</label>
-                <input
-                  name="username"
-                  value={form.username}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
-                  placeholder="Username"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="mb-1 block text-sm font-medium">Email</label>
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
-                  placeholder="email@example.com"
-                />
-              </div>
-
-              {/* Bio */}
+              <Field
+                label="First Name"
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                placeholder="First name"
+              />
+              <Field
+                label="Last Name"
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                placeholder="Last name"
+              />
+              <Field
+                label="Username"
+                name="username"
+                value={form.username}
+                onChange={handleChange}
+                placeholder="Username"
+              />
+              <Field
+                label="Email"
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="email@example.com"
+              />
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">Bio</label>
-                <textarea
+                <Textarea
+                  label="Bio"
                   name="bio"
-                  rows={4}
+                  rows={5}
                   value={form.bio}
                   onChange={handleChange}
-                  className="w-full resize-none rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   placeholder="Tell us a bit about you"
                 />
               </div>
@@ -167,7 +143,7 @@ export default function ProfilePage() {
             <div className="mt-8 flex justify-end gap-3">
               <button
                 type="button"
-                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                 onClick={() => (window.location.href = "/")}
               >
                 Cancel
@@ -183,5 +159,33 @@ export default function ProfilePage() {
         </div>
       </form>
     </div>
+  );
+}
+
+/* small inputs */
+function Field({ label, ...props }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm font-medium text-slate-700">
+        {label}
+      </span>
+      <input
+        {...props}
+        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+      />
+    </label>
+  );
+}
+function Textarea({ label, ...props }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-sm font-medium text-slate-700">
+        {label}
+      </span>
+      <textarea
+        {...props}
+        className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+      />
+    </label>
   );
 }

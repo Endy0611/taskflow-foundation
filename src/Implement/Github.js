@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth } from "../firebase/firebase-config";
+import { auth } from "./firebase/firebase-config";
 import {
   GithubAuthProvider,
   onAuthStateChanged,
@@ -7,9 +7,9 @@ import {
   signOut,
 } from "firebase/auth";
 
-const API_BASE = "taskflow-api.istad.co";
+const API_BASE = "https://taskflow-api.istad.co";
 
-export const useLoginWithGithub = () => {
+export const useLogin = () => {
   const [error, setError] = useState(null); // kept for compatibility, stays null
   const [isPending, setIsPending] = useState(false);
   const [user, setUser] = useState(null);

@@ -1,5 +1,4 @@
-import { use, useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
@@ -99,6 +98,7 @@ export default function LoginPage() {
           className="hidden md:block w-[500px] max-w-sm object-contain"
         />
 
+
         {/* Form section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -182,6 +182,7 @@ export default function LoginPage() {
                 Forgot password?
               </a>
             </div>
+
 
             <button
               type="submit"
