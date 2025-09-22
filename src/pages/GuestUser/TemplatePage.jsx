@@ -86,7 +86,7 @@ export default function TemplatePage() {
                 className={`group relative px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   selectedCategory === category.id
                     ? "bg-primary text-white shadow-lg transform scale-105"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
+                    : "bg-gray-100 text-gray-700 hover:bg-blue-100 hover:scale-105"
                 }`}
               >
                 <div className="flex items-center space-x-2">
