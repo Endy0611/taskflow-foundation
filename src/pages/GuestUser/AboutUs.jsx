@@ -179,7 +179,7 @@ const AboutUs = () => {
 
           <div className="flex flex-col md:flex-row gap-8">
             {/* Get in Touch */}
-            <div className="flex-1 relative p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-xl hover:shadow-2xl transition">
+            <div className="flex-1 relative p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 shadow-xl hover:shadow-2xl transition">
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-8 h-full">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
                   Get in Touch

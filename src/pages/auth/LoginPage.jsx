@@ -28,7 +28,7 @@ export default function LoginPage() {
     }
   };
 
-  const navLink = useNavigate();
+  const link = useNavigate();
 
   const handleOAuth = (provider) => {
     alert(`Continue with ${provider} clicked!`);
@@ -242,7 +242,7 @@ export default function LoginPage() {
             <a
               href="#"
               className="font-medium text-white underline-offset-4 hover:underline"
-              onClick={()=> navLink("/register")}
+              onClick={()=> link("/register")}
             >
               Create one
             </a>

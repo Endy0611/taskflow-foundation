@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { NavLink } from "react-router-dom";
+
 
 const GuestHomePage = () => {
   // Animation variants
@@ -108,12 +110,12 @@ const GuestHomePage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <a
-                      href="/login"
+                    <NavLink
+                      to="/login"
                       className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
                     >
                       Get Started · Free
-                    </a>
+                    </NavLink>
                   </motion.div>
                 </motion.div>
               </motion.div>
@@ -376,25 +378,28 @@ const GuestHomePage = () => {
                   bgColor: "bg-blue-100",
                   title: "Features",
                   description: "With TaskFlow, track all your projects at a glance on the Dashboard, collaborate seamlessly with your team, and manage tasks from to-do to done effortlessly.",
-                  buttonText: "TaskFlow Features"
+                  buttonText: "TaskFlow Features",
+                  path: "/features"
                 },
                 {
                   icon: "/src/assets/home/card2.png",
                   bgColor: "bg-purple-100",
                   title: "Templates",
                   description: "Perfect for creators and marketers to schedule, draft, and publish content. Organize by week, assign deadlines, and keep track of publishing platforms.",
-                  buttonText: "Get to know Templates"
+                  buttonText: "Get to know Templates",
+                  path: "/templates"
                 },
                 {
                   icon: "/src/assets/home/card3.png",
                   bgColor: "bg-orange-100",
                   title: "Task Management",
                   description: "Organize projects from start to finish with clear task stages like To Do, In Progress, and Completed. Perfect for keeping your team on the same page.",
-                  buttonText: "See more"
+                  buttonText: "See more",
+                  path: "/about"
                 }
               ].map((card, index) => (
-                <motion.div
-                  key={index}
+                <NavLink key={index} to={card.path}>
+                <motion.div        
                   className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-8 text-center border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
                   variants={fadeInScale}
                   whileHover={{ 
@@ -424,6 +429,7 @@ const GuestHomePage = () => {
                     {card.buttonText}
                   </motion.button>
                 </motion.div>
+                </NavLink>
               ))}
             </motion.div>
           </div>
@@ -582,7 +588,7 @@ const GuestHomePage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                See more
+                <NavLink to="/about">See more</NavLink> 
               </motion.button>
             </motion.div>
           </div>
@@ -623,7 +629,7 @@ const GuestHomePage = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Sign up - It's free!
+             <NavLink to="/register">Sign up - It's free!</NavLink> 
             </motion.button>
           </motion.div>
           <motion.p 

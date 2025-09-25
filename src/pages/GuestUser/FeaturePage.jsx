@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function FeaturePage() {
+  const link = useNavigate();
   return (
     <div className="flex flex-col pt-20 items-center w-full bg-gray-50 dark:bg-gray-900 text-primary dark:!text-gray-100 transition-colors duration-300">
       {/* Hero Section */}
@@ -14,7 +17,7 @@ export default function FeaturePage() {
             effortlessly with TaskFlow.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition">
+            <button onClick={()=> link("/login")} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition">
               Try it for Free!
             </button>
           </div>
