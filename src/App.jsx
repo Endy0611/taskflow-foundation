@@ -6,8 +6,9 @@ import AboutUs from "./pages/GuestUser/AboutUs";
 import RootLayout from "./components/layout/RootLayout";
 import GuestHomePage from "./pages/GuestUser/HomePage";
 import TemplatePage from "./pages/GuestUser/TemplatePage";
-import LoginPage from "./pages/Auth/LoginPage";
-import RegisterPage from "./pages/Auth/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+
 
 function App() {
   return (
@@ -28,4 +29,3 @@ function App() {
 }
 
 export default App;
-

@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub, } from "react-icons/fa";
 import loginImage from "../../assets/general/Login-pic.png";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ export default function LoginPage() {
     }
   };
 
-  const navLink = useNavigate();
+  const link = useNavigate();
 
   const handleOAuth = (provider) => {
     alert(`Continue with ${provider} clicked!`);
@@ -241,7 +242,7 @@ export default function LoginPage() {
             <a
               href="#"
               className="font-medium text-white underline-offset-4 hover:underline"
-              onClick={()=> navLink("/register")}
+              onClick={()=> link("/register")}
             >
               Create one
             </a>
