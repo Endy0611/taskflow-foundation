@@ -101,3 +101,112 @@ button.bg-highlight:hover {
 button.bg-danger:hover {
   background-color: var(--color-danger-hover);
 }
+
+.card {
+  display: flex;
+  align-items: stretch;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  font-family: "Arial", sans-serif;
+  max-width: 850px;
+  margin: 20px auto;
+}
+
+/* Left Section */
+.leftSection {
+  display: flex;
+  align-items: center;
+  background-color: #0d3b66; /* Deep professional blue */
+  padding: 24px;
+  flex: 2;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  position: relative;
+}
+
+.profileImage {
+  width: 120px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 4px solid #ffffff;
+  margin-right: 20px;
+  background: #fff;
+}
+
+.textContent {
+  color: #ffffff;
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.support {
+  font-size: 0.95rem;
+  margin: 0 0 6px 0;
+}
+
+.role {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Right Section */
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+  gap: 16px;
+}
+
+.contactLink {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #0d3b66;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contactLink:hover {
+  color: #145ea8;
+}
+
+.icon {
+  font-size: 1.4rem;
+  margin-right: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .leftSection {
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px 12px 0 0;
+    padding: 20px;
+  }
+
+  .profileImage {
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .rightSection {
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+}
