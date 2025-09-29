@@ -12,11 +12,8 @@ import {
   X,
   
 } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
-import ChecklistModal from "./ChecklistModal";
-import CreateCardModal from "./CreateCardModal";
-import LabelModal from "./LabelModal";
-import MemberModal from "./MemberModal";
 
 export default function TaskDetailComponent() {
   const [checklist, setChecklist] = useState([
@@ -75,7 +72,7 @@ export default function TaskDetailComponent() {
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1">Members</p>
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-orange-500 text-white flex items-center justify-center font-semibold text-sm">
+            <div className="w-9 h-9 rounded-full bg-secondary text-white flex items-center justify-center font-semibold text-sm">
               MS
             </div>
             <button className="w-9 h-9 flex items-center justify-center rounded-full border hover:bg-gray-100">
@@ -116,7 +113,7 @@ export default function TaskDetailComponent() {
             <button className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-100">
               Hide checked
             </button>
-            <button className="text-xs px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center gap-1">
+            <button className="text-xs px-3 py-1 rounded-lg bg-danger text-white flex items-center gap-1">
               <Trash size={12} /> Delete
             </button>
           </div>
@@ -153,7 +150,7 @@ export default function TaskDetailComponent() {
                     type="checkbox"
                     checked={item.checked}
                     onChange={() => toggleCheck(item.id)}
-                    className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
+                    className="w-4 h-4 rounded border-gray-400 text-primary"
                   />
                   <span
                     className={`text-sm ${
