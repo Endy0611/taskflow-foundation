@@ -2,24 +2,13 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import SidebarB4CreateBoard from "../../components/sidebar/SidebarB4CreateBoard";
 // import TaskDetailComponent from "../../components/task/TaskDetailComponent";
 
 export default function Board() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  // Initialize dark mode
-  useEffect(() => {
-    const preferDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    if (preferDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -30,29 +19,8 @@ export default function Board() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <NavbarComponent
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        setShowModal={setShowModal}
-      />
-
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -64,7 +32,7 @@ export default function Board() {
         )}
 
         {/* Sidebar */}
-        <SidebarComponent
+        <SidebarB4CreateBoard
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           setShowModal={setShowModal}

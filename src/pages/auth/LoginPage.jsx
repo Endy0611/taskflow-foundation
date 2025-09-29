@@ -1,39 +1,53 @@
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGithub, } from "react-icons/fa";
+import { FaFacebook, FaGithub } from "react-icons/fa";
 import loginImage from "../../assets/general/Login-pic.png";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
+  const link = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+  //   try {
+  //     await new Promise((r) => setTimeout(r, 800));
+  //     if (!email || !password) throw new Error("Please fill in all fields");
+
+  //     // ✅ login success
+  //     setIsAuthenticated(true);
+  //     link("/homeuser");
+  //   } catch (err) {
+  //     setError(err.message || "Login failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await new Promise((r) => setTimeout(r, 800));
-      if (!email || !password) throw new Error("Please fill in all fields");
-      alert(`Logged in as ${email}`);
-    } catch (err) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+  try {
+    await new Promise((r) => setTimeout(r, 800));
+    if (!email || !password) throw new Error("Please fill in all fields");
+    link("/homeuser");
+  } catch (err) {
+    setError(err.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const link = useNavigate();
-
-  const handleOAuth = (provider) => {
-    alert(`Continue with ${provider} clicked!`);
-    // TODO: integrate with Firebase/Supabase/Auth0
-  };
 
   return (
     <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex">
@@ -98,7 +112,6 @@ export default function LoginPage() {
           alt="Login Illustration"
           className="hidden md:block w-[500px] max-w-sm object-contain"
         />
-
 
         {/* Form section */}
         <motion.div
@@ -184,7 +197,6 @@ export default function LoginPage() {
               </a>
             </div>
 
-
             <button
               type="submit"
               disabled={loading}
@@ -196,9 +208,7 @@ export default function LoginPage() {
                   Logging in…
                 </span>
               ) : (
-                <>
-                  <span onClick={()=> navigator("/WorkspaceSetting")}>Sign in</span>
-                </>
+                <>Sign in</>
               )}
             </button>
           </form>
@@ -242,7 +252,7 @@ export default function LoginPage() {
             <a
               href="#"
               className="font-medium text-white underline-offset-4 hover:underline"
-              onClick={()=> link("/register")}
+              onClick={() => link("/register")}
             >
               Create one
             </a>
