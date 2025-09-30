@@ -6,8 +6,8 @@ import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 
 export default function BoardB4Create() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showWorkspaceModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -176,26 +176,22 @@ export default function BoardB4Create() {
           <img
             src="/src/assets/general/chatbot.png"
             alt="Our Chatbot"
-            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer"
-            onClick={() => setShowModal(true)}
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            onClick={() => setShowChatbot(true)}
           />
         </main>
       </div>
 
-      {/* Modal for chatbot */}
       <AnimatePresence>
-        {showModal && (
+        {showChatbot && (
           <>
-            {/* Overlay */}
             <motion.div
               className="fixed inset-0 bg-black/50 z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
+              onClick={() => setShowChatbot(false)}
             />
-
-            {/* Chatbot itself */}
             <motion.div
               className="fixed bottom-24 right-8 z-50"
               initial={{ scale: 0.8, opacity: 0 }}
@@ -203,7 +199,72 @@ export default function BoardB4Create() {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <TaskFlowChatbot onClose={() => setShowModal(false)} />
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showWorkspaceModal && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowModal(false)}
+            />
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 px-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
+                <h2 className="text-xl md:text-2xl font-bold mb-2">
+                  Let’s build a Workspace
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
+                  Boost your productivity by making it easier for everyone to
+                  access boards in one location.
+                </p>
+
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Workspace name
+                </label>
+                <input
+                  type="text"
+                  placeholder="name"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-2 bg-white dark:bg-gray-700 dark:text-white"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                  This is the name of your company, team or organization.
+                </p>
+
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Workspace description
+                </label>
+                <textarea
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-6 bg-white dark:bg-gray-700 dark:text-white"
+                  placeholder="Our team organizes everything here."
+                  rows="3"
+                />
+
+                <NavLink
+                  to="/board"
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
+                  Continue
+                </NavLink>
+
+                <button
+                  className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
+                  onClick={() => setShowModal(false)}
+                >
+                  ✖
+                </button>
+              </div>
             </motion.div>
           </>
         )}

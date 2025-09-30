@@ -172,13 +172,12 @@ export default function WorkspaceSetting() {
                   rows="3"
                 />
 
-              <NavLink
-  to="/board"
-  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
->
-  Continue
-</NavLink>
-
+                <NavLink
+                  to="/board"
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
+                  Continue
+                </NavLink>
 
                 <button
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
@@ -191,53 +190,6 @@ export default function WorkspaceSetting() {
           </>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function BoardCard({ title, subtitle, color, image, isCreate }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -4 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-36 object-cover group-hover:opacity-90 transition"
-        />
-      ) : (
-        <div
-          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
-        >
-          {isCreate ? "+" : title}
-        </div>
-      )}
-
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {subtitle}
-          </p>
-        )}
-      </div>
-
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
-    </motion.div>
-  );
-}
-
-/* Reusable NavItem */
-function NavItem({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
-      {icon} {text}
     </div>
   );
 }

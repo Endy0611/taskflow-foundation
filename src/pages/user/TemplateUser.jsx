@@ -2,16 +2,13 @@ import { useState, useEffect } from "react";
 import { Search, Grid, List, Moon, Sun } from "lucide-react";
 import TemplateSection from "../template/TemplateSection";
 import { templates, categories } from "../../features/template/templatesData";
-import SidebarB4CreateBoard from "../../components/sidebar/SidebarB4CreateBoard";
 import { NavLink } from "react-router-dom";
 
 export default function TemplateUser() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode] = useState(false);
 
   // Sync dark mode with <html> tag
   useEffect(() => {
