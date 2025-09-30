@@ -43,15 +43,6 @@ export default function WorkspaceBoard() {
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <NavbarComponent
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        setShowModal={setShowModal}
-      />
-
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}

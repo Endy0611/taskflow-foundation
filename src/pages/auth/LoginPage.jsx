@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub } from "react-icons/fa";
+
 import loginImage from "../../assets/general/Login-pic.png";
 
 import {
@@ -137,6 +138,25 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+  //   try {
+  //     await new Promise((r) => setTimeout(r, 800));
+  //     if (!email || !password) throw new Error("Please fill in all fields");
+
+  //     // ✅ login success
+  //     setIsAuthenticated(true);
+  //     link("/homeuser");
+  //   } catch (err) {
+  //     setError(err.message || "Login failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
 
   const google = new GoogleAuthProvider();
   const github = new GithubAuthProvider(); github.addScope("user:email");
@@ -281,7 +301,6 @@ export default function LoginPage() {
               </label>
               <a href="#" className="text-white/80 underline-offset-4 hover:underline">Forgot password?</a>
             </div>
-
 
             <button
               type="submit"
