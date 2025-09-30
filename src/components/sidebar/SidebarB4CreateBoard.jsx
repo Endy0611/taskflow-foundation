@@ -9,7 +9,7 @@ function NavItem({ icon, text, to }) {
       end
       className={({ isActive }) =>
         `flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer rounded px-2 py-3 
-        hover:text-white hover:bg-[#2563EB] ${
+        hover:!text-white hover:bg-[#2563EB] ${
           isActive ? "bg-[#1E40AF] text-white" : ""
         }`
       }
@@ -46,7 +46,7 @@ export default function SidebarB4CreateBoard({ sidebarOpen, setSidebarOpen, setS
 
         {/* Static links */}
         <div className="space-y-1">
-          <NavItem icon={<Home size={16} />} text="Home" to="/homeuser" />
+          <NavItem icon={<Home size={16} />} text="Home" to="/homeuser"/>
           <NavItem icon={<LayoutGrid size={16} />} text="Boards" to="/board" />
           <NavItem icon={<FileText size={16} />} text="Templates" to="/templateuser" />
         </div>
