@@ -12,7 +12,6 @@ export default function TemplateUser() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  
 
   // Sync dark mode with <html> tag
   useEffect(() => {
@@ -67,7 +66,7 @@ export default function TemplateUser() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-primary bg-clip-text text-transparent">
@@ -76,8 +75,6 @@ export default function TemplateUser() {
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Browse all available templates
           </p>
-
-       
         </div>
 
         {/* Search + Controls */}
@@ -198,16 +195,17 @@ export default function TemplateUser() {
               No templates found
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Try adjusting your search or filter to find what you're looking for
+              Try adjusting your search or filter to find what you're looking
+              for
             </p>
           </div>
         )}
       </div>
-        {/* ✅ Fixed Back to Board button */}
-      <div className="fixed bottom-6 left-6 z-50">
+      {/* ✅ Fixed Back to Board button */}
+      <div className="fixed bottom-6 left-6 z-0">
         <NavLink
           to="/board"
-          className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-white hover:!text-white"
+          className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-white hover:bg-primary-hover hover:!text-white"
         >
           ← Back to Board
         </NavLink>

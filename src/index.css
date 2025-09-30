@@ -86,7 +86,8 @@
 .bg-danger {
   background-color: var(--color-danger);
 }
-button.bg-primary:hover {
+button.bg-primary:hover,
+a.bg-primary:hover {
   background-color: var(--color-primary-hover);
 }
 button.bg-secondary:hover {

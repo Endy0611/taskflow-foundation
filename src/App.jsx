@@ -15,10 +15,14 @@ import RegisterPage from "./pages/auth/RegisterPage";
 // User pages
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
-import Board from "./pages/user/Board";
+
+//Worksapce 
+import WorkspaceLayout from "./components/layout/WorkspaceLayout";
+import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import UserLayout from "./components/layout/UserLayout";
+import Board from "./pages/user/Board";
 
 function App() {
   return (
@@ -40,10 +44,17 @@ function App() {
         <Route element={<UserLayout />}>
           <Route path="/homeuser" element={<HomeUser />} />
           <Route path="/templateuser" element={<TemplateUser />} />
-          <Route path="/board" element={<Board />} />
+          
+        </Route>
+
+        <Route element={<WorkspaceLayout/>}>
+          <Route path="/boardb4create" element={<BoardB4Create />} />
+          <Route path="/board" element={<Board/>}/>
           <Route path="/workspacesetting" element={<WorkspaceSetting />} />
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
+
         </Route>
+
         <Route path="*" element={<h1>404 Page Not Found</h1>} />
       </Routes>
     </BrowserRouter>

@@ -2,17 +2,18 @@ import { useState } from "react";
 import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-import Board from "../../pages/user/Board";
+import Board from "../../pages/user/BoardB4Create";
 
 function NavItem({ icon, text, to }) {
   return (
-    <NavLink
+   <NavLink
       to={to}
+      end
       className={({ isActive }) =>
-        `flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer rounded px-2 py-3 
-        hover:text-white hover:bg-[#2563EB] ${
-          isActive ? "bg-[#1E40AF] text-white" : ""
-        }`
+        `group flex items-center gap-2 cursor-pointer rounded px-2 py-3
+        text-gray-700 dark:text-gray-200
+        ${isActive ? "bg-[#1E40AF] text-white" : ""}
+        hover:bg-[#2563EB] hover:!text-white`
       }
     >
       {icon} {text}
@@ -21,11 +22,11 @@ function NavItem({ icon, text, to }) {
 }
 
 export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowModal }) {
-  const [openDropdown, setOpenDropdown] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(false);
 
   return (
     <aside
-      className={[
+       className={[
         "transform transition-transform duration-300 will-change-transform",
         "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
         "border-r border-gray-300 dark:border-gray-700",
@@ -49,9 +50,9 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
 
         {/* Static links */}
         <div className="space-y-1">
-          <NavItem icon={<Home size={16} />} text="Home" to="../../pages/user/Board.jsx" />
-          <NavItem icon={<LayoutGrid size={16} />} text="Boards" />
-          <NavItem icon={<FileText size={16} />} text="Templates" />
+          <NavItem icon={<Home size={16} />} text="Home" to="/homeuser" />
+          <NavItem icon={<LayoutGrid size={16} />} text="Boards" to="/board" />
+          <NavItem icon={<FileText size={16} />} text="Templates" to="/templateuser" />
         </div>
         <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
 
