@@ -1,84 +1,55 @@
-const RAW_BASE = import.meta.env.VITE_API_BASE || "https://taskflow-api.istad.co";
-export const API_BASE = RAW_BASE.replace(/\/+$/, "");
+// src/Implement/api.js
+// Unified API client with safe JSON parsing and cookie support.
 
-const lead = (p, d) => (p ?? d).toString().startsWith("/") ? (p ?? d) : `/${p ?? d}`;
-export const LOGIN_PATH    = lead(import.meta.env.VITE_LOGIN_PATH, "/auth/login");
-export const REGISTER_PATH = lead(import.meta.env.VITE_REGISTER_PATH, "/auth/register");
+const BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "";
 
-const safeParseJSON = async (res) => {
-  const text = await res.text().catch(() => "");
-  try { return text ? JSON.parse(text) : null; } catch { return text || null; }
-};
+// Export these so LoginPage can use them
+// export const API_BASE = BASE_URL;
+export const API_BASE = 'https://taskflow-api.istad.co';
+export const LOGIN_PATH = "/auth/login";
+export const REGISTER_PATH = "/auth/register";
 
-async function timedFetch(url, init = {}, { timeoutMs = 15000 } = {}) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(new DOMException("Timeout","AbortError")), timeoutMs);
+async function safeJson(res) {
   try {
-    const res = await fetch(url, { mode: "cors", credentials: "omit", ...init, signal: controller.signal });
-    const data = await safeParseJSON(res);
-    return { ok: res.ok, status: res.status, data, headers: res.headers };
-  } catch (e) {
-    return { ok: false, status: 0, data: { message: e?.message || "Network error" } };
-  } finally {
-    clearTimeout(id);
+    return await res.json();
+  } catch {
+    return null;
   }
 }
 
-async function postJSON(path, body, opts = {}) {
-  return timedFetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json, */*" },
-    body: JSON.stringify(body || {}),
-  }, opts);
+async function request(path, { method = "GET", body, headers } = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(headers || {}),
+    },
+    credentials: "include", // send/receive cookies (session auth)
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await safeJson(res);
+  return { ok: res.ok, status: res.status, data, res };
 }
 
 export const apiAuth = {
-  async register(form) {
-    const trim = (v) => (typeof v === "string" ? v.trim() : v);
+  // Accepts either email or username in "identity"
+  async login({ identity, password }) {
+    // normalize
+    const id = String(identity || "").includes("@")
+      ? String(identity || "").trim().toLowerCase()
+      : String(identity || "").trim();
 
-    // build EXACT body like Postman
-    const body = {
-      familyName: trim(form?.familyName),
-      givenName:  trim(form?.givenName),
-      gender:     trim(form?.gender), // "Male"/"Female"/"Other"
-      username:   String(trim(form?.username) || "").replace(/\s+/g,"_").replace(/[^a-zA-Z0-9._]/g,"").toLowerCase(),
-      email:      String(trim(form?.email) || "").toLowerCase(),
-      password:   String(form?.password || ""),
-      confirmedPassword: String(
-        form?.confirmedPassword ??
-        form?.confirmPassword ??
-        form?.passwordConfirm ??
-        form?.passwordConfirmation ??
-        form?.password
-      ),
-    };
+    return request(LOGIN_PATH, {
+      method: "POST",
+      body: { identity: id, password },
+    });
+  },
 
-    // attempt 1
-    let r = await postJSON(REGISTER_PATH, body);
-    if (r.ok) return r;
+  async me() {
+    return request("/auth/me");
+  },
 
-    // fallback: enum uppercase
-    if (!r.ok && (r.status === 400 || r.status === 422 || r.status === 500) && body.gender) {
-      const G = String(body.gender).toUpperCase();
-      if (["MALE","FEMALE","OTHER"].includes(G) && G !== body.gender) {
-        r = await postJSON(REGISTER_PATH, { ...body, gender: G });
-        if (r.ok) return r;
-      }
-    }
-
-    // fallback: minimal when server is picky
-    if (!r.ok && (r.status === 422 || r.status === 500)) {
-      const minimal = {
-        email: body.email,
-        username: body.username,
-        password: body.password,
-        confirmedPassword: body.confirmedPassword,
-      };
-      const r2 = await postJSON(REGISTER_PATH, minimal);
-      return r2.ok ? r2 : r;
-    }
-
-    return r;
+  async logout() {
+    return request("/auth/logout", { method: "POST" });
   },
 };
-export default apiAuth;
