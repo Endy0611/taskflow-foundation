@@ -3,6 +3,12 @@
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "";
 
+// Export these so LoginPage can use them
+// export const API_BASE = BASE_URL;
+export const API_BASE = 'https://taskflow-api.istad.co';
+export const LOGIN_PATH = "/auth/login";
+export const REGISTER_PATH = "/auth/register";
+
 async function safeJson(res) {
   try {
     return await res.json();
@@ -33,10 +39,10 @@ export const apiAuth = {
       ? String(identity || "").trim().toLowerCase()
       : String(identity || "").trim();
 
-    // Adjust the body keys to match your backend DTO:
-    // If your backend expects { email, password }, change to { email: id, password }
-    // If it expects { usernameOrEmail, password }, change below accordingly.
-    return request("/auth/login", { method: "POST", body: { identity: id, password } });
+    return request(LOGIN_PATH, {
+      method: "POST",
+      body: { identity: id, password },
+    });
   },
 
   async me() {
