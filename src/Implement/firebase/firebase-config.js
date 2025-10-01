@@ -24,7 +24,7 @@ const k = cfg.apiKey || "";
 console.log("VITE_FIREBASE_API_KEY prefix:", k.slice(0, 6), "len:", k.length);
 if (!/^AIza[0-9A-Za-z_\-]{35,}$/.test(k)) {
   console.error("Bad Firebase apiKey. Current cfg:", cfg);
-  throw new Error("Invalid Firebase apiKey from env (.env.local).");
+  throw new Error("Invalid Firebase apiKey from env (.env.dev).");
 }
 
 // Init
