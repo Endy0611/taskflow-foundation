@@ -1,12 +1,20 @@
 import { useState } from "react";
-import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
+import {
+  Home,
+  LayoutGrid,
+  FileText,
+  ChevronUp,
+  ChevronDown,
+  X,
+  Menu,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import Board from "../../pages/user/BoardB4Create";
 
 function NavItem({ icon, text, to }) {
   return (
-   <NavLink
+    <NavLink
       to={to}
       end
       className={({ isActive }) =>
@@ -21,12 +29,16 @@ function NavItem({ icon, text, to }) {
   );
 }
 
-export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowModal }) {
+export default function SidebarComponent({
+  sidebarOpen,
+  setSidebarOpen,
+  setShowModal,
+}) {
   const [openDropdown, setOpenDropdown] = useState(false);
 
   return (
     <aside
-       className={[
+      className={[
         "transform transition-transform duration-300 will-change-transform",
         "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
         "border-r border-gray-300 dark:border-gray-700",
@@ -52,7 +64,11 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
         <div className="space-y-1">
           <NavItem icon={<Home size={16} />} text="Home" to="/homeuser" />
           <NavItem icon={<LayoutGrid size={16} />} text="Boards" to="/board" />
-          <NavItem icon={<FileText size={16} />} text="Templates" to="/templateuser" />
+          <NavItem
+            icon={<FileText size={16} />}
+            text="Templates"
+            to="/templateuser"
+          />
         </div>
         <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
 
@@ -84,15 +100,15 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="overflow-hidden text-gray-600 dark:text-gray-300 rounded-b-lg shadow-lg border border-gray-100 dark:border-gray-700"
               >
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                <NavLink to="/workspaceboard" className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
                   Boards
-                </div>
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                </NavLink>
+                <NavLink to="/workspacemember" className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
                   Members
-                </div>
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                </NavLink>
+                <NavLink to="/workspacesetting" className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
                   Settings
-                </div>
+                </NavLink>
               </motion.div>
             )}
           </AnimatePresence>

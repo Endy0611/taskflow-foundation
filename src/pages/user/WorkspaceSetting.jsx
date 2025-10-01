@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { PencilRulerIcon } from "lucide-react";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { NavLink } from "react-router-dom";
 
 export default function WorkspaceSetting() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -120,10 +123,39 @@ export default function WorkspaceSetting() {
                 />
               </div>
             </section>
+               {/* Floating chatbot button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Our Chatbot"
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            onClick={() => setShowChatbot(true)}
+          />
           </div>
         </main>
       </div>
 
+      <AnimatePresence>
+        {showChatbot && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Modal */}
       <AnimatePresence>
         {showModal && (
@@ -144,7 +176,7 @@ export default function WorkspaceSetting() {
             >
               <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
                 <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let’s build a Workspace
+                  Let's build a Workspace
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
                   Boost your productivity by making it easier for everyone to

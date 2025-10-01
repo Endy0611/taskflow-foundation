@@ -122,9 +122,9 @@ export default function BoardB4Create() {
                   >
                     Boards
                   </NavLink>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink to="/workspacemember" className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
                     Member
-                  </button>
+                  </NavLink>
                   <NavLink
                     to="/workspacesetting"
                     className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -208,7 +208,7 @@ export default function BoardB4Create() {
         {showWorkspaceModal && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/50 z-40"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -223,7 +223,7 @@ export default function BoardB4Create() {
             >
               <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
                 <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let’s build a Workspace
+                  Let's build a Workspace
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
                   Boost your productivity by making it easier for everyone to

@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { NavLink } from "react-router-dom";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 
 export default function Board() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -114,12 +116,50 @@ export default function Board() {
 
                 {/* Right: Actions */}
                 <div className="flex flex-wrap gap-2">
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink
+                    to="/board"
+                    onClick={(e) => {
+                      if (window.location.pathname === "/board") {
+                        e.preventDefault();
+                        window.location.reload();
+                      }
+                    }}
+                    className={({ isActive }) =>
+                      `px-3 py-1.5 border rounded text-sm ${
+                        isActive
+                          ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`
+                    }
+                  >
                     Boards
-                  </button>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  </NavLink>
+                  {/* <NavLink
+                    to="/board"
+                    onClick={(e) => {
+                      if (window.location.pathname === "/board") {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        // Optional: Add a small haptic feedback on mobile
+                        if (navigator.vibrate) navigator.vibrate(50);
+                      }
+                    }}
+                    className={({ isActive }) =>
+                      `px-3 py-1.5 border rounded text-sm ${
+                        isActive
+                          ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`
+                    }
+                  >
+                    Boards
+                  </NavLink> */}
+                  <NavLink
+                    to="/workspacemember"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     Member
-                  </button>
+                  </NavLink>
                   <NavLink
                     to="/workspacesetting"
                     className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -166,9 +206,37 @@ export default function Board() {
               </div>
             </div>
           </section>
+          {/* Floating chatbot button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Our Chatbot"
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
-
+      <AnimatePresence>
+        {showChatbot && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Modal */}
       <AnimatePresence>
         {showModal && (
