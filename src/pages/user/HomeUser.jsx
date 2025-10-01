@@ -114,7 +114,7 @@ const HomeUserPage = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <NavLink
-                      to="/board"
+                      to="/boardb4create"
                       className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
                     >
                       Check Board{" "}

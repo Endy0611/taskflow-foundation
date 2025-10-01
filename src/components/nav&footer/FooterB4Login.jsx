@@ -2,7 +2,7 @@ import { Mail, Phone, Instagram, Facebook, Twitter, Github } from "lucide-react"
 
 export default function FooterB4Login() {
   return (
-    <footer className="bg-primary text-white">
+    <footer className="bg-primary text-white relative z-10">
       {/* Top Section */}
       <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-5 gap-8">
         {/* Logo + About */}
