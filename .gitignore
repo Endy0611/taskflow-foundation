@@ -28,3 +28,4 @@ dist-ssr
 .env.prod
 .env.dev
 .env.production
+.env.local
