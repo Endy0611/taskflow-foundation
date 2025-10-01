@@ -1,25 +1,11 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { PencilRulerIcon } from "lucide-react";
 
 export default function WorkspaceSetting() {
-  const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  // Initialize dark mode
-  useEffect(() => {
-    const preferDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    if (preferDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -30,29 +16,8 @@ export default function WorkspaceSetting() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <NavbarComponent
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        setShowModal={setShowModal}
-      />
-
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -207,9 +172,12 @@ export default function WorkspaceSetting() {
                   rows="3"
                 />
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                <NavLink
+                  to="/board"
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
                   Continue
-                </button>
+                </NavLink>
 
                 <button
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
@@ -222,54 +190,6 @@ export default function WorkspaceSetting() {
           </>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function BoardCard({ title, subtitle, color, image, isCreate }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -4 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-36 object-cover group-hover:opacity-90 transition"
-        />
-      ) : (
-        <div
-          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
-        >
-          {isCreate ? "+" : title}
-        </div>
-      )}
-
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {subtitle}
-          </p>
-        )}
-      </div>
-
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
-    </motion.div>
-  );
-}
-
-
-/* Reusable NavItem */
-function NavItem({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
-      {icon} {text}
     </div>
   );
 }

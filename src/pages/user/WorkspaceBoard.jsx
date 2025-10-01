@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 
 export default function WorkspaceBoard() {
@@ -28,18 +27,6 @@ export default function WorkspaceBoard() {
     mq.addEventListener("change", handleChange);
     return () => mq.removeEventListener("change", handleChange);
   }, []);
-
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
-  };
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
@@ -176,9 +163,12 @@ export default function WorkspaceBoard() {
                   rows="3"
                 />
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                <NavLink
+                  to="/board"
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
                   Continue
-                </button>
+                </NavLink>
 
                 <button
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"

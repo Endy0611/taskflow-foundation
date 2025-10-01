@@ -1,5 +1,5 @@
 // App.js
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Guest pages
 import FeaturePage from "./pages/GuestUser/FeaturePage";
@@ -15,38 +15,49 @@ import RegisterPage from "./pages/auth/RegisterPage";
 // User pages
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
-import Board from "./pages/user/Board";
+
+//Worksapce 
+import WorkspaceLayout from "./components/layout/WorkspaceLayout";
+import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import UserLayout from "./components/layout/UserLayout";
+import Board from "./pages/user/Board";
 
 function App() {
   return (
-    <Routes>
-      {/* Guest routes */}
-      <Route element={<RootLayout />}>
-        <Route path="/" element={<GuestHomePage />} />
-        <Route path="/features" element={<FeaturePage />} />
-        <Route path="/templates" element={<TemplatePage />} />
-        <Route path="/about" element={<AboutUs />} />
-      </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* Guest routes */}
+        <Route element={<RootLayout />}>
+          <Route path="/" element={<GuestHomePage />} />
+          <Route path="/features" element={<FeaturePage />} />
+          <Route path="/templates" element={<TemplatePage />} />
+          <Route path="/about" element={<AboutUs />} />
+        </Route>
 
-      {/* Auth routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+        {/* Auth routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* User routes */}
-      <Route element={<UserLayout />}>
-        <Route path="/homeuser" element={<HomeUser />} />
-        <Route path="/templateuser" element={<TemplateUser />} />
-        <Route path="/board" element={<Board />} />
-        <Route path="/workspacesetting" element={<WorkspaceSetting />} />
-        <Route path="/workspaceboard" element={<WorkspaceBoard />} />
-      </Route>
+        {/* User routes */}
+        <Route element={<UserLayout />}>
+          <Route path="/homeuser" element={<HomeUser />} />
+          <Route path="/templateuser" element={<TemplateUser />} />
+          
+        </Route>
 
-      {/* Fallback */}
-      <Route path="*" element={<h1>404 Page Not Found</h1>} />
-    </Routes>
+        <Route element={<WorkspaceLayout/>}>
+          <Route path="/boardb4create" element={<BoardB4Create />} />
+          <Route path="/board" element={<Board/>}/>
+          <Route path="/workspacesetting" element={<WorkspaceSetting />} />
+          <Route path="/workspaceboard" element={<WorkspaceBoard />} />
+
+        </Route>
+
+        <Route path="*" element={<h1>404 Page Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
