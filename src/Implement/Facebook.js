@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { auth } from "./firebase/firebase-config";
 import {
   FacebookAuthProvider,
-  onAuthStateChanged,-
+  onAuthStateChanged,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
