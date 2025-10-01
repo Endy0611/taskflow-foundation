@@ -7,23 +7,29 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 
-// Use your .env values
-const firebaseConfig = {
+// Build config from env
+const cfg = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: "G-1JJY8S8N72",
+  // measurementId is optional for Auth
+  // measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// --- Sanity check BEFORE initializeApp ---
+const k = cfg.apiKey || "";
+console.log("VITE_FIREBASE_API_KEY prefix:", k.slice(0, 6), "len:", k.length);
+if (!/^AIza[0-9A-Za-z_\-]{35,}$/.test(k)) {
+  console.error("Bad Firebase apiKey. Current cfg:", cfg);
+  throw new Error("Invalid Firebase apiKey from env (.env.local).");
+}
 
-export {
-  auth,
-  setPersistence,
-  browserLocalPersistence,
-  browserSessionPersistence,
-};
+// Init
+const app = initializeApp(cfg);
+export const auth = getAuth(app);
+
+// Re-exports you use elsewhere
+export { setPersistence, browserLocalPersistence, browserSessionPersistence };

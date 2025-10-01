@@ -20,7 +20,7 @@ const mockUsers = [
 
 // Async login thunk
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  '/auth/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       // Simulate API delay

@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
 const GuestHomePage = () => {
   // Animation variants
@@ -524,75 +526,99 @@ const GuestHomePage = () => {
         </motion.section>
 
         {/* Development Team Section */}
-        <motion.section 
-          className="py-24 px-6 lg:px-8 bg-white dark:bg-gray-900"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12">
-            {/* Left big profile */}
-            <motion.div 
-              className="lg:w-1/2 flex justify-center"
-              variants={slideInFromLeft}
-            >
-              <motion.div 
-                className="w-64 h-64 rounded-full overflow-hidden shadow-lg"
-                whileHover={{ scale: 1.05, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+        <motion.section
+  className="py-24 px-6 lg:px-8 bg-white dark:bg-gray-900"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+>
+  <div className="max-w-6xl mx-auto">
+    <Swiper
+      modules={[Autoplay]}
+      autoplay={{ delay: 3000, disableOnInteraction: false }} // auto slide every 1s
+      loop
+      spaceBetween={40}
+      slidesPerView={1}
+      className="pb-12"
+    >
+      {[
+        {
+          img: "/src/assets/About/Cholna.png",
+          name: "Tith Cholna",
+          role: "Student from ISTAD",
+          text: "ISTAD is the ideal place for anyone looking to improve their IT skills. Supportive environment, excellent teachers, and exposure to the latest technologies.",
+        },
+        {
+          img: "/src/assets/About/Dana.png",
+          name: "Dorn Dana",
+          role: "Student from ISTAD",
+          text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were amazing!",
+        },
+        {
+          img: "/src/assets/About/Sreynet.png",
+          name: "Mon Sreynet",
+          role: "Student",
+          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+        },
+        {
+          img: "/src/assets/About/Manith.png",
+          name: "Rith Saramanith",
+          role: "Student",
+          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+        },
+        {
+          img: "/src/assets/About/Smey.png",
+          name: "Lonh Raksmey",
+          role: "Student",
+          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+        },
+        {
+          img: "/src/assets/About/Endy.png",
+          name: "Ong Endy",
+          role: "Student",
+          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+        },
+      ].map((member, idx) => (
+        <SwiperSlide key={idx}>
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Left profile */}
+            <motion.div className="lg:w-1/2 flex justify-center">
+              <div className="w-64 h-64 rounded-full overflow-hidden shadow-lg hover:scale-105 hover:rotate-3 transition-transform duration-300">
                 <img
-                  src="/src/assets/About/Cholna.png"
-                  alt="Development Team"
+                  src={member.img}
+                  alt={member.name}
                   className="w-full h-full object-cover"
                 />
-              </motion.div>
+              </div>
             </motion.div>
 
             {/* Right text */}
-            <motion.div 
-              className="lg:w-1/2"
-              variants={staggerContainer}
-            >
-              <motion.h2 
-                className="text-3xl lg:text-4xl text-primary font-bold mb-6"
-                variants={fadeInUp}
-              >
+            <div className="lg:w-1/2 text-center lg:text-left">
+              <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-primary">
                 Development <span className="text-secondary">Team</span>
-              </motion.h2>
-              <motion.p 
-                className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed"
-                variants={fadeInUp}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed">
+                {member.text}
+              </p>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                {member.name}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+                {member.role}
+              </p>
+              <NavLink
+                to="/about"
+                className="inline-block bg-white hover:bg-blue-700 border border-primary text-primary hover:!text-white px-6 py-2 rounded-lg shadow transition"
               >
-                ISTAD is the ideal place for anyone looking to improve their IT
-                skills. I highly recommend it because of its supportive
-                environment, excellent teachers, strong framework, research
-                projects, exposure to the latest technologies, and
-                knowledge-sharing culture.
-              </motion.p>
-              <motion.h3 
-                className="font-semibold text-gray-900 dark:text-gray-100 text-lg"
-                variants={fadeInUp}
-              >
-                Tith Cholna
-              </motion.h3>
-              <motion.p 
-                className="text-gray-500 dark:text-gray-400 mb-6 text-sm"
-                variants={fadeInUp}
-              >
-                Student from ISTAD
-              </motion.p>
-              <motion.button 
-                className="bg-white hover:bg-blue-700 border-1 border-primary text-primary hover:!text-white px-6 py-2 rounded-lg shadow"
-                variants={fadeInUp}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <NavLink to="/about">See more</NavLink> 
-              </motion.button>
-            </motion.div>
+                See more
+              </NavLink>
+            </div>
           </div>
-        </motion.section>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </div>
+</motion.section>
 
         {/* CTA Section */}
         <motion.section 
