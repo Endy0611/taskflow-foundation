@@ -1,3 +1,4 @@
+// src/pages/auth/LoginPage.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -20,9 +21,20 @@ import {
   FacebookAuthProvider,
 } from "firebase/auth";
 
-import { API_BASE, LOGIN_PATH, REGISTER_PATH } from "../../Implement/api";
+import { z } from "zod";
 
-/* ---------------- utils ---------------- */
+/* ---------------- env + utils ---------------- */
+const API_BASE = (
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_BASE_URL ||
+  "http://localhost:4000"
+).replace(/\/+$/, "");
+
+const loginSchema = z.object({
+  username: z.string().min(3, { message: "Username is required" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
+
 const safeParseJSON = async (res) => {
   const text = await res.text().catch(() => "");
   try {
@@ -32,171 +44,15 @@ const safeParseJSON = async (res) => {
   }
 };
 
-async function timedFetch(url, init = {}, { timeoutMs = 15000 } = {}) {
-  const controller = new AbortController();
-  const id = setTimeout(
-    () => controller.abort(new DOMException("Timeout", "AbortError")),
-    timeoutMs
-  );
-  try {
-    const res = await fetch(url, {
-      mode: "cors",
-      credentials: "omit",
-      ...init,
-      signal: controller.signal,
-    });
-    const data = await safeParseJSON(res);
-    return { ok: res.ok, status: res.status, data, headers: res.headers };
-  } catch (e) {
-    return { ok: false, status: 0, data: { message: e?.message || "Network error" } };
-  } finally {
-    clearTimeout(id);
-  }
-}
-
-function deepFindToken(obj) {
-  if (!obj || typeof obj !== "object") return null;
-  for (const [k, v] of Object.entries(obj)) {
-    if (typeof v === "string") {
-      const key = k.toLowerCase();
-      if (
-        key === "token" ||
-        key === "access_token" ||
-        key === "jwt" ||
-        key.endsWith("token") ||
-        /^eyJ/.test(v)
-      )
-        return v;
-    }
-    if (v && typeof v === "object") {
-      const t = deepFindToken(v);
-      if (t) return t;
-    }
-  }
-  return null;
-}
-
-function extractToken(resp) {
-  const t = deepFindToken(resp?.data);
-  if (t) return t;
-  try {
-    const auth = resp?.headers?.get?.("authorization") || resp?.headers?.get?.("Authorization");
-    const m = auth && /Bearer\s+(.+)/i.exec(auth);
-    if (m) return m[1];
-  } catch {}
-  return null;
-}
-
-async function loginToApiSmart(identity, password) {
-  const headers = { "Content-Type": "application/json", Accept: "application/json, */*" };
-
-  // ✅ Match backend schema (Swagger usually shows "usernameOrEmail")
-  const body = JSON.stringify({ usernameOrEmail: identity, password });
-
-  // try cookie-mode first
-  const cookieTry = await timedFetch(`${API_BASE}${LOGIN_PATH}`, {
-    method: "POST",
-    headers,
-    body,
-    credentials: "include",
-  });
-  if (cookieTry.ok) return cookieTry;
-
-  // then bearer-mode
-  return timedFetch(`${API_BASE}${LOGIN_PATH}`, {
-    method: "POST",
-    headers,
-    body,
-    credentials: "omit",
-  });
-}
-
-async function fetchGithubPrimaryEmail(accessToken) {
-  if (!accessToken) return null;
-  try {
-    const r = await fetch("https://api.github.com/user/emails", {
-      headers: { Authorization: `token ${accessToken}`, Accept: "application/vnd.github+json" },
-    });
-    if (!r.ok) return null;
-    const emails = await r.json();
-    const primary = emails?.find((e) => e?.primary && e?.verified)?.email;
-    return primary || emails?.find((e) => e?.verified)?.email || emails?.[0]?.email || null;
-  } catch {
-    return null;
-  }
-}
-
-async function authAgainstBackend({ email, usernameSeed, uid }) {
-  const base =
-    (usernameSeed || "").trim() ||
-    (email?.split("@")[0]) ||
-    (uid?.slice(0, 8)) ||
-    "user";
-  const username =
-    base.replace(/\W+/g, "_").slice(0, 20).toLowerCase() ||
-    `u_${(uid || "").slice(0, 8)}`;
-  const password = String(uid || "oauth_pass");
-  const emailFinal = (email || `${uid}@oauth.local`).toLowerCase();
-
-  const login1 = await timedFetch(`${API_BASE}${LOGIN_PATH}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usernameOrEmail: emailFinal, password }),
-    credentials: "include",
-  });
-  if (login1.ok) return { token: extractToken(login1) };
-
-  if ([401, 404, 409, 422].includes(login1.status)) {
-    const reg = await timedFetch(`${API_BASE}${REGISTER_PATH}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        email: emailFinal,
-        password,
-        confirmedPassword: password,
-        confirmed_password: password,
-        password_confirmation: password,
-      }),
-      credentials: "include",
-    });
-    if (reg.ok) {
-      const t = extractToken(reg);
-      if (t) return { token: t };
-      const login2 = await timedFetch(`${API_BASE}${LOGIN_PATH}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usernameOrEmail: emailFinal, password }),
-        credentials: "include",
-      });
-      if (login2.ok) return { token: extractToken(login2) };
-    }
-  }
-  return { token: null };
-}
-
-function mapBackendError(status, data) {
-  const msg =
-    (typeof data?.message === "string" && data.message) ||
-    (typeof data?.error === "string" && data.error) ||
-    "";
-  if (status === 400 || status === 401) return msg || "Invalid email or password.";
-  if (status === 404) return "Account not found.";
-  if (status === 429) return "Too many attempts. Please wait a bit.";
-  if (status >= 500) return "Server error. Try again later.";
-  return msg || `Login failed (HTTP ${status}).`;
-}
-
 /* ---------------- component ---------------- */
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  const [identity, setIdentity] = useState(""); // email or username
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ username: "", password: "" });
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState(""); // success or error text
 
   const google = new GoogleAuthProvider();
   const github = new GithubAuthProvider();
@@ -204,37 +60,64 @@ export default function LoginPage() {
   const facebook = new FacebookAuthProvider();
   facebook.addScope("email");
 
+  const handleChange = (e) => {
+    setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
+  };
+
   async function applyPersistence(rememberMe) {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    await setPersistence(
+      auth,
+      rememberMe ? browserLocalPersistence : browserSessionPersistence
+    );
   }
 
-  // EMAIL/PASSWORD -> BACKEND ONLY
+  // USERNAME/PASSWORD -> API
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
+    setMessage("");
+
+    const result = loginSchema.safeParse(form);
+    if (!result.success) {
+      setMessage(result.error.errors[0].message);
+      return;
+    }
+
     setLoading(true);
     try {
-      const r = await loginToApiSmart(identity.trim(), password);
-      if (!r.ok) {
-        setError(mapBackendError(r.status, r.data));
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: form.username, // 👈 username, not email
+          password: form.password,
+        }),
+        credentials: "omit",
+      });
+
+      const data = await safeParseJSON(res);
+
+      if (!res.ok) {
+        setMessage((data && (data.message || data.error)) || "Login failed");
         return;
-      }
+        }
 
-      const token = extractToken(r);
-      if (token) localStorage.setItem("token", token);
-      localStorage.setItem("session", "ok");
+      // Save tokens/user if provided
+      if (data?.token) localStorage.setItem("token", data.token);
+      if (data?.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+      if (data?.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/app", { replace: true });
-    } catch (err) {
-      setError(err?.message || "Network error.");
+      setMessage("Login successful! Redirecting...");
+      setTimeout(() => navigate("/"), 800);
+    } catch {
+      setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  // OAUTH
+  // OAUTH (kept same behavior: client-only store)
   async function handleOAuth(which) {
-    setError("");
+    setMessage("");
     setLoading(true);
     try {
       await applyPersistence(remember);
@@ -244,34 +127,33 @@ export default function LoginPage() {
       if (which === "GitHub") result = await signInWithPopup(auth, github);
       if (!result) return;
 
-      let userEmail = result.user?.email || null;
-      if (!userEmail && which === "GitHub") {
-        const cred = GithubAuthProvider.credentialFromResult(result);
-        userEmail = await fetchGithubPrimaryEmail(cred?.accessToken || null);
-      }
+      const user = result.user;
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+        })
+      );
 
-      const { token } = await authAgainstBackend({
-        email: userEmail,
-        usernameSeed: result.user?.displayName,
-        uid: result.user?.uid,
-      });
-      if (token) localStorage.setItem("token", token);
-      localStorage.setItem("session", "ok");
-
-      navigate("/app", { replace: true });
+      setMessage("Login successful! Redirecting...");
+      setTimeout(() => navigate("/"), 800);
     } catch (err) {
       const code = String(err?.code || "");
-      if (code.includes("auth/popup-closed-by-user")) setError("Popup closed.");
-      else if (code.includes("auth/operation-not-allowed")) setError("Provider disabled in Firebase.");
-      else if (code.includes("auth/network-request-failed")) setError("Network error.");
-      else setError("Social login failed.");
+      if (code.includes("auth/popup-closed-by-user")) setMessage("Popup closed.");
+      else if (code.includes("auth/operation-not-allowed"))
+        setMessage("Provider disabled in Firebase.");
+      else if (code.includes("auth/network-request-failed"))
+        setMessage("Network error.");
+      else setMessage(err?.message || "Social login failed.");
       console.error(`${which} OAuth error:`, err);
     } finally {
       setLoading(false);
     }
   }
 
-  /* ---------------- UI ---------------- */
+  /* ---------------- UI (your original style) ---------------- */
   return (
     <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex">
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-6xl place-items-center px-4 flex justify-around">
@@ -293,22 +175,29 @@ export default function LoginPage() {
             <p className="mt-2 text-sm text-white/70">Log in to continue</p>
           </div>
 
-          {error && (
-            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-              {error}
+          {message && (
+            <div
+              className={`mb-4 rounded-xl p-3 text-sm ${
+                message.toLowerCase().includes("success")
+                  ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                  : "border border-red-500/30 bg-red-500/10 text-red-200"
+              }`}
+            >
+              {message}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <label className="block">
               <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <Mail className="h-4 w-4" /> Email or Username
+                <Mail className="h-4 w-4" /> Username
               </span>
               <input
+                name="username"
                 type="text"
-                value={identity}
-                onChange={(e) => setIdentity(e.target.value)}
-                placeholder="you@example.com or yourname"
+                value={form.username}
+                onChange={handleChange}
+                placeholder="your_username"
                 className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 outline-none transition focus:border-white/40"
                 autoComplete="username"
                 required
@@ -321,9 +210,10 @@ export default function LoginPage() {
               </span>
               <div className="relative">
                 <input
+                  name="password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={form.password}
+                  onChange={(e) => setForm((s) => ({ ...s, password: e.target.value }))}
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40"
                   autoComplete="current-password"
@@ -336,7 +226,11 @@ export default function LoginPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </label>
@@ -351,7 +245,10 @@ export default function LoginPage() {
                 />
                 Remember me
               </label>
-              <a href="#" className="text-white/80 underline-offset-4 hover:underline">
+              <a
+                href="#"
+                className="text-white/80 underline-offset-4 hover:underline"
+              >
                 Forgot password?
               </a>
             </div>

@@ -1,10 +1,11 @@
+// /src/pages/auth/RegisterPage.jsx
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
-import { apiAuth } from "../../Implement/api.js";
+import { API_BASE, REGISTER_PATH } from "../../Implement/api";
 
-/* ----------------------------- helper functions ---------------------------- */
+/* ---------------- helpers ---------------- */
 const firstError = (d) => {
   if (!d) return null;
   if (typeof d === "string") return d;
@@ -17,16 +18,13 @@ const firstError = (d) => {
   }
   return null;
 };
-
 const isEmail = (v) => /\S+@\S+\.\S+/.test(String(v || ""));
-
 const sanitizeUsername = (u) =>
   (String(u || "")
     .replace(/\s+/g, "_")
     .replace(/[^a-zA-Z0-9._]/g, "")
     .toLowerCase()
     .slice(0, 32)) || "";
-
 const passwordStrong = (p) =>
   typeof p === "string" &&
   p.length >= 8 &&
@@ -34,8 +32,23 @@ const passwordStrong = (p) =>
   /[a-z]/.test(p) &&
   /\d/.test(p) &&
   /[^A-Za-z0-9]/.test(p);
+const normalizeGender = (g) => {
+  const v = String(g || "").trim().toLowerCase();
+  if (["male", "m"].includes(v)) return "MALE";
+  if (["female", "f"].includes(v)) return "FEMALE";
+  return "OTHER";
+};
 
-/* --------------------------------- component -------------------------------- */
+const safeParseJSON = async (res) => {
+  const text = await res.text().catch(() => "");
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch {
+    return text || null;
+  }
+};
+
+/* ---------------- component ---------------- */
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -87,7 +100,6 @@ export default function RegisterPage() {
     )
       return "Please fill in all fields.";
     if (!isEmail(cleanEmail)) return "Please enter a valid email address.";
-    // guard against users trying to use email as username
     if (isEmail(formData.username)) return "Username cannot be an email address.";
     if (cleanUsername.length < 3)
       return "Username must be at least 3 characters (letters, numbers, . or _).";
@@ -114,27 +126,35 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await apiAuth.register({
-        familyName: formData.familyName,
-        givenName: formData.givenName,
-        gender: formData.gender,
-        username: cleanUsername,
-        email: cleanEmail,
-        password: formData.password,
-        confirmedPassword: formData.confirmedPassword,
+      const res = await fetch(`${API_BASE}${REGISTER_PATH}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "omit",
+        body: JSON.stringify({
+          username: cleanUsername,
+          email: cleanEmail,
+          password: formData.password,
+          confirmedPassword: formData.confirmedPassword,
+          givenName: formData.givenName,
+          familyName: formData.familyName,
+          gender: normalizeGender(formData.gender),
+        }),
       });
 
-      if (res?.ok) {
+      const data = await safeParseJSON(res);
+
+      if (res.ok) {
         setOkMsg(`Account created. You can now log in as "${cleanUsername}".`);
         setFormData((p) => ({ ...p, password: "", confirmedPassword: "" }));
       } else {
         const msg =
-          firstError(res?.data) ||
-          (res?.status === 409 && "Email or username already in use.") ||
-          (res?.status === 422 && "Invalid data. Please check all fields.") ||
-          (res?.status === 500 &&
-            "Server error while creating account. Try a stronger password or unique username/email.") ||
-          `Registration failed${res?.status ? ` (HTTP ${res.status})` : ""}`;
+          firstError(data) ||
+          (res.status === 409 && "Email or username already in use.") ||
+          (res.status === 422 && "Invalid data. Please check all fields.") ||
+          (res.status === 400 && "Bad request. Please review your inputs.") ||
+          (res.status === 500 &&
+            "Server error while creating account. Try again later.") ||
+          `Registration failed (HTTP ${res.status}).`;
         setError(msg);
       }
     } catch (err) {
@@ -227,15 +247,9 @@ export default function RegisterPage() {
                 <option value="" disabled className="text-gray-400">
                   Select gender
                 </option>
-                <option value="Male" className="text-black">
-                  Male
-                </option>
-                <option value="Female" className="text-black">
-                  Female
-                </option>
-                <option value="Other" className="text-black">
-                  Other
-                </option>
+                <option value="Male" className="text-black">Male</option>
+                <option value="Female" className="text-black">Female</option>
+                <option value="Other" className="text-black">Other</option>
               </select>
             </label>
 
@@ -298,11 +312,7 @@ export default function RegisterPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </label>
@@ -318,7 +328,7 @@ export default function RegisterPage() {
                   value={formData.confirmedPassword}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
+                  className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
                   placeholder="Repeat password"
                   autoComplete="new-password"
                   minLength={8}
@@ -328,15 +338,9 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowConfirmPassword((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
-                  aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
-                  }
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </label>
