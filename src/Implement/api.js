@@ -1,55 +1,88 @@
-// src/Implement/api.js
-// Unified API client with safe JSON parsing and cookie support.
+// /src/Implement/api.js
+// Centralized API helpers for login/register + exported constants
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "";
+export const API_BASE = (
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_BASE_URL ||
+  "http://localhost:4000"
+).replace(/\/+$/, "");
 
-// Export these so LoginPage can use them
-// export const API_BASE = BASE_URL;
-export const API_BASE = 'https://taskflow-api.istad.co';
+// Adjust these if your backend is different
 export const LOGIN_PATH = "/auth/login";
 export const REGISTER_PATH = "/auth/register";
+export const REFRESH_PATH = "/auth/refresh";
 
-async function safeJson(res) {
+const safeParseJSON = async (res) => {
+  const text = await res.text().catch(() => "");
   try {
-    return await res.json();
+    return text ? JSON.parse(text) : null;
   } catch {
-    return null;
+    return text || null;
+  }
+};
+
+async function timedFetch(url, init = {}, { timeoutMs = 15000 } = {}) {
+  const controller = new AbortController();
+  const id = setTimeout(
+    () => controller.abort(new DOMException("Timeout", "AbortError")),
+    timeoutMs
+  );
+  try {
+    const res = await fetch(url, {
+      mode: "cors",
+      credentials: "omit",
+      ...init,
+      signal: controller.signal,
+    });
+    const data = await safeParseJSON(res);
+    return { ok: res.ok, status: res.status, data, headers: res.headers };
+  } catch (e) {
+    return {
+      ok: false,
+      status: 0,
+      data: { message: e?.message || "Network error" },
+    };
+  } finally {
+    clearTimeout(id);
   }
 }
 
-async function request(path, { method = "GET", body, headers } = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(headers || {}),
-    },
-    credentials: "include", // send/receive cookies (session auth)
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const data = await safeJson(res);
-  return { ok: res.ok, status: res.status, data, res };
-}
-
 export const apiAuth = {
-  // Accepts either email or username in "identity"
-  async login({ identity, password }) {
-    // normalize
-    const id = String(identity || "").includes("@")
-      ? String(identity || "").trim().toLowerCase()
-      : String(identity || "").trim();
+  // Username (or usernameOrEmail) + password
+  async login({ username, password, email, usernameOrEmail }) {
+    const identity = (username ?? usernameOrEmail ?? email ?? "").trim();
+    const body = JSON.stringify({
+      username: identity,
+      usernameOrEmail: identity,
+      email, // harmless if backend ignores
+      password,
+    });
 
-    return request(LOGIN_PATH, {
+    return timedFetch(`${API_BASE}${LOGIN_PATH}`, {
       method: "POST",
-      body: { identity: id, password },
+      headers: { "Content-Type": "application/json" },
+      body,
     });
   },
 
-  async me() {
-    return request("/auth/me");
-  },
+  async register(payload) {
+    const body = JSON.stringify({
+      username: payload.username,
+      email: payload.email,
+      password: payload.password,
+      confirmedPassword:
+        payload.confirmedPassword ??
+        payload.password_confirmation ??
+        payload.confirmed_password,
+      givenName: payload.givenName,
+      familyName: payload.familyName,
+      gender: payload.gender, // "MALE" | "FEMALE" | "OTHER"
+    });
 
-  async logout() {
-    return request("/auth/logout", { method: "POST" });
+    return timedFetch(`${API_BASE}${REGISTER_PATH}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    });
   },
 };
