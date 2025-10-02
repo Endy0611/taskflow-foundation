@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { NavLink } from "react-router-dom";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Initialize dark mode
   useEffect(() => {
@@ -29,29 +31,8 @@ export default function WorkspaceBoard() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <NavbarComponent
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        setShowModal={setShowModal}
-      />
-
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -134,9 +115,38 @@ export default function WorkspaceBoard() {
               />
             </div>
           </section>
+             {/* Floating chatbot button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Our Chatbot"
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
 
+        <AnimatePresence>
+        {showChatbot && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Modal */}
       <AnimatePresence>
         {showModal && (
@@ -185,9 +195,12 @@ export default function WorkspaceBoard() {
                   rows="3"
                 />
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                <NavLink
+                  to="/board"
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
                   Continue
-                </button>
+                </NavLink>
 
                 <button
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
