@@ -1,4 +1,3 @@
-// App.js
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Guest pages
@@ -16,7 +15,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
 
-//Worksapce 
+// Workspace 
 import WorkspaceLayout from "./components/layout/WorkspaceLayout";
 import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
@@ -24,6 +23,16 @@ import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import UserLayout from "./components/layout/UserLayout";
 import Board from "./pages/user/Board";
 import WorkspaceMember from "./pages/user/WorkspaceMember";
+
+import { registerLicense } from "@syncfusion/ej2-base";
+registerLicense(
+  "Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1NpR2FGfV5ycUVHYFZURnxfQE0DNHVRdkdmWXZccnZXQ2RZVUZyWUdWYEg="
+);
+
+
+// 404 Not Found page
+import NotFoundPage from "./utils/404";
+import ProjectManagement from "./pages/user/ProjectManagement";
 
 function App() {
   return (
@@ -45,18 +54,19 @@ function App() {
         <Route element={<UserLayout />}>
           <Route path="/homeuser" element={<HomeUser />} />
           <Route path="/templateuser" element={<TemplateUser />} />
-          
         </Route>
 
-        <Route element={<WorkspaceLayout/>}>
+        <Route element={<WorkspaceLayout />}>
           <Route path="/boardb4create" element={<BoardB4Create />} />
           <Route path="/board" element={<Board/>}/>
           <Route path="/workspacemember" element={<WorkspaceMember/>}/>
           <Route path="/workspacesetting" element={<WorkspaceSetting />} />
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
+          <Route path="/projectmanagement" element={<ProjectManagement/>}/>
         </Route>
 
-        <Route path="*" element={<h1>404 Page Not Found</h1>} />
+        {/* 404 Page Not Found */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
