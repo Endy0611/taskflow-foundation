@@ -22,9 +22,17 @@ import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import UserLayout from "./components/layout/UserLayout";
 import Board from "./pages/user/Board";
+import WorkspaceMember from "./pages/user/WorkspaceMember";
+
+import { registerLicense } from "@syncfusion/ej2-base";
+registerLicense(
+  "Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1NpR2FGfV5ycUVHYFZURnxfQE0DNHVRdkdmWXZccnZXQ2RZVUZyWUdWYEg="
+);
+
 
 // 404 Not Found page
 import NotFoundPage from "./utils/404";
+import ProjectManagement from "./pages/user/ProjectManagement";
 
 function App() {
   return (
@@ -50,9 +58,11 @@ function App() {
 
         <Route element={<WorkspaceLayout />}>
           <Route path="/boardb4create" element={<BoardB4Create />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/board" element={<Board/>}/>
+          <Route path="/workspacemember" element={<WorkspaceMember/>}/>
           <Route path="/workspacesetting" element={<WorkspaceSetting />} />
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
+          <Route path="/projectmanagement" element={<ProjectManagement/>}/>
         </Route>
 
         {/* 404 Page Not Found */}

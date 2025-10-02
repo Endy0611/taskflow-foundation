@@ -11,7 +11,7 @@ function NavItem({ icon, text, to }) {
         `group flex items-center gap-2 cursor-pointer rounded px-2 py-3
         text-gray-700 dark:text-gray-200
         ${isActive ? "bg-[#1E40AF] text-white" : ""}
-        hover:bg-[#2563EB] hover:text-white`
+        hover:bg-[#2563EB] hover:!text-white`
       }
     >
       {icon} {text}
