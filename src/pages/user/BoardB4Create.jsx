@@ -32,15 +32,14 @@ export default function BoardB4Create() {
           />
         )}
 
-       {/* Sidebar */}
-<div className="md:relative z-50">
-  <SidebarB4CreateBoard
-    sidebarOpen={sidebarOpen}
-    setSidebarOpen={setSidebarOpen}
-    setShowModal={setShowModal}
-  />
-</div>
-
+        {/* Sidebar */}
+        <div className="md:relative z-50">
+          <SidebarB4CreateBoard
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            setShowModal={setShowModal}
+          />
+        </div>
 
         <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
           {/* Templates */}
@@ -50,7 +49,7 @@ export default function BoardB4Create() {
               customizable workflows
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
+              {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
                   <NavLink
                     key={idx}
@@ -129,7 +128,10 @@ export default function BoardB4Create() {
                   >
                     Boards
                   </NavLink>
-                  <NavLink to="/workspacemember" className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink
+                    to="/workspacemember"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     Member
                   </NavLink>
                   <NavLink
@@ -146,7 +148,7 @@ export default function BoardB4Create() {
 
               {/* Workspace boards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-               {["Boardup", "Create new board"].map((title, idx) =>
+                {["Boardup", "Create new board"].map((title, idx) =>
                   title !== "Create new board" ? (
                     <NavLink
                       key={idx}
@@ -182,7 +184,7 @@ export default function BoardB4Create() {
           <img
             src="/src/assets/general/chatbot.png"
             alt="Our Chatbot"
-            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
             onClick={() => setShowChatbot(true)}
           />
         </main>
@@ -275,28 +277,28 @@ export default function BoardB4Create() {
           </>
         )}
       </AnimatePresence>
-       <AnimatePresence>
-              {showCreateBoard && (
-                <>
-                  <motion.div
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setShowCreateBoard(false)}
-                  />
-                  <motion.div
-                    className="fixed inset-0 flex items-center justify-center z-50 px-4"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
+      <AnimatePresence>
+        {showCreateBoard && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCreateBoard(false)}
+            />
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 px-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

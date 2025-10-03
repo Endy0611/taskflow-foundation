@@ -131,39 +131,3 @@ export default function SidebarComponent({
     </aside>
   );
 }
-export default function SidebarDropdown({ sidebarOpen, setSidebarOpen }) {
-  return (
-    <AnimatePresence>
-      {sidebarOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.25 }}
-          className="absolute top-full left-0 w-full bg-gray-50 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700 shadow-lg md:hidden z-40"
-        >
-          <div className="py-2">
-            <NavItem
-              icon={<Home size={16} />}
-              text="Home"
-              to="/homeuser"
-              onClick={() => setSidebarOpen(false)}
-            />
-            <NavItem
-              icon={<LayoutGrid size={16} />}
-              text="Boards"
-              to="/board"
-              onClick={() => setSidebarOpen(false)}
-            />
-            <NavItem
-              icon={<FileText size={16} />}
-              text="Templates"
-              to="/templateuser"
-              onClick={() => setSidebarOpen(false)}
-            />
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
