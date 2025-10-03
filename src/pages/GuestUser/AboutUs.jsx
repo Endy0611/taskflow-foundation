@@ -30,26 +30,7 @@ const AboutUs = () => {
   };
 
   // ======= Mentor Data =======
-  const mentors = [
-    {
-      name: "Mr. Chan Chhaya",
-      role: "Mentor",
-      img: "src/assets/About/cher chhaya.png",
-      github: "https://github.com/mentor1",
-      linkedin: "https://linkedin.com/in/mentor1",
-      email: "mailto:mentor1@email.com",
-      quote: "Offer support in Java & API",
-    },
-    {
-      name: "Ms. Srong Sokcheat",
-      role: "Mentor",
-      img: "src/assets/About/cher cheat.png",
-      github: "https://github.com/mentor2",
-      linkedin: "https://linkedin.com/in/mentor2",
-      email: "mailto:mentor2@email.com",
-      quote: "Offer support in Web Design",
-    },
-  ];
+  // (Removed unused mentors variable)
 
   // ======= Team Members Data =======
   const members = [
@@ -122,7 +103,7 @@ const AboutUs = () => {
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-              About <span className="text-blue-600">TaskFlow</span>
+              About <span className="text-primary">TaskFlow</span>
             </h1>
             <p className="text-gray-600 font-bold dark:text-gray-300 text-lg leading-relaxed">
               TaskFlow{" "}
@@ -170,18 +151,18 @@ const AboutUs = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="relative bg-white dark:bg-gray-900 py-16 px-6 lg:px-12 border dark:border-white lg:mx-24">
+      <section className="relative bg-gray-50 dark:bg-gray-900 py-16 px-6 lg:px-12 border border-purple-800 dark:border-white lg:mx-24">
         {/* Content Wrapper */}
         <div className="relative z-10 max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-blue-600 mb-12">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Contact Us
           </h2>
 
           <div className="flex flex-col md:flex-row gap-8">
             {/* Get in Touch */}
-            <div className="flex-1 relative p-[2px] rounded-2xl bg-gradient-to-r from-blue-500 via-orange-500 to-red-500 shadow-xl hover:shadow-2xl transition">
+            <div className="flex-1 relative p-[2px] rounded-2xl bg-gradient-to-r from-blue-600 via-orange-600 to-red-500 shadow-xl hover:shadow-2xl transition">
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-8 h-full">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                <h3 className="text-2xl font-bold text-secondary dark:text-white mb-6">
                   Get in Touch
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">
@@ -193,7 +174,7 @@ const AboutUs = () => {
                 <div className="space-y-6 mb-8">
                   {/* Email */}
                   <div className="flex items-center gap-4 group">
-                    <div className="bg-blue-600/90 p-3 rounded-xl shadow-md group-hover:scale-110 transition">
+                    <div className="bg-primary p-3 rounded-xl  group-hover:scale-110 transition">
                       <FiMail className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -208,7 +189,7 @@ const AboutUs = () => {
 
                   {/* Phone */}
                   <div className="flex items-center gap-4 group">
-                    <div className="bg-blue-600/90 p-3 rounded-xl shadow-md group-hover:scale-110 transition">
+                    <div className="bg-primary p-3 rounded-xl group-hover:scale-110 transition">
                       <FiPhone className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -224,14 +205,14 @@ const AboutUs = () => {
 
                 {/* Social Media */}
                 <div>
-                  <p className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                  <p className="font-semibold mb-3 text-gray-800 dark:text-gray-200 mt-25">
                     Follow our social media
                   </p>
-                  <div className="flex gap-4">
-                    <FaFacebook className="text-blue-600 w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaTwitter className="text-blue-400 w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaLinkedin className="text-blue-500 w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaInstagram className="text-pink-500 w-6 h-6 cursor-pointer hover:scale-125 transition" />
+                  <div className="flex gap-4 mt-5">
+                    <FaFacebook className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaTwitter className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaLinkedin className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaInstagram className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
                   </div>
                 </div>
               </div>
@@ -287,7 +268,7 @@ const AboutUs = () => {
                 ></textarea>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition"
+                  className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition"
                 >
                   Send
                 </button>
@@ -314,13 +295,13 @@ const AboutUs = () => {
 
       {/* Mentors Section */}
       <section className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-blue-600 mb-16">Our Mentors</h2>
+        <h2 className="text-3xl font-bold text-primary m-30">Our Mentors</h2>
 
-        <div className="space-y-16 md:space-y-25 max-w-6xl mx-auto">
+        <div className="space-y-16 md:space-y-25 max-w-6xl mx-auto ">
           {/* Mentor 1 */}
           <div className="flex flex-col md:flex-row rounded-3xl shadow-xl">
             {/* Image Side */}
-            <div className="relative md:w-1/2 bg-blue-600 flex justify-center items-end rounded-tl-3xl">
+            <div className="relative md:w-1/2 bg-primary flex justify-center items-end rounded-tl-3xl">
               <img
                 src="src/assets/About/cher chhaya.png"
                 alt="Mr. Chan Chhaya"
@@ -329,20 +310,20 @@ const AboutUs = () => {
             </div>
 
             {/* Info Side */}
-            <div className="md:w-1/2 bg-gray-200 dark:bg-gray-800 p-8 text-left flex flex-col justify-center rounded-br-3xl">
-              <h3 className="text-2xl font-semibold text-blue-700 dark:text-blue-400">
+            <div className="md:w-1/2 bg-gray-50 dark:bg-gray-800 p-8 text-left flex flex-col justify-center rounded-br-3xl">
+              <h3 className="text-2xl font-semibold text-primary dark:text-white">
                 Mr. Chan Chhaya
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
                 Offer support in Java & API
               </p>
-              <p className="mt-1 text-gray-700 dark:text-gray-300 font-medium">
+              <p className="mt-2 text-primary text-lg dark:text-gray-300 font-medium">
                 Mentor
               </p>
 
-              <div className="mt-6 space-y-4">
+              <div className="mt-4 space-y-4">
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FaGithub className="text-blue-600" />
+                  <FaGithub className="text-primary w-6 h-6" />
                   <a
                     href="https://github.com/it-chhaya"
                     target="_blank"
@@ -352,11 +333,11 @@ const AboutUs = () => {
                   </a>
                 </p>
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FiMail className="text-blue-600" />
+                  <FiMail className="text-primary w-6 h-6" />
                   <a href="mailto:it.chhaya@gmail.com">it.chhaya@gmail.com</a>
                 </p>
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FaLinkedin className="text-blue-600" />
+                  <FaLinkedin className="text-primary w-6 h-6" />
                   <a
                     href="https://www.linkedin.com/in/chan-chhaya"
                     target="_blank"
@@ -372,7 +353,7 @@ const AboutUs = () => {
           {/* Mentor 2 */}
           <div className="flex flex-col md:flex-row-reverse rounded-3xl shadow-xl">
             {/* Image Side */}
-            <div className="relative md:w-1/2 bg-blue-600 flex justify-center items-end rounded-tr-3xl">
+            <div className="relative md:w-1/2 bg-primary flex justify-center items-end rounded-tr-3xl">
               <img
                 src="src/assets/About/cher cheat.png"
                 alt="Ms. Srong Sokcheat"
@@ -381,20 +362,20 @@ const AboutUs = () => {
             </div>
 
             {/* Info Side */}
-            <div className="md:w-1/2 bg-gray-200 dark:bg-gray-800 p-8 text-left flex flex-col justify-center rounded-bl-3xl">
-              <h3 className="text-2xl font-semibold text-blue-700 dark:text-blue-400">
+            <div className="md:w-1/2 bg-gray-50 dark:bg-gray-800 p-8 text-left flex flex-col justify-center rounded-bl-3xl">
+              <h3 className="text-2xl font-semibold text-primary dark:text-blue-400">
                 Ms. Srong Sokcheat
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
                 Offer support in Web Design
               </p>
-              <p className="mt-1 text-gray-700 dark:text-gray-300 font-medium">
+              <p className="mt-2 text-primary text-lg dark:text-gray-300 font-medium">
                 Mentor
               </p>
 
               <div className="mt-6 space-y-4">
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FaGithub className="text-blue-600" />
+                  <FaGithub className="text-primary w-6 h-6" />
                   <a
                     href="https://github.com/Sokcheatsrorng"
                     target="_blank"
@@ -404,11 +385,11 @@ const AboutUs = () => {
                   </a>
                 </p>
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FiMail className="text-blue-600" />
+                  <FiMail className="text-primary w-6 h-6" />
                   <a href="mailto:sokcheat@email.com">sokcheat@email.com</a>
                 </p>
                 <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                  <FaLinkedin className="text-blue-600" />
+                  <FaLinkedin className="text-primary w-6 h-6" />
                   <a
                     href="https://www.linkedin.com/in/srorng-sokcheat"
                     target="_blank"
@@ -425,15 +406,15 @@ const AboutUs = () => {
 
       {/* Team Members Section */}
       <section className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-blue-600 mb-10">Team Members</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 justify-items-center">
+        <h2 className="text-3xl font-bold text-primary m-30">Team Members</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-20 justify-items-center">
           {members.map((member, i) => (
             <div
               key={i}
-              className="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-left w-full max-w-md transition hover:shadow-xl"
+              className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
             >
               {/* Top Badge */}
-              <div className="absolute -top-3 left-0 bg-blue-600 text-white px-4 py-1 rounded-tr-xl rounded-bl-xl">
+              <div className="absolute -top-3 left-0 bg-primary text-white px-4 py-1 rounded-tr-xl rounded-bl-xl">
                 <h3 className="font-semibold text-sm">{member.name}</h3>
                 <p className="text-xs opacity-80">{member.role}</p>
               </div>
@@ -444,7 +425,7 @@ const AboutUs = () => {
               </p>
 
               {/* Icons */}
-              <div className="flex gap-4 mt-6 text-xl text-blue-600">
+              <div className="flex gap-4 mt-8 text-2xl text-primary">
                 <a href={member.github} target="_blank" rel="noreferrer">
                   <FaGithub className="hover:scale-110 transition-transform" />
                 </a>
@@ -457,7 +438,7 @@ const AboutUs = () => {
               </div>
 
               {/* Profile Pic */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full overflow-hidden border-4 border-orange-500 shadow-md">
+              <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
                 <img
                   src={member.img}
                   alt={member.name}

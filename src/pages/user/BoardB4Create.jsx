@@ -116,7 +116,7 @@ export default function BoardB4Create() {
               {/* Workspace header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
+                  <div className="w-10 h-10 bg-primary text-white flex items-center justify-center rounded-md font-bold">
                     S
                   </div>
                   <span className="font-semibold">TaskFlow Workspaces</span>
@@ -261,7 +261,7 @@ export default function BoardB4Create() {
 
                 <NavLink
                   to="/board"
-                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="block w-full text-center bg-primary text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 >
                   Continue
                 </NavLink>

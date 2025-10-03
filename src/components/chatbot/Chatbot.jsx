@@ -263,7 +263,7 @@ const TaskFlowChatbot = ({ onClose }) => {
             <div className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 
               border border-gray-200 dark:border-gray-700 p-3 rounded-2xl 
               rounded-bl-md flex items-center space-x-2 shadow-sm">
-              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+              <Loader2 className="w-4 h-4 animate-spin text-primary" />
               <span className="text-sm">TaskFlowBot is thinking...</span>
             </div>
           </div>

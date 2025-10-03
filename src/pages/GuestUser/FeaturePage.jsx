@@ -17,7 +17,7 @@ export default function FeaturePage() {
             effortlessly with TaskFlow.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <button onClick={()=> link("/login")} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition">
+            <button onClick={()=> link("/login")} className="px-6 py-3 bg-primary hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition">
               Try it for Free!
             </button>
           </div>
