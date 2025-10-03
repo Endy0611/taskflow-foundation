@@ -1,5 +1,6 @@
 import React from "react";
 import TemplateCard from "./TemplateCard";
+import { NavLink } from "react-router-dom";
 
 export default function TemplateSection({ title, templates, viewMode = "grid" }) {
   if (!templates || templates.length === 0) return null;
@@ -72,7 +73,7 @@ export default function TemplateSection({ title, templates, viewMode = "grid" })
                 </p>
 
                 {/* Action Button */}
-                <button
+                <NavLink to="/projectmanagement"
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-white 
                              bg-primary rounded-lg shadow-md 
                              hover:bg-primary/90 hover:shadow-lg hover:scale-105 
@@ -92,7 +93,7 @@ export default function TemplateSection({ title, templates, viewMode = "grid" })
                       d="M13 7l5 5m0 0l-5 5m5-5H6"
                     />
                   </svg>
-                </button>
+                </NavLink>
               </div>
             </div>
           )

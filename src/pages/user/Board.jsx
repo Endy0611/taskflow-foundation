@@ -121,20 +121,8 @@ export default function Board() {
                 {/* Right: Actions */}
                 <div className="flex flex-wrap gap-2">
                   <NavLink
-                    to="/board"
-                    onClick={(e) => {
-                      if (window.location.pathname === "/board") {
-                        e.preventDefault();
-                        window.location.reload();
-                      }
-                    }}
-                    className={({ isActive }) =>
-                      `px-3 py-1.5 border rounded text-sm ${
-                        isActive
-                          ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`
-                    }
+                    to="/workspaceboard"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Boards
                   </NavLink>

@@ -25,16 +25,17 @@ export default function SidebarB4CreateBoard({
   setShowModal,
 }) {
   return (
-    <aside
-      className={[
-        "transform transition-transform duration-300 will-change-transform",
-        "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
-        "border-r border-gray-300 dark:border-gray-700",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full",
-        "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
-        "top-[56px] md:top-0",
-      ].join(" ")}
-    >
+   <aside
+  className={[
+    "transform transition-transform duration-300 will-change-transform",
+    "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
+    "border-r border-gray-300 dark:border-gray-700",
+    sidebarOpen ? "translate-x-0" : "-translate-x-full",
+    "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
+    "top-0",   // ✅ FIXED
+  ].join(" ")}
+>
+
       <div className="p-4 text-sm">
         {/* Close (mobile only) */}
         <div className="flex items-center justify-between md:hidden mb-2">
