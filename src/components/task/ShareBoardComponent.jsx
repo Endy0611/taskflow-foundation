@@ -1,9 +1,12 @@
-import { X, Link, UserPlus } from 'lucide-react'
+import { X, Link, UserPlus } from "lucide-react";
 
-export function ShareBoardComponent() {
+export function ShareBoardComponent({ onClose }) {
   return (
     <div className="w-full max-w-xl bg-white rounded-xl p-6 shadow-lg relative space-y-6">
-      <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+      >
         <X size={20} />
       </button>
 
@@ -28,13 +31,17 @@ export function ShareBoardComponent() {
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <Link size={16} />
         <span>Share this board with a link</span>
-        <a href="#" className="text-primary underline ml-2">Create link</a>
+        <a href="#" className="text-primary underline ml-2">
+          Create link
+        </a>
       </div>
 
       <div className="flex items-center gap-2 mt-4">
-        <div className="bg-secondary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">M</div>
+        <div className="bg-secondary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold">
+          M
+        </div>
         <span>User (you)</span>
       </div>
     </div>
-  )
+  );
 }

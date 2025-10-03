@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import "../../index.css";
+import { NavLink } from "react-router-dom";
 
 export default function TemplateCard({ template }) {
   return (
@@ -38,15 +39,15 @@ export default function TemplateCard({ template }) {
           {template.description}
         </p>
 
-        <button
+        <NavLink to="/projectmanagement"
           onClick={() => console.log("Template selected:", template.id)}
-          className="mt-4 w-full px-4 py-2 text-sm font-medium text-white 
+          className="text-center mt-4 w-full px-4 py-2 text-sm font-medium text-white 
                      bg-blue-500 hover:bg-blue-600 
                      dark:bg-blue-900/40 dark:hover:bg-blue-800 
                      rounded-lg transition-colors duration-200"
         >
           Use Template
-        </button>
+        </NavLink>
       </div>
     </motion.div>
   );

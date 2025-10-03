@@ -27,7 +27,7 @@ export function CreateBoardComponent({ onClose }) {
       {/* Visibility */}
       <div className="space-y-2">
         <label className="block text-sm font-medium">Visibility</label>
-        <select className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-white dark:bg-gray-700 dark:text-white">
+        <select className="w-full border border-gray-300 dark:border-gray-600 px-2 py-2 rounded-md bg-white dark:bg-gray-700 dark:text-white">
           <option>Workspace</option>
         </select>
       </div>

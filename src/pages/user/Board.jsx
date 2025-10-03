@@ -39,14 +39,14 @@ export default function Board() {
           setShowModal={setShowModal}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-950">
+         <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
           {/* Templates */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">
+          <section className="mb-10">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
               Start with a template and let TaskFlow handle the rest with
               customizable workflows
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
                   <NavLink
@@ -69,9 +69,11 @@ export default function Board() {
           </section>
 
           {/* Recently Viewed */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Recently viewed</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <section className="mb-10">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+              Recently viewed
+            </h2>
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
               {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
                 title !== "Create new board" ? (
                   <NavLink
@@ -104,60 +106,26 @@ export default function Board() {
           </section>
 
           {/* Your Workspaces */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Your Workspaces</h2>
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 mb-6 border border-gray-200 dark:border-gray-700">
+          <section className="mb-16">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+              Your Workspaces
+            </h2>
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
               {/* Workspace header */}
-
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                {/* Left: Workspace name */}
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
                     S
                   </div>
                   <span className="font-semibold">TaskFlow Workspaces</span>
                 </div>
-
-                {/* Right: Actions */}
                 <div className="flex flex-wrap gap-2">
                   <NavLink
-                    to="/board"
-                    onClick={(e) => {
-                      if (window.location.pathname === "/board") {
-                        e.preventDefault();
-                        window.location.reload();
-                      }
-                    }}
-                    className={({ isActive }) =>
-                      `px-3 py-1.5 border rounded text-sm ${
-                        isActive
-                          ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`
-                    }
+                    to="/workspaceboard"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Boards
                   </NavLink>
-                  {/* <NavLink
-                    to="/board"
-                    onClick={(e) => {
-                      if (window.location.pathname === "/board") {
-                        e.preventDefault();
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                        // Optional: Add a small haptic feedback on mobile
-                        if (navigator.vibrate) navigator.vibrate(50);
-                      }
-                    }}
-                    className={({ isActive }) =>
-                      `px-3 py-1.5 border rounded text-sm ${
-                        isActive
-                          ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`
-                    }
-                  >
-                    Boards
-                  </NavLink> */}
                   <NavLink
                     to="/workspacemember"
                     className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -177,7 +145,7 @@ export default function Board() {
               </div>
 
               {/* Workspace boards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {["Boardup", "Create new board"].map((title, idx) =>
                   title !== "Create new board" ? (
                     <NavLink
@@ -209,6 +177,7 @@ export default function Board() {
               </div>
             </div>
           </section>
+
           {/* Floating chatbot button */}
           <img
             src="/src/assets/general/chatbot.png"

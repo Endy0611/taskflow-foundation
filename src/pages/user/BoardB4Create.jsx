@@ -3,11 +3,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import SidebarB4CreateBoard from "../../components/sidebar/SidebarB4CreateBoard";
 import { NavLink } from "react-router-dom";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
 
 export default function BoardB4Create() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showWorkspaceModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -31,11 +33,13 @@ export default function BoardB4Create() {
         )}
 
         {/* Sidebar */}
-        <SidebarB4CreateBoard
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          setShowModal={setShowModal}
-        />
+        <div className="md:relative z-50">
+          <SidebarB4CreateBoard
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            setShowModal={setShowModal}
+          />
+        </div>
 
         <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
           {/* Templates */}
@@ -47,8 +51,9 @@ export default function BoardB4Create() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
-                  <div
+                  <NavLink
                     key={idx}
+                    to="/projectmanagement"
                     className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
                   >
                     <img
@@ -59,7 +64,7 @@ export default function BoardB4Create() {
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
                       {title}
                     </div>
-                  </div>
+                  </NavLink>
                 )
               )}
             </div>
@@ -71,33 +76,34 @@ export default function BoardB4Create() {
               Recently viewed
             </h2>
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
-              {["Boardup", "Boardup", "Create new board"].map((title, idx) => (
-                <div
-                  key={idx}
-                  className={`relative rounded-xl overflow-hidden shadow-md border ${
-                    title === "Create new board"
-                      ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                      : "cursor-pointer"
-                  }`}
-                >
-                  {title !== "Create new board" ? (
-                    <>
-                      <img
-                        src={`https://picsum.photos/600/400?random=${idx + 10}`}
-                        alt={title}
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                        {title}
-                      </div>
-                    </>
-                  ) : (
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
+                title !== "Create new board" ? (
+                  <NavLink
+                    key={idx}
+                    to="/projectmanagement"
+                    className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
+                  >
+                    <img
+                      src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                      alt={title}
+                      className="w-full h-32 object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                      {title}
+                    </div>
+                  </NavLink>
+                ) : (
+                  <div
+                    key={idx}
+                    onClick={() => setShowCreateBoard(true)}
+                    className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                  >
                     <span className="text-gray-600 dark:text-gray-300 font-medium">
                       + {title}
                     </span>
-                  )}
-                </div>
-              ))}
+                  </div>
+                )
+              )}
             </div>
           </section>
 
@@ -122,7 +128,10 @@ export default function BoardB4Create() {
                   >
                     Boards
                   </NavLink>
-                  <NavLink to="/workspacemember" className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink
+                    to="/workspacemember"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     Member
                   </NavLink>
                   <NavLink
@@ -139,35 +148,34 @@ export default function BoardB4Create() {
 
               {/* Workspace boards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {["Boardup", "Create new board"].map((title, idx) => (
-                  <div
-                    key={idx}
-                    className={`relative rounded-xl overflow-hidden shadow-md border ${
-                      title === "Create new board"
-                        ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                        : "cursor-pointer"
-                    }`}
-                  >
-                    {title !== "Create new board" ? (
-                      <>
-                        <img
-                          src={`https://picsum.photos/600/400?random=${
-                            idx + 20
-                          }`}
-                          alt={title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                          {title}
-                        </div>
-                      </>
-                    ) : (
+                {["Boardup", "Create new board"].map((title, idx) =>
+                  title !== "Create new board" ? (
+                    <NavLink
+                      key={idx}
+                      to="/projectmanagement"
+                      className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
+                    >
+                      <img
+                        src={`https://picsum.photos/600/400?random=${idx + 20}`}
+                        alt={title}
+                        className="w-full h-32 object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                        {title}
+                      </div>
+                    </NavLink>
+                  ) : (
+                    <div
+                      key={idx}
+                      onClick={() => setShowCreateBoard(true)}
+                      className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                    >
                       <span className="text-gray-600 dark:text-gray-300 font-medium">
                         + {title}
                       </span>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </section>
@@ -176,7 +184,7 @@ export default function BoardB4Create() {
           <img
             src="/src/assets/general/chatbot.png"
             alt="Our Chatbot"
-            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
             onClick={() => setShowChatbot(true)}
           />
         </main>
@@ -265,6 +273,28 @@ export default function BoardB4Create() {
                   ✖
                 </button>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showCreateBoard && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCreateBoard(false)}
+            />
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 px-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
             </motion.div>
           </>
         )}

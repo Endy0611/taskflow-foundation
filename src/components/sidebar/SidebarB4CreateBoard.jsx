@@ -31,8 +31,8 @@ export default function SidebarB4CreateBoard({
         "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
         "border-r border-gray-300 dark:border-gray-700",
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
-        "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
-        "top-[56px] md:top-0",
+        "md:static md:translate-x-0 md:inset-auto md:h-screen md:z-0", // <-- changed h-auto → h-screen
+        "top-0",
       ].join(" ")}
     >
       <div className="p-4 text-sm">
