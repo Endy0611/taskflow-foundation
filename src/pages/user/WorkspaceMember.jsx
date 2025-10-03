@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { NavLink } from "react-router-dom";
@@ -82,6 +82,15 @@ export default function WorkspaceMembers() {
 
         {/* Main content */}
         <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+            {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           <div className="max-w-6xl mx-auto space-y-8">
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-3">

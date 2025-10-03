@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { NavLink } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
@@ -54,6 +55,15 @@ export default function WorkspaceBoard() {
         <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-900">
           {/* Workspace header */}
           <div className="mb-10">
+              {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-lg">
                 TF

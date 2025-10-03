@@ -8,8 +8,6 @@
 @import "@syncfusion/ej2-popups/styles/bootstrap5.css";
 @import "@syncfusion/ej2-react-kanban/styles/bootstrap5.css";
 
-
-
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,7 +22,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -45,6 +42,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* 🎨 Color Variables */
 :root {
   --color-primary: #1E40AF;
   --color-secondary: #F97316;
@@ -52,37 +50,26 @@
   --color-highlight: #3EE6BF;
   --color-danger: #D0090D;
   --color-text: rgba(0, 0, 0, 0.8);
+
   --color-primary-hover: #2563EB;
   --color-secondary-hover: #EA580C;
   --color-accent-hover: #7C3AED;
   --color-highlight-hover: #2DD4BF;
   --color-danger-hover: #DC2626;
-} 
-
-.text-primary {
-  color: var(--color-primary);
 }
 
-.text-secondary {
-  color: var(--color-secondary);
-}
+/* ✅ Text Colors */
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+.text-accent { color: var(--color-accent); }
+.text-highlight { color: var(--color-highlight); }
+.text-danger { color: var(--color-danger); }
+.text-default { color: var(--color-text); }
 
-.text-accent {
-  color: var(--color-accent);
-}
-
-.text-highlight {
-  color: var(--color-highlight);
-}
-
-.text-danger {
-  color: var(--color-danger);
-}
-
-.text-default {
-  color: var(--color-text);
-}
-
-.bg-primary {
-  background-color: var(--color-primary);
-}
+/* ✅ Background Colors */
+.bg-primary { background-color: var(--color-primary); }
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-accent { background-color: var(--color-accent); }
+.bg-highlight { background-color: var(--color-highlight); }
+.bg-danger { background-color: var(--color-danger); }
+.bg-default { background-color: var(--color-text); }

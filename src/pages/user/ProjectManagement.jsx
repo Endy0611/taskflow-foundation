@@ -1,6 +1,6 @@
 // ProjectManagement.jsx
 import React, { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Menu, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
@@ -138,6 +138,15 @@ export default function ProjectManagement() {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
         />
+          {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">

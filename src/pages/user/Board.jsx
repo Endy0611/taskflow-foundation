@@ -4,6 +4,7 @@ import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { NavLink } from "react-router-dom";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
+import { Menu } from "lucide-react";
 
 export default function Board() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function Board() {
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
+      
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -41,7 +43,17 @@ export default function Board() {
 
          <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
           {/* Templates */}
+          
           <section className="mb-10">
+              {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
             <h2 className="text-lg sm:text-xl font-semibold mb-3">
               Start with a template and let TaskFlow handle the rest with
               customizable workflows
