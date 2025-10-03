@@ -45,8 +45,8 @@ export default function NavbarB4Login() {
               className={({ isActive }) =>
                 `font-medium px-3 py-2 rounded-lg transition ${
                   isActive
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-gray-700 dark:text-gray-200"
+                    ? "text-primary font-semibold dark:text-blue-400"
+                    : "text-gray-700 font-semibold dark:text-gray-200"
                 }`
               }
             >
@@ -66,7 +66,7 @@ export default function NavbarB4Login() {
           </NavLink>
           <NavLink
             to="/register"
-            className="hidden lg:block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition text-sm sm:text-base"
+            className="hidden lg:block bg-primary hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition text-sm sm:text-base"
           >
             Sign up - It's free!
           </NavLink>
@@ -111,7 +111,7 @@ export default function NavbarB4Login() {
               className={({ isActive }) =>
                 `block font-medium px-3 py-2 rounded-lg transition ${
                   isActive
-                    ? "text-blue-600 dark:text-blue-400"
+                    ? "text-primary dark:text-blue-400"
                     : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`
               }
@@ -121,13 +121,13 @@ export default function NavbarB4Login() {
           ))}
           <NavLink
             to="/login"
-            className="block w-full text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="block w-full text-gray-700 font-semibold dark:text-gray-200 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             Log in
           </NavLink>
           <NavLink
             to="/register"
-            className="block w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition"
+            className="block w-full bg-primary hover:bg-blue-800 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition"
           >
             Sign up - It's free!
           </NavLink>

@@ -14,12 +14,12 @@ export default function NavbarComponent({
   const navigate = useNavigate();
 
   return (
-    <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
+    <nav className="sticky top-0 bg-primary text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
       {/* Left */}
       <div className="flex items-center gap-2">
         {/* Hamburger visible only on mobile */}
         <button
-          className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+          className="md:hidden p-2 -ml-2 rounded hover:bg-blue-800"
           aria-label="Toggle sidebar"
           aria-expanded={sidebarOpen}
           onClick={() => setSidebarOpen((v) => !v)}
@@ -46,7 +46,7 @@ export default function NavbarComponent({
             />
           </div>
         </div>
-        <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white">
+        <button className="bg-secondary hover:bg-orange-700 px-3 py-1 rounded text-sm text-white">
           Create
         </button>
       </div>
@@ -63,7 +63,7 @@ export default function NavbarComponent({
         {/* Profile dropdown */}
         <div className="relative">
           <button
-            className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold"
+            className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center font-semibold"
             onClick={() => setOpen((v) => !v)}
           >
             OE

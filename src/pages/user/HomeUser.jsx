@@ -98,7 +98,7 @@ const HomeUserPage = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
                   Escape the clutter and chaos — unleash your productivity with
-                  <span className="font-semibold text-blue-500"> TaskFlow</span>
+                  <span className="font-semibold text-primary"> TaskFlow</span>
                   .
                 </motion.p>
 
@@ -115,7 +115,7 @@ const HomeUserPage = () => {
                   >
                     <NavLink
                       to="/boardb4create"
-                      className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
+                      className="inline-block bg-primary hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
                     >
                       Check Board{" "}
                       <ArrowRight className="inline-block w-4 h-4 ml-2" />
@@ -157,7 +157,7 @@ const HomeUserPage = () => {
               {/* Left Side - Text */}
               <motion.div className="lg:w-1/2" variants={slideInFromLeft}>
                 <motion.h2
-                  className="text-3xl sm:text-4xl font-bold text-blue-600 mb-6 dark:text-blue-400"
+                  className="text-3xl sm:text-4xl font-bold text-primary mb-6 dark:text-blue-400"
                   variants={fadeInUp}
                 >
                   Your productivity powerhouse
@@ -235,7 +235,7 @@ const HomeUserPage = () => {
 
         {/* Invite Section */}
         <motion.section
-          className="relative bg-blue-600 dark:bg-blue-700 pt-14 pb-65 px-6 lg:px-8 text-white"
+          className="relative bg-primary dark:bg-blue-700 pt-14 pb-65 px-6 lg:px-8 text-white"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -348,7 +348,7 @@ const HomeUserPage = () => {
               variants={staggerContainer}
             >
               <motion.h3
-                className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-2"
+                className="text-lg font-semibold text-primary dark:text-blue-400 mb-2"
                 variants={fadeInUp}
               >
                 Work Smarter
