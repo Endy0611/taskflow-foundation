@@ -97,7 +97,7 @@ const GuestHomePage = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
                   Escape the clutter and chaos — unleash your productivity with
-                  <span className="font-semibold text-blue-500"> TaskFlow</span>
+                  <span className="font-semibold text-primary"> TaskFlow</span>
                   .
                 </motion.p>
 
@@ -595,7 +595,7 @@ const GuestHomePage = () => {
             {/* Right text */}
             <div className="lg:w-1/2 text-center lg:text-left">
               <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-primary">
-                Development <span className="text-secondary">Team</span>
+                Developer <span className="text-secondary">Team</span>
               </h2>
               <p className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed">
                 {member.text}
