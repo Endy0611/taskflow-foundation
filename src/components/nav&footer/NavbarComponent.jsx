@@ -1,40 +1,46 @@
 import { useState } from "react";
 import { Search, Bell, SunIcon, MoonIcon, Menu } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function NavbarComponent({
+  user,
   darkMode,
   toggleDarkMode,
-  setSidebarOpen,
   sidebarOpen,
+  setSidebarOpen,
   setShowModal,
+  onLogout,
 }) {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+
+  // get initials for local users
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "U";
 
   return (
     <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
       {/* Left */}
       <div className="flex items-center gap-2">
-        {/* Hamburger visible only on mobile */}
         <button
           className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
           aria-label="Toggle sidebar"
           aria-expanded={sidebarOpen}
           onClick={() => setSidebarOpen((v) => !v)}
         >
-          {/* You can swap Menu/X icons here if needed */}
-          <span className="material-icons">
-            <Menu />
-          </span>
+          <Menu />
         </button>
 
         <div className="w-4 h-4 rounded-full bg-green-400" />
         <span className="font-bold text-xl md:text-3xl">TaskFlow</span>
       </div>
 
-      {/* Middle (hidden on mobile) */}
+      {/* Middle (search) */}
       <div className="hidden md:flex max-w-lg flex-1">
         <div className="flex-1 md:px-6">
           <div className="relative">
@@ -63,10 +69,14 @@ export default function NavbarComponent({
         {/* Profile dropdown */}
         <div className="relative">
           <button
-            className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold"
+            className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold overflow-hidden"
             onClick={() => setOpen((v) => !v)}
           >
-            OE
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </button>
 
           <AnimatePresence>
@@ -80,13 +90,17 @@ export default function NavbarComponent({
               >
                 {/* User Info */}
                 <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
-                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white">
-                    OE
+                  <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white overflow-hidden">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      initials
+                    )}
                   </div>
                   <div>
-                    <p className="font-semibold">Ong Endy</p>
+                    <p className="font-semibold">{user?.name}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      endyong@gmail.com
+                      {user?.email}
                     </p>
                   </div>
                 </div>
@@ -100,11 +114,9 @@ export default function NavbarComponent({
                     🙍 Profile & Visibility
                   </li>
                   <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                    🕓 Activity
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
                     ⚙️ Settings
                   </li>
+
                   {/* Dark mode toggle */}
                   <li
                     onClick={toggleDarkMode}
@@ -126,19 +138,10 @@ export default function NavbarComponent({
                 {/* Bottom actions */}
                 <div className="py-2 border-t border-gray-200 dark:border-gray-700">
                   <div
-                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-blue-600"
-                    onClick={() => setShowModal(true)}
-                  >
-                    ➕ Create Workspace
-                  </div>
-                  <div
                     className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600"
                     onClick={() => {
-                      // (Optional) clear localStorage/session before logout
-                      localStorage.clear();
-
-                      // Redirect to login page
-                      navigate("/login");
+                      setOpen(false);
+                      onLogout();
                     }}
                   >
                     🚪 Log out
