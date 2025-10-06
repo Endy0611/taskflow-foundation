@@ -42,7 +42,7 @@ export default function TemplateCard({ template }) {
         <NavLink to="/projectmanagement"
           onClick={() => console.log("Template selected:", template.id)}
           className="text-center mt-4 w-full px-4 py-2 text-sm font-medium text-white 
-                     bg-blue-500 hover:bg-blue-600 
+                     bg-primary 
                      dark:bg-blue-900/40 dark:hover:bg-blue-800 
                      rounded-lg transition-colors duration-200"
         >

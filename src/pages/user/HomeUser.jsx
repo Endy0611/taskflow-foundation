@@ -62,9 +62,9 @@ const HomeUserPage = () => {
     <>
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {/* Hero Section */}
-        <section className="relative h-screen bg-orange-50 dark:bg-gray-800 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 py-16 lg:py-48">
+        <section className="relative min-h-[90vh] lg:min-h-screen bg-orange-50 dark:bg-gray-800 overflow-hidden flex items-center">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+            <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-20 py-16 lg:py-24">
               {/* Left: Text */}
               <motion.div
                 className="w-full lg:w-1/2 text-center lg:text-left space-y-6"
@@ -74,7 +74,7 @@ const HomeUserPage = () => {
                 viewport={{ once: true }}
               >
                 <motion.h1
-                  className="text-3xl sm:text-4xl lg:text-6xl font-extrabold leading-snug text-gray-900 dark:text-gray-100"
+                  className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-snug text-gray-900 dark:text-gray-100"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
@@ -86,9 +86,9 @@ const HomeUserPage = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
                   >
-                    to-dos Capture, organize, and get{" "}
-                  </motion.span>
-                  them done from anywhere.
+                    to-dos, capture, organize,
+                  </motion.span>{" "}
+                  and get them done from anywhere.
                 </motion.h1>
 
                 <motion.p
@@ -98,11 +98,10 @@ const HomeUserPage = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
                   Escape the clutter and chaos — unleash your productivity with
-                  <span className="font-semibold text-primary"> TaskFlow</span>
-                  .
+                  <span className="font-semibold text-primary"> TaskFlow</span>.
                 </motion.p>
 
-                {/* CTA buttons */}
+                {/* CTA Buttons */}
                 <motion.div
                   className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2"
                   initial={{ opacity: 0, y: 20 }}
@@ -115,7 +114,7 @@ const HomeUserPage = () => {
                   >
                     <NavLink
                       to="/boardb4create"
-                      className="inline-block bg-primary hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
+                      className="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-md transition duration-300"
                     >
                       Check Board{" "}
                       <ArrowRight className="inline-block w-4 h-4 ml-2" />
@@ -136,7 +135,7 @@ const HomeUserPage = () => {
                 <motion.img
                   src="/src/assets/home/image1.png"
                   alt="TaskFlow productivity app"
-                  className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-xl"
+                  className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-xl"
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 />
@@ -533,100 +532,99 @@ const HomeUserPage = () => {
         </motion.section>
 
         {/* Development Team Carousel */}
-<motion.section
-  className="py-24 px-6 lg:px-8 bg-white dark:bg-gray-900"
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true }}
->
-  <div className="max-w-6xl mx-auto">
-    <Swiper
-      modules={[Autoplay]}
-      autoplay={{ delay: 3000, disableOnInteraction: false }} // auto slide every 1s
-      loop
-      spaceBetween={40}
-      slidesPerView={1}
-      className="pb-12"
-    >
-      {[
-        {
-          img: "/src/assets/About/Cholna.png",
-          name: "Tith Cholna",
-          role: "Student from ISTAD",
-          text: "ISTAD is the ideal place for anyone looking to improve their IT skills. Supportive environment, excellent teachers, and exposure to the latest technologies.",
-        },
-        {
-          img: "/src/assets/About/Dana.png",
-          name: "Dorn Dana",
-          role: "Student from ISTAD",
-          text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were amazing!",
-        },
-        {
-          img: "/src/assets/About/Sreynet.png",
-          name: "Mon Sreynet",
-          role: "Student",
-          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
-        },
-        {
-          img: "/src/assets/About/Manith.png",
-          name: "Rith Saramanith",
-          role: "Student",
-          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
-        },
-        {
-          img: "/src/assets/About/Smey.png",
-          name: "Lonh Raksmey",
-          role: "Student",
-          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
-        },
-        {
-          img: "/src/assets/About/Endy.png",
-          name: "Ong Endy",
-          role: "Student",
-          text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
-        },
-      ].map((member, idx) => (
-        <SwiperSlide key={idx}>
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Left profile */}
-            <motion.div className="lg:w-1/2 flex justify-center">
-              <div className="w-64 h-64 rounded-full overflow-hidden shadow-lg hover:scale-105 hover:rotate-3 transition-transform duration-300">
-                <img
-                  src={member.img}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </motion.div>
+        <motion.section
+          className="py-24 px-6 lg:px-8 bg-white dark:bg-gray-900"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <Swiper
+              modules={[Autoplay]}
+              autoplay={{ delay: 3000, disableOnInteraction: false }} // auto slide every 1s
+              loop
+              spaceBetween={40}
+              slidesPerView={1}
+              className="pb-12"
+            >
+              {[
+                {
+                  img: "/src/assets/About/Cholna.png",
+                  name: "Tith Cholna",
+                  role: "Student from ISTAD",
+                  text: "ISTAD is the ideal place for anyone looking to improve their IT skills. Supportive environment, excellent teachers, and exposure to the latest technologies.",
+                },
+                {
+                  img: "/src/assets/About/Dana.png",
+                  name: "Dorn Dana",
+                  role: "Student from ISTAD",
+                  text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were amazing!",
+                },
+                {
+                  img: "/src/assets/About/Sreynet.png",
+                  name: "Mon Sreynet",
+                  role: "Student",
+                  text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+                },
+                {
+                  img: "/src/assets/About/Manith.png",
+                  name: "Rith Saramanith",
+                  role: "Student",
+                  text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+                },
+                {
+                  img: "/src/assets/About/Smey.png",
+                  name: "Lonh Raksmey",
+                  role: "Student",
+                  text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+                },
+                {
+                  img: "/src/assets/About/Endy.png",
+                  name: "Ong Endy",
+                  role: "Student",
+                  text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
+                },
+              ].map((member, idx) => (
+                <SwiperSlide key={idx}>
+                  <div className="flex flex-col lg:flex-row items-center gap-12">
+                    {/* Left profile */}
+                    <motion.div className="lg:w-1/2 flex justify-center">
+                      <div className="w-64 h-64 rounded-full overflow-hidden shadow-lg hover:scale-105 hover:rotate-3 transition-transform duration-300">
+                        <img
+                          src={member.img}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </motion.div>
 
-            {/* Right text */}
-            <div className="lg:w-1/2 text-center lg:text-left">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-primary">
-                Development <span className="text-secondary">Team</span>
-              </h2>
-              <p className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed">
-                {member.text}
-              </p>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
-                {member.name}
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
-                {member.role}
-              </p>
-              <NavLink
-                to="/about"
-                className="inline-block bg-white hover:bg-blue-700 border border-primary text-primary hover:!text-white px-6 py-2 rounded-lg shadow transition"
-              >
-                See more
-              </NavLink>
-            </div>
+                    {/* Right text */}
+                    <div className="lg:w-1/2 text-center lg:text-left">
+                      <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-primary">
+                        Development <span className="text-secondary">Team</span>
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-200 mb-6 leading-relaxed">
+                        {member.text}
+                      </p>
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                        {member.name}
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+                        {member.role}
+                      </p>
+                      <NavLink
+                        to="/about"
+                        className="inline-block bg-white hover:bg-blue-700 border border-primary text-primary hover:!text-white px-6 py-2 rounded-lg shadow transition"
+                      >
+                        See more
+                      </NavLink>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div>
-</motion.section>
-
+        </motion.section>
 
         {/* CTA Section */}
         <motion.section
@@ -652,11 +650,7 @@ const HomeUserPage = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <motion.button
-              className="px-6 py-2 bg-primary text-white rounded-lg transition"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.button className="px-6 py-2 bg-primary text-white rounded-lg transition">
               <NavLink to="/board">Create a New Board</NavLink>
             </motion.button>
           </motion.div>

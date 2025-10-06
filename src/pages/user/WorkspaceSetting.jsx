@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
-import { PencilRulerIcon } from "lucide-react";
+import { Menu, PencilRulerIcon } from "lucide-react";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { NavLink } from "react-router-dom";
 
@@ -41,6 +41,15 @@ export default function WorkspaceSetting() {
         {/* Main content */}
         <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
           <div className="max-w-3xl space-y-8">
+              {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
             {/* Workspace header */}
             <div className="flex items-center gap-3 flex-wrap">
               <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-3xl font-bold rounded">
