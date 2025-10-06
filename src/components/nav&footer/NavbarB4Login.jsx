@@ -5,6 +5,8 @@ import { NavLink } from "react-router-dom";
 export default function NavbarB4Login() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isHoveringNav, setIsHoveringNav] = useState(false);
+
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -25,35 +27,43 @@ export default function NavbarB4Login() {
   return (
     <nav className="font-roboto fixed top-0 w-full z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[65px]">
-        
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center">
             <div className="w-3 h-3 bg-white rounded-full" />
           </div>
-          <NavLink to="/" className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
+          <NavLink
+            to="/"
+            className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight"
+          >
             TaskFlow
           </NavLink>
         </div>
 
+  
         {/* Center: Links (hidden on tablet & mobile) */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.name}
-              to={link.path}
-              className={({ isActive }) =>
-                `font-medium px-3 py-2 rounded-lg transition ${
-                  isActive
-                    ? "text-primary font-semibold dark:text-blue-400"
-                    : "text-gray-700 font-semibold dark:text-gray-200"
-                }`
-              }
-            >
-              {link.name}
-            </NavLink>
-          ))}
-        </div>
+<div
+  className="hidden lg:flex items-center gap-6 xl:gap-8"
+  onMouseEnter={() => setIsHoveringNav(true)}
+  onMouseLeave={() => setIsHoveringNav(false)}
+>
+  {navLinks.map((link) => (
+    <NavLink
+      key={link.name}
+      to={link.path}
+      className={({ isActive }) =>
+        `font-medium px-3 py-2 rounded-lg transition-colors duration-200 ${
+          isActive && !isHoveringNav
+            ? "text-primary font-semibold dark:text-blue-400"
+            : "text-gray-700 dark:text-gray-200 font-semibold hover:text-[var(--color-primary)] dark:hover:text-blue-400"
+        }`
+      }
+    >
+      {link.name}
+    </NavLink>
+  ))}
+</div>
+
 
         {/* Right: Buttons + Theme Toggle */}
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">

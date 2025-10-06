@@ -46,7 +46,7 @@ export default function NavbarComponent({
   return (
     <div className="relative">
       {/* Navbar */}
-      <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
+      <nav className="sticky top-0 bg-primary text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
         {/* Left */}
         <div className="flex items-center gap-2">
         

@@ -17,6 +17,18 @@
   font-family: 'Roboto', sans-serif;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
 /* Base Theme Colors */
 :root {
   --color-primary: #1E40AF;
@@ -33,13 +45,45 @@
   --color-danger-hover: #DC2626;
 }
 
-/* Text Colors */
-.text-primary { color: var(--color-primary); }
-.text-secondary { color: var(--color-secondary); }
-.text-accent { color: var(--color-accent); }
-.text-highlight { color: var(--color-highlight); }
-.text-danger { color: var(--color-danger); }
-.text-default { color: var(--color-text); }
+.text-primary {
+  color: var(--color-primary);
+  transition: color 0.25s ease;
+}
+.text-primary:hover {
+  color: var(--color-primary-hover);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+  transition: color 0.25s ease;
+}
+.text-secondary:hover {
+  color: var(--color-secondary-hover);
+}
+
+.text-accent {
+  color: var(--color-accent);
+  transition: color 0.25s ease;
+}
+.text-accent:hover {
+  color: var(--color-accent-hover);
+}
+
+.text-highlight {
+  color: var(--color-highlight);
+  transition: color 0.25s ease;
+}
+.text-highlight:hover {
+  color: var(--color-highlight-hover);
+}
+
+.text-danger {
+  color: var(--color-danger);
+  transition: color 0.25s ease;
+}
+.text-danger:hover {
+  color: var(--color-danger-hover);
+}
 
 /* Background Colors */
 .bg-primary { background-color: var(--color-primary); }
@@ -85,9 +129,5 @@ a.bg-danger:hover {
   :root {
     color: #213547;
     background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #fff;
   }
 }
