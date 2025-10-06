@@ -47,15 +47,24 @@ export default function NavbarComponent({
     <div className="relative">
       {/* Navbar */}
       <nav className="sticky top-0 bg-primary text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
-        {/* Left */}
-        <div className="flex items-center gap-2">
-        
-          <div className="w-4 h-4 rounded-full bg-green-400" />
-          <span className="font-bold text-xl md:text-3xl">TaskFlow</span>
+        {/* Left Section */}
+        <div className="flex items-center gap-3">
+          {/* Mobile menu toggle */}
+          <button
+            className="block md:hidden p-2 rounded hover:bg-blue-600"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-green-400" />
+            <span className="font-bold text-xl md:text-2xl">TaskFlow</span>
+          </div>
         </div>
 
-        {/* Middle (hidden on mobile) */}
-        <div className="hidden md:flex max-w-lg flex-1">
+        {/* Middle (Desktop Only) */}
+        <div className="hidden lg:flex flex-1 justify-center max-w-xl">
           <div className="flex-1 md:px-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -66,13 +75,14 @@ export default function NavbarComponent({
               />
             </div>
           </div>
-          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white">
+          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white ml-2">
             Create
           </button>
         </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-4 relative">
+        {/* Right Section */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Notification */}
           <button className="relative hidden sm:block">
             <Bell className="w-6 h-6 text-white hover:text-gray-200" />
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
@@ -80,15 +90,28 @@ export default function NavbarComponent({
             </span>
           </button>
 
-          {/* Profile dropdown */}
+          {/* Dark Mode (visible on all) */}
+          <button
+            onClick={toggleDarkMode}
+            className="cursor-pointer hover:opacity-80"
+          >
+            {darkMode ? (
+              <SunIcon className="w-6 h-6 text-yellow-300" />
+            ) : (
+              <MoonIcon className="w-6 h-6 text-yellow-300" />
+            )}
+          </button>
+
+          {/* Profile Button */}
           <div className="relative">
             <button
-              className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold"
+              className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold text-white"
               onClick={() => setProfileOpen((v) => !v)}
             >
               OE
             </button>
 
+            {/* Dropdown */}
             <AnimatePresence>
               {profileOpen && (
                 <motion.div
@@ -96,7 +119,7 @@ export default function NavbarComponent({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-72 text-black bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+                  className="absolute right-0 mt-3 w-64 sm:w-72 text-black bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
                 >
                   {/* User Info */}
                   <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
@@ -111,26 +134,27 @@ export default function NavbarComponent({
                     </div>
                   </div>
 
-                  {/* Menu items */}
+                  {/* Menu Items */}
                   <ul className="py-2 text-sm">
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                       👥 Switch accounts
                     </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                       🙍 Profile & Visibility
                     </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                       🕓 Activity
                     </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                       ⚙️ Settings
                     </li>
-                    {/* Dark mode toggle */}
+
+                    {/* Dark mode toggle inside dropdown */}
                     <li
                       onClick={toggleDarkMode}
                       className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between"
                     >
-                      <span className="flex items-center gap-2">
+                      <span>
                         {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
                       </span>
                       <span className="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center">
@@ -143,7 +167,7 @@ export default function NavbarComponent({
                     </li>
                   </ul>
 
-                  {/* Bottom actions */}
+                  {/* Bottom Actions */}
                   <div className="py-2 border-t border-gray-200 dark:border-gray-700">
                     <div
                       className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-blue-600"
@@ -165,19 +189,10 @@ export default function NavbarComponent({
               )}
             </AnimatePresence>
           </div>
-
-          {/* Top-right dark mode toggle */}
-          <button onClick={toggleDarkMode} className="cursor-pointer">
-            {darkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            ) : (
-              <MoonIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            )}
-          </button>
         </div>
       </nav>
 
-      {/* Mobile Slide-in Sidebar */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
