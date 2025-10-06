@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from "react";
-import NavbarComponent from "../nav&footer/NavbarComponent";
-import { Outlet } from "react-router-dom";
 import FooterB4Login from "../nav&footer/FooterB4Login";
+import DynamicNavbar from "./DynamicNavbar";
+import { Outlet } from "react-router-dom";
 
 function UserLayout() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // Initialize dark mode
   useEffect(() => {
-    const preferDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    if (preferDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
+    const isDark = localStorage.theme === "dark";
+    setDarkMode(isDark);
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, []);
 
   const toggleDarkMode = () => {
@@ -34,7 +29,7 @@ function UserLayout() {
 
   return (
     <>
-      <NavbarComponent
+      <DynamicNavbar
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         sidebarOpen={sidebarOpen}
