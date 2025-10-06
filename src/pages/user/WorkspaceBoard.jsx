@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { NavLink } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
 
   // Initialize dark mode
   useEffect(() => {
@@ -51,6 +55,15 @@ export default function WorkspaceBoard() {
         <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-900">
           {/* Workspace header */}
           <div className="mb-10">
+              {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-lg">
                 TF
@@ -112,9 +125,38 @@ export default function WorkspaceBoard() {
               />
             </div>
           </section>
+             {/* Floating chatbot button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Our Chatbot"
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
 
+        <AnimatePresence>
+        {showChatbot && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Modal */}
       <AnimatePresence>
         {showModal && (

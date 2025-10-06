@@ -25,7 +25,7 @@ export default function NavbarComponent({
     : "U";
 
   return (
-    <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
+    <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50">
       {/* Left */}
       <div className="flex items-center gap-2">
         <button
@@ -72,11 +72,7 @@ export default function NavbarComponent({
             onClick={() => setOpen((v) => !v)}
           >
             {user?.photoURL ? (
-              <img
-                src={user.photoURL}
-                alt="avatar"
-                className="w-full h-full object-cover"
-              />
+              <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
             ) : (
               initials
             )}
@@ -95,20 +91,14 @@ export default function NavbarComponent({
                 <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
                   <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white overflow-hidden">
                     {user?.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt="avatar"
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
                       initials
                     )}
                   </div>
                   <div>
                     <p className="font-semibold">{user?.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {user?.email}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
                   </div>
                 </div>
 
@@ -137,7 +127,7 @@ export default function NavbarComponent({
                   <li
                     onClick={() => {
                       setOpen(false);
-                      navigate("/settingworkspace"); // ✅ Correct route
+                      navigate("/settingworkspace"); // ✅ Correct workspace settings route
                     }}
                     className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                   >

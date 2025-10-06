@@ -1,11 +1,26 @@
-// /src/pages/auth/RegisterPage.jsx
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
-import { API_BASE, REGISTER_PATH } from "../../Implement/api";
+import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
-/* ---------------- helpers ---------------- */
+// Zod schema for register validation
+const registerSchema = z
+  .object({
+    username: z.string().min(2, { message: "Username is required" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Helper functions
 const firstError = (d) => {
   if (!d) return null;
   if (typeof d === "string") return d;
@@ -18,6 +33,7 @@ const firstError = (d) => {
   }
   return null;
 };
+
 const isEmail = (v) => /\S+@\S+\.\S+/.test(String(v || ""));
 const sanitizeUsername = (u) =>
   (String(u || "")
@@ -32,6 +48,7 @@ const passwordStrong = (p) =>
   /[a-z]/.test(p) &&
   /\d/.test(p) &&
   /[^A-Za-z0-9]/.test(p);
+
 const normalizeGender = (g) => {
   const v = String(g || "").trim().toLowerCase();
   if (["male", "m"].includes(v)) return "MALE";
@@ -48,7 +65,7 @@ const safeParseJSON = async (res) => {
   }
 };
 
-/* ---------------- component ---------------- */
+// RegisterPage Component
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -75,6 +92,8 @@ export default function RegisterPage() {
     () => String(formData.email || "").trim().toLowerCase(),
     [formData.email]
   );
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,17 +145,20 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}${REGISTER_PATH}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE}${import.meta.env.VITE_REGISTER_PATH}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          // No Authorization token needed for registration
+        },
+        credentials: "omit", // Ensure credentials aren't included unless needed
         body: JSON.stringify({
           username: cleanUsername,
           email: cleanEmail,
           password: formData.password,
           confirmedPassword: formData.confirmedPassword,
-          givenName: formData.givenName,
           familyName: formData.familyName,
+          givenName: formData.givenName,
           gender: normalizeGender(formData.gender),
         }),
       });
@@ -146,6 +168,8 @@ export default function RegisterPage() {
       if (res.ok) {
         setOkMsg(`Account created. You can now log in as "${cleanUsername}".`);
         setFormData((p) => ({ ...p, password: "", confirmedPassword: "" }));
+        // Redirect to login page after success
+        setTimeout(() => navigate("/login"), 1500);
       } else {
         const msg =
           firstError(data) ||
@@ -165,134 +189,103 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center p-4 bg-[#1E40AF]">
-      <div className="relative z-10 flex w-full max-w-6xl items-center justify-center gap-24">
-        <img
-          src={registerImage}
-          alt="Register Illustration"
-          className="hidden lg:block w-[480px] max-w-md object-contain"
-        />
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-700 via-blue-600 to-purple-700 p-6">
+      <div className="flex w-full max-w-6xl rounded-3xl bg-white shadow-xl overflow-hidden">
+        {/* Left image section */}
+        <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-500 relative">
+          <img
+            src={registerImage}
+            alt="Register Illustration"
+            className="w-[650px] max-w-md object-contain drop-shadow-xl"
+          />
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.35)]"
-        >
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">
-              Register
-            </h1>
-            <p className="mt-2 text-sm text-white/70">
-              Create new Account to use cool template
-            </p>
-          </div>
-
-          {error && (
-            <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-              {error}
+        {/* Right form section */}
+        <div className="flex-1 flex items-center justify-center p-12 bg-gray-50">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-md"
+          >
+            {/* Register title + subtitle */}
+            <div className="flex flex-col items-center mb-8">
+              <button className="pb-2 text-primary text-3xl font-medium">
+                Register
+              </button>
+              <p className="mt-2 text-md text-gray-500">
+                Create new Account to use cool template
+              </p>
             </div>
-          )}
-          {okMsg && (
-            <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
-              {okMsg}
-            </div>
-          )}
 
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <User className="h-4 w-4" /> Given Name
-              </span>
+            {/* Error / Success Messages */}
+            {error && (
+              <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+            {okMsg && (
+              <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-600">
+                {okMsg}
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <input
                 name="givenName"
                 value={formData.givenName}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                placeholder="Ong"
-                autoComplete="given-name"
+                placeholder="First Name"
+                className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 text-gray-700"
                 required
               />
-            </label>
-
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <User className="h-4 w-4" /> Family Name
-              </span>
               <input
                 name="familyName"
                 value={formData.familyName}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                placeholder="Endy"
-                autoComplete="family-name"
+                placeholder="Last Name"
+                className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 text-gray-700"
                 required
               />
-            </label>
-
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <User className="h-4 w-4" /> Gender
-              </span>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none transition focus:border-white/40 disabled:opacity-60"
+                className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 text-gray-700"
                 required
               >
                 <option value="" disabled className="text-gray-400">
-                  Select gender
+                  Select your gender
                 </option>
-                <option value="Male" className="text-black">Male</option>
-                <option value="Female" className="text-black">Female</option>
-                <option value="Other" className="text-black">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <User className="h-4 w-4" /> Username
-              </span>
               <input
                 name="username"
                 value={cleanUsername}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                placeholder="yourhandle"
+                placeholder="Username"
                 autoComplete="username"
                 required
+                className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 text-gray-700"
               />
-              <p className="mt-1 text-xs text-white/60">
-                Use letters, numbers, “.” or “_”. Don’t use an email here.
-              </p>
-            </label>
-
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <Mail className="h-4 w-4" /> Email
-              </span>
               <input
                 type="email"
                 name="email"
                 value={cleanEmail}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                placeholder="you@example.com"
-                autoComplete="email"
+                placeholder="Email"
+                className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 text-gray-700"
                 required
               />
-            </label>
 
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <Lock className="h-4 w-4" /> Password
-              </span>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -300,27 +293,20 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                  placeholder="StrongP@ssw0rd1"
-                  autoComplete="new-password"
+                  placeholder="Password"
+                  className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 pr-12 text-gray-700"
                   minLength={8}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-            </label>
 
-            <label className="block">
-              <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
-                <Lock className="h-4 w-4" /> Confirm Password
-              </span>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -328,49 +314,40 @@ export default function RegisterPage() {
                   value={formData.confirmedPassword}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40 disabled:opacity-60"
-                  placeholder="Repeat password"
-                  autoComplete="new-password"
+                  placeholder="Confirm Password"
+                  className="w-full border-b border-gray-300 focus:border-blue-500 focus:outline-none py-2 pr-12 text-gray-700"
                   minLength={8}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-            </label>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white/90 px-4 py-3 font-semibold text-gray-900 shadow-lg shadow-black/20 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-75"
-            >
-              {loading ? (
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/40 border-t-transparent" />
-                  Processing…
-                </span>
-              ) : (
-                <>Sign Up</>
-              )}
-            </button>
-
-            <p className="mt-6 text-center text-sm text-white/70">
-              Have Account?{" "}
-              <a
-                href="/login"
-                className="font-medium text-white underline-offset-4 hover:underline inline-flex items-center gap-1"
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-primary hover:bg-blue-700 text-white font-semibold shadow-md transition disabled:opacity-70"
               >
-                <ArrowLeft className="h-4 w-4" /> Back to Login
-              </a>
-            </p>
-          </form>
-        </motion.div>
+                {loading ? "Processing…" : "Sign Up"}
+              </button>
+
+              <p className="mt-4 text-center text-sm text-gray-500">
+                Have an account?{" "}
+                <a
+                  href="/login"
+                  className="text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back to Login
+                </a>
+              </p>
+            </form>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
