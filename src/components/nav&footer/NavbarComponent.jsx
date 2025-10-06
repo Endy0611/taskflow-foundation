@@ -68,7 +68,7 @@ export default function NavbarComponent({
               className="w-full pl-9 pr-3 py-1.5 rounded bg-white dark:bg-gray-700 dark:text-white text-sm text-black"
             />
           </div>
-          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white">
+          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white ml-2">
             Create
           </button>
         </div>
@@ -170,19 +170,10 @@ export default function NavbarComponent({
               )}
             </AnimatePresence>
           </div>
-
-          {/* Top-right dark mode toggle */}
-          <button onClick={toggleDarkMode} className="cursor-pointer">
-            {darkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            ) : (
-              <MoonIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            )}
-          </button>
         </div>
       </nav>
 
-      {/* Mobile Slide-in Sidebar */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
