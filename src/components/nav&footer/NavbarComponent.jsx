@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search, Bell, SunIcon, MoonIcon, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // ✅ Import navigation
 
 export default function NavbarComponent({
   user,
@@ -12,8 +13,8 @@ export default function NavbarComponent({
   onLogout,
 }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate(); // ✅ For internal routing
 
-  // get initials for local users
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -29,8 +30,6 @@ export default function NavbarComponent({
       <div className="flex items-center gap-2">
         <button
           className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-          aria-label="Toggle sidebar"
-          aria-expanded={sidebarOpen}
           onClick={() => setSidebarOpen((v) => !v)}
         >
           <Menu />
@@ -40,7 +39,7 @@ export default function NavbarComponent({
         <span className="font-bold text-xl md:text-3xl">TaskFlow</span>
       </div>
 
-      {/* Middle (search) */}
+      {/* Search bar */}
       <div className="hidden md:flex max-w-lg flex-1">
         <div className="flex-1 md:px-6">
           <div className="relative">
@@ -57,7 +56,7 @@ export default function NavbarComponent({
         </button>
       </div>
 
-      {/* Right */}
+      {/* Right side */}
       <div className="flex items-center gap-4 relative">
         <button className="relative hidden sm:block">
           <Bell className="w-6 h-6 text-white hover:text-gray-200" />
@@ -73,7 +72,11 @@ export default function NavbarComponent({
             onClick={() => setOpen((v) => !v)}
           >
             {user?.photoURL ? (
-              <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+              <img
+                src={user.photoURL}
+                alt="avatar"
+                className="w-full h-full object-cover"
+              />
             ) : (
               initials
             )}
@@ -92,7 +95,11 @@ export default function NavbarComponent({
                 <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
                   <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white overflow-hidden">
                     {user?.photoURL ? (
-                      <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
+                      <img
+                        src={user.photoURL}
+                        alt="avatar"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       initials
                     )}
@@ -105,26 +112,44 @@ export default function NavbarComponent({
                   </div>
                 </div>
 
-                {/* Menu items */}
+                {/* Dropdown Menu */}
                 <ul className="py-2 text-sm">
-                  <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+                  <li
+                    onClick={() => {
+                      setOpen(false);
+                      navigate("/switch-account");
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     👥 Switch accounts
                   </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+
+                  <li
+                    onClick={() => {
+                      setOpen(false);
+                      navigate("/profile");
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     🙍 Profile & Visibility
                   </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
+
+                  <li
+                    onClick={() => {
+                      setOpen(false);
+                      navigate("/settingworkspace"); // ✅ Correct route
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                  >
                     ⚙️ Settings
                   </li>
 
-                  {/* Dark mode toggle */}
+                  {/* Dark mode */}
                   <li
                     onClick={toggleDarkMode}
-                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between"
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex justify-between"
                   >
-                    <span className="flex items-center gap-2">
-                      {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
-                    </span>
+                    <span>{darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}</span>
                     <span className="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center">
                       <span
                         className={`w-4 h-4 bg-white rounded-full shadow transform transition ${
@@ -135,7 +160,7 @@ export default function NavbarComponent({
                   </li>
                 </ul>
 
-                {/* Bottom actions */}
+                {/* Logout */}
                 <div className="py-2 border-t border-gray-200 dark:border-gray-700">
                   <div
                     className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600"
@@ -152,7 +177,7 @@ export default function NavbarComponent({
           </AnimatePresence>
         </div>
 
-        {/* Top-right dark mode toggle */}
+        {/* Top-right Dark mode button */}
         <button onClick={toggleDarkMode} className="cursor-pointer">
           {darkMode ? (
             <SunIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />

@@ -1,22 +1,33 @@
-// src/pages/profile/ProfilePage.jsx
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { ArrowLeft, Camera } from "lucide-react";
 import NavbarComponent from "../../components/nav&footer/NavbarComponent";
 
 export default function ProfilePage() {
   const [form, setForm] = useState({
-    firstName: "Mon",
-    lastName: "Sreynet",
-    username: "Sreynet168",
-    email: "monsreynet@gmail.com",
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
     bio: "",
   });
-
-  const [avatar, setAvatar] = useState(
-    "https://images.unsplash.com/photo-1544006659-f0b21884ced1?q=80&w=640&auto=format&fit=crop"
-  );
-
+  const [avatar, setAvatar] = useState(null);
   const fileRef = useRef(null);
+
+  // ✅ Load existing user info from localStorage
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      const [first, ...rest] = storedUser.name?.split(" ") || ["User"];
+      setForm({
+        firstName: first,
+        lastName: rest.join(" ") || "",
+        username: storedUser.name || "",
+        email: storedUser.email || "",
+        bio: storedUser.bio || "",
+      });
+      setAvatar(storedUser.photoURL || null);
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,19 +43,35 @@ export default function ProfilePage() {
     setAvatar(url);
   };
 
+  // ✅ Save user profile to localStorage
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log("submit", form);
+
+    const updatedUser = {
+      name: `${form.firstName} ${form.lastName}`.trim() || form.username,
+      email: form.email || "user@gmail.com",
+      bio: form.bio,
+      photoURL: avatar,
+      provider: "local", // keep provider type
+    };
+
+    // Save to localStorage
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    // Trigger global storage update (navbar updates too)
+    window.dispatchEvent(new Event("storage"));
+
+    alert("✅ Profile updated successfully!");
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-800">
-      <NavbarComponent />
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-slate-800 dark:text-white transition-colors duration-300">
+      {/* <NavbarComponent user={JSON.parse(localStorage.getItem("user"))} /> */}
 
-      {/* HEADER (in container) */}
+      {/* HEADER */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <button
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700"
+          className="inline-flex items-center gap-2 text-slate-500 dark:text-gray-300 hover:text-slate-700"
           onClick={() => window.history.back()}
           type="button"
         >
@@ -53,23 +80,26 @@ export default function ProfilePage() {
         </button>
 
         <h1 className="mt-4 text-2xl font-semibold">Edit Profile</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Keep your details private. Information you add here.
+        <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
+          Update your personal information and profile photo.
         </p>
       </div>
 
-      {/* CONTENT (full-height feel, but inside container) */}
+      {/* FORM */}
       <form
         onSubmit={onSubmit}
         className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-6"
       >
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* PHOTO CARD */}
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-2xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
             <div className="flex flex-col items-center">
               <div className="relative">
                 <img
-                  src={avatar}
+                  src={
+                    avatar ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
                   alt="avatar"
                   className="h-56 w-56 rounded-full object-cover ring-4 ring-orange-500"
                 />
@@ -89,15 +119,17 @@ export default function ProfilePage() {
                   onChange={handleFile}
                 />
               </div>
-              <p className="mt-3 text-xs text-slate-500">Photo</p>
+              <p className="mt-3 text-xs text-slate-500 dark:text-gray-400">
+                Profile Picture
+              </p>
               <p className="mt-1 text-sm font-medium">
                 {form.firstName} {form.lastName}
               </p>
             </div>
           </section>
 
-          {/* FORM CARD */}
-          <section className="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          {/* INFO FORM */}
+          <section className="md:col-span-2 rounded-2xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <Field
                 label="First Name"
@@ -143,8 +175,8 @@ export default function ProfilePage() {
             <div className="mt-8 flex justify-end gap-3">
               <button
                 type="button"
-                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                onClick={() => (window.location.href = "/")}
+                className="rounded-xl border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-gray-600"
+                onClick={() => window.history.back()}
               >
                 Cancel
               </button>
@@ -162,29 +194,30 @@ export default function ProfilePage() {
   );
 }
 
-/* small inputs */
+/* Helper components */
 function Field({ label, ...props }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-slate-700">
+      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-300">
         {label}
       </span>
       <input
         {...props}
-        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none ring-orange-500/0 transition placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+        className="w-full rounded-xl border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 outline-none transition placeholder:text-slate-400 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
       />
     </label>
   );
 }
+
 function Textarea({ label, ...props }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-slate-700">
+      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-gray-300">
         {label}
       </span>
       <textarea
         {...props}
-        className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+        className="w-full resize-y rounded-xl border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 outline-none placeholder:text-slate-400 dark:placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
       />
     </label>
   );
