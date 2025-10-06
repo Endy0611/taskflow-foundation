@@ -7,7 +7,7 @@ export default function TemplatePage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode] = useState(false);
 
   // Sync dark mode with <html> tag
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function TemplatePage() {
   }, [darkMode]);
 
   const categoryData = [
-    { id: "All", name: "All", count: templates.length, color: "bg-blue-500" },
+    { id: "All", name: "All", count: templates.length, color: "bg-primary" },
     {
       id: "Featured",
       name: "Featured",

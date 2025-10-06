@@ -20,6 +20,17 @@ import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import Board from "./pages/user/Board";
+import WorkspaceMember from "./pages/user/WorkspaceMember";
+
+import { registerLicense } from "@syncfusion/ej2-base";
+registerLicense(
+  "Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1NpR2FGfV5ycUVHYFZURnxfQE0DNHVRdkdmWXZccnZXQ2RZVUZyWUdWYEg="
+);
+
+
+// 404 Not Found page
+import NotFoundPage from "./utils/404";
+import ProjectManagement from "./pages/user/ProjectManagement";
 
 function App() {
   return (

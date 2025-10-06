@@ -2,10 +2,15 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import { NavLink } from "react-router-dom";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
+import { Menu } from "lucide-react";
 
 export default function Board() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -18,6 +23,7 @@ export default function Board() {
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
+      
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -35,18 +41,29 @@ export default function Board() {
           setShowModal={setShowModal}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-950">
+         <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
           {/* Templates */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">
+          
+          <section className="mb-10">
+              {/* Hamburger visible only on mobile */}
+            <button
+              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
               Start with a template and let TaskFlow handle the rest with
               customizable workflows
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
-                  <div
+                  <NavLink
                     key={idx}
+                    to="/projectmanagement"
                     className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
                   >
                     <img
@@ -57,69 +74,76 @@ export default function Board() {
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
                       {title}
                     </div>
-                  </div>
+                  </NavLink>
                 )
               )}
             </div>
           </section>
 
           {/* Recently Viewed */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Recently viewed</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              {["Boardup", "Boardup", "Create new board"].map((title, idx) => (
-                <div
-                  key={idx}
-                  className={`relative rounded-xl overflow-hidden shadow-md border ${
-                    title === "Create new board"
-                      ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                      : "cursor-pointer"
-                  }`}
-                >
-                  {title !== "Create new board" ? (
-                    <>
-                      <img
-                        src={`https://picsum.photos/600/400?random=${idx + 10}`}
-                        alt={title}
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                        {title}
-                      </div>
-                    </>
-                  ) : (
+          <section className="mb-10">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+              Recently viewed
+            </h2>
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
+                title !== "Create new board" ? (
+                  <NavLink
+                    key={idx}
+                    to="/projectmanagement"
+                    className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
+                  >
+                    <img
+                      src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                      alt={title}
+                      className="w-full h-32 object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                      {title}
+                    </div>
+                  </NavLink>
+                ) : (
+                  <div
+                    key={idx}
+                    onClick={() => setShowCreateBoard(true)}
+                    className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                  >
                     <span className="text-gray-600 dark:text-gray-300 font-medium">
                       + {title}
                     </span>
-                  )}
-                </div>
-              ))}
+                  </div>
+                )
+              )}
             </div>
           </section>
 
           {/* Your Workspaces */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Your Workspaces</h2>
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 mb-6 border border-gray-200 dark:border-gray-700">
+          <section className="mb-16">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+              Your Workspaces
+            </h2>
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
               {/* Workspace header */}
-
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                {/* Left: Workspace name */}
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
                     S
                   </div>
                   <span className="font-semibold">TaskFlow Workspaces</span>
                 </div>
-
-                {/* Right: Actions */}
                 <div className="flex flex-wrap gap-2">
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <NavLink
+                    to="/workspaceboard"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     Boards
-                  </button>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                  </NavLink>
+                  <NavLink
+                    to="/workspacemember"
+                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     Member
-                  </button>
+                  </NavLink>
                   <NavLink
                     to="/workspacesetting"
                     className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -133,42 +157,70 @@ export default function Board() {
               </div>
 
               {/* Workspace boards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {["Boardup", "Create new board"].map((title, idx) => (
-                  <div
-                    key={idx}
-                    className={`relative rounded-xl overflow-hidden shadow-md border ${
-                      title === "Create new board"
-                        ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                        : "cursor-pointer"
-                    }`}
-                  >
-                    {title !== "Create new board" ? (
-                      <>
-                        <img
-                          src={`https://picsum.photos/600/400?random=${
-                            idx + 20
-                          }`}
-                          alt={title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                          {title}
-                        </div>
-                      </>
-                    ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {["Boardup", "Create new board"].map((title, idx) =>
+                  title !== "Create new board" ? (
+                    <NavLink
+                      key={idx}
+                      to="/projectmanagement"
+                      className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
+                    >
+                      <img
+                        src={`https://picsum.photos/600/400?random=${idx + 20}`}
+                        alt={title}
+                        className="w-full h-32 object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                        {title}
+                      </div>
+                    </NavLink>
+                  ) : (
+                    <div
+                      key={idx}
+                      onClick={() => setShowCreateBoard(true)}
+                      className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                    >
                       <span className="text-gray-600 dark:text-gray-300 font-medium">
                         + {title}
                       </span>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </section>
+
+          {/* Floating chatbot button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Our Chatbot"
+            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
-
+      <AnimatePresence>
+        {showChatbot && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Modal */}
       <AnimatePresence>
         {showModal && (
@@ -219,7 +271,7 @@ export default function Board() {
 
                 <NavLink
                   to="/board"
-                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="block w-full text-center bg-primary text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 >
                   Continue
                 </NavLink>
@@ -231,6 +283,29 @@ export default function Board() {
                   ✖
                 </button>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCreateBoard && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCreateBoard(false)}
+            />
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 px-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
             </motion.div>
           </>
         )}

@@ -1,18 +1,23 @@
 import { useState } from "react";
-import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X, Menu } from "lucide-react";
+import {
+  Home,
+  LayoutGrid,
+  FileText,
+  ChevronUp,
+  ChevronDown,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
-import Board from "../../pages/user/BoardB4Create";
 
 function NavItem({ icon, text, to }) {
   return (
-   <NavLink
+    <NavLink
       to={to}
       end
       className={({ isActive }) =>
-        `group flex items-center gap-2 cursor-pointer rounded px-2 py-3
-        text-gray-700 dark:text-gray-200
-        ${isActive ? "bg-[#1E40AF] text-white" : ""}
+        `group flex items-center gap-2 cursor-pointer rounded px-2 py-3 text-gray-700 dark:text-gray-200 
+        ${isActive ? "bg-[#1E40AF] text-white" : ""} 
         hover:bg-[#2563EB] hover:!text-white`
       }
     >
@@ -21,12 +26,16 @@ function NavItem({ icon, text, to }) {
   );
 }
 
-export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowModal }) {
+export default function SidebarComponent({
+  sidebarOpen,
+  setSidebarOpen,
+  setShowModal,
+}) {
   const [openDropdown, setOpenDropdown] = useState(false);
 
   return (
     <aside
-       className={[
+      className={[
         "transform transition-transform duration-300 will-change-transform",
         "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
         "border-r border-gray-300 dark:border-gray-700",
@@ -52,8 +61,13 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
         <div className="space-y-1">
           <NavItem icon={<Home size={16} />} text="Home" to="/homeuser" />
           <NavItem icon={<LayoutGrid size={16} />} text="Boards" to="/board" />
-          <NavItem icon={<FileText size={16} />} text="Templates" to="/templateuser" />
+          <NavItem
+            icon={<FileText size={16} />}
+            text="Templates"
+            to="/templateuser"
+          />
         </div>
+
         <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
 
         {/* Workspace */}
@@ -61,6 +75,7 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
           <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
             Workspace
           </h3>
+
           <div
             className={`flex items-center justify-between cursor-pointer p-2 rounded ${
               openDropdown
@@ -69,9 +84,7 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
             } hover:bg-[#2563EB] hover:text-white`}
             onClick={() => setOpenDropdown((v) => !v)}
           >
-            <span className="flex items-center gap-2 font-medium">
-              🌍 TaskFlow
-            </span>
+            <span className="flex items-center gap-2 font-medium">🌍 TaskFlow</span>
             {openDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </div>
 
@@ -84,18 +97,28 @@ export default function SidebarComponent({ sidebarOpen, setSidebarOpen, setShowM
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="overflow-hidden text-gray-600 dark:text-gray-300 rounded-b-lg shadow-lg border border-gray-100 dark:border-gray-700"
               >
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                <NavLink
+                  to="/workspaceboard"
+                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                >
                   Boards
-                </div>
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                </NavLink>
+                <NavLink
+                  to="/workspacemember"
+                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                >
                   Members
-                </div>
-                <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
+                </NavLink>
+                <NavLink
+                  to="/workspacesetting"
+                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                >
                   Settings
-                </div>
+                </NavLink>
               </motion.div>
             )}
           </AnimatePresence>
+
 
           <button
             className="mt-3 text-[#1E40AF] dark:text-white text-sm hover:bg-[#2563EB] hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"

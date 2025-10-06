@@ -4,6 +4,8 @@ import { NavLink } from "react-router-dom";
 
 export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHoveringNav, setIsHoveringNav] = useState(false);
+
 
   const navLinks = [
     { name: "Home", path: "/" },
