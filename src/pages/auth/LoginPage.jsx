@@ -1,4 +1,3 @@
-// src/pages/auth/LoginPage.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -19,6 +18,8 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   FacebookAuthProvider,
+  fetchSignInMethodsForEmail,
+  linkWithCredential,
 } from "firebase/auth";
 
 import { z } from "zod";
@@ -47,12 +48,11 @@ const safeParseJSON = async (res) => {
 /* ---------------- component ---------------- */
 export default function LoginPage() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({ username: "", password: "" });
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(""); // success or error text
+  const [message, setMessage] = useState("");
 
   const google = new GoogleAuthProvider();
   const github = new GithubAuthProvider();
@@ -65,13 +65,10 @@ export default function LoginPage() {
   };
 
   async function applyPersistence(rememberMe) {
-    await setPersistence(
-      auth,
-      rememberMe ? browserLocalPersistence : browserSessionPersistence
-    );
+    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
   }
 
-  // USERNAME/PASSWORD -> API
+  /* ---------------- USERNAME + PASSWORD ---------------- */
   async function handleSubmit(e) {
     e.preventDefault();
     setMessage("");
@@ -88,7 +85,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: form.username, // 👈 username, not email
+          username: form.username,
           password: form.password,
         }),
         credentials: "omit",
@@ -99,61 +96,91 @@ export default function LoginPage() {
       if (!res.ok) {
         setMessage((data && (data.message || data.error)) || "Login failed");
         return;
-        }
+      }
 
-      // Save tokens/user if provided
-      if (data?.token) localStorage.setItem("token", data.token);
-      if (data?.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
-      if (data?.user) localStorage.setItem("user", JSON.stringify(data.user));
+      // ✅ Save tokens and user info
+      if (data?.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      } else {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: form.username,
+            email: `${form.username}@local.login`,
+            photoURL: null,
+          })
+        );
+      }
 
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/"), 800);
-    } catch {
+      setTimeout(() => navigate("/homeuser"), 800);
+    } catch (err) {
+      console.error(err);
       setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  // OAUTH (kept same behavior: client-only store)
+  /* ---------------- SOCIAL LOGIN ---------------- */
   async function handleOAuth(which) {
     setMessage("");
     setLoading(true);
+
     try {
       await applyPersistence(remember);
-      let result;
-      if (which === "Google") result = await signInWithPopup(auth, google);
-      if (which === "Facebook") result = await signInWithPopup(auth, facebook);
-      if (which === "GitHub") result = await signInWithPopup(auth, github);
-      if (!result) return;
+      let provider;
 
+      if (which === "Google") provider = google;
+      if (which === "Facebook") provider = facebook;
+      if (which === "GitHub") provider = github;
+
+      const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      // ✅ Save user info to localStorage (used by navbar)
       localStorage.setItem(
         "user",
         JSON.stringify({
-          name: user.displayName,
+          name: user.displayName || "User",
           email: user.email,
-          photoURL: user.photoURL,
+          photoURL: user.photoURL || null,
+          provider: result.providerId,
         })
       );
 
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/"), 800);
+      setTimeout(() => navigate("/homeuser"), 800);
     } catch (err) {
-      const code = String(err?.code || "");
-      if (code.includes("auth/popup-closed-by-user")) setMessage("Popup closed.");
-      else if (code.includes("auth/operation-not-allowed"))
-        setMessage("Provider disabled in Firebase.");
-      else if (code.includes("auth/network-request-failed"))
-        setMessage("Network error.");
-      else setMessage(err?.message || "Social login failed.");
       console.error(`${which} OAuth error:`, err);
+      const code = err.code;
+
+      if (code === "auth/account-exists-with-different-credential") {
+        const email = err.customData?.email;
+        const pendingCred = err.credential;
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+
+        if (methods.length) {
+          const existingProviderId = methods[0];
+          let existingProvider;
+          if (existingProviderId === "google.com") existingProvider = google;
+          if (existingProviderId === "facebook.com") existingProvider = facebook;
+          if (existingProviderId === "github.com") existingProvider = github;
+
+          const linkedResult = await signInWithPopup(auth, existingProvider);
+          await linkWithCredential(linkedResult.user, pendingCred);
+          setMessage("Accounts linked successfully!");
+          setTimeout(() => navigate("/homeuser"), 800);
+        }
+      } else {
+        setMessage(err.message || "Social login failed.");
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  /* ---------------- UI (your original style) ---------------- */
+  /* ---------------- UI ---------------- */
   return (
     <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex">
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-6xl place-items-center px-4 flex justify-around">
@@ -187,6 +214,7 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Login form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <label className="block">
               <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
@@ -213,7 +241,9 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   value={form.password}
-                  onChange={(e) => setForm((s) => ({ ...s, password: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((s) => ({ ...s, password: e.target.value }))
+                  }
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-white/40"
                   autoComplete="current-password"
@@ -224,13 +254,8 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </label>
@@ -245,10 +270,7 @@ export default function LoginPage() {
                 />
                 Remember me
               </label>
-              <a
-                href="#"
-                className="text-white/80 underline-offset-4 hover:underline"
-              >
+              <a href="#" className="text-white/80 underline-offset-4 hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -269,12 +291,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Socials */}
+          {/* Social logins */}
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-white/20" />
             <span className="text-xs text-white/60">OR</span>
             <div className="h-px flex-1 bg-white/20" />
           </div>
+
           <div className="flex text-white">
             <button
               onClick={() => handleOAuth("Google")}
@@ -284,6 +307,7 @@ export default function LoginPage() {
               <FcGoogle className="h-12 w-12" />
               <span className="text-sm font-medium">Google</span>
             </button>
+
             <button
               onClick={() => handleOAuth("Facebook")}
               disabled={loading}
@@ -292,6 +316,7 @@ export default function LoginPage() {
               <FaFacebook className="h-12 w-12 text-blue-400 bg-white rounded-full" />
               <span className="text-sm font-medium">Facebook</span>
             </button>
+
             <button
               onClick={() => handleOAuth("GitHub")}
               disabled={loading}
