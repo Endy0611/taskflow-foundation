@@ -12,14 +12,16 @@ export default function Board() {
   const [showChatbot, setShowChatbot] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
 
-  // Reset sidebar when resizing
+  // Handle sidebar reset when resizing
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => setSidebarOpen(false);
-    handleChange();
-    mq.addEventListener("change", handleChange);
-    return () => mq.removeEventListener("change", handleChange);
-  }, []);
+  const mq = window.matchMedia("(min-width: 1024px)");
+  const handleChange = (e) => {
+    if (!e.matches) setSidebarOpen(false);
+  };
+  handleChange(mq);
+  mq.addEventListener("change", handleChange);
+  return () => mq.removeEventListener("change", handleChange);
+}, []);
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
@@ -29,7 +31,7 @@ export default function Board() {
         {/* Overlay for mobile */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -41,24 +43,36 @@ export default function Board() {
           setShowModal={setShowModal}
         />
 
-         <main className="relative flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950">
-          {/* Templates */}
-          
+          <main
+          className="relative flex-1 overflow-y-auto 
+          px-3 sm:px-6 lg:px-10 
+          pt-5 sm:pt-8 lg:pt-10 
+          bg-gray-100 dark:bg-gray-950 
+          transition-all duration-300 ease-in-out"
+        >
+          {/* Hamburger Button (Mobile Only) */}
+          <button
+            className="lg:hidden p-2 mb-4 rounded hover:bg-blue-600"
+            aria-label="Toggle sidebar"
+            onClick={() => setSidebarOpen((v) => !v)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* Templates Section */}
           <section className="mb-10">
-              {/* Hamburger visible only on mobile */}
-            <button
-              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-              aria-label="Toggle sidebar"
-              aria-expanded={sidebarOpen}
-              onClick={() => setSidebarOpen((v) => !v)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <h2 className="text-lg sm:text-xl font-semibold mb-3">
-              Start with a template and let TaskFlow handle the rest with
-              customizable workflows
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
+              Start with a template and let TaskFlow handle the rest
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              className="
+              grid 
+              grid-cols-1 
+              sm:grid-cols-2 
+              md:grid-cols-2 
+              lg:grid-cols-3 
+              gap-4 md:gap-6"
+            >
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
                   <NavLink
@@ -69,8 +83,9 @@ export default function Board() {
                     <img
                       src={`https://picsum.photos/600/400?random=${idx + 1}`}
                       alt={title}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform"
+                      className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
                     />
+
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
                       {title}
                     </div>
@@ -79,13 +94,22 @@ export default function Board() {
               )}
             </div>
           </section>
+          
 
-          {/* Recently Viewed */}
+          {/* Recently Viewed Section */}
           <section className="mb-10">
-            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
               Recently viewed
             </h2>
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
+            <div
+              className="
+                grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-3 
+                lg:grid-cols-4 
+                gap-4 md:gap-6"
+            >
               {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
                 title !== "Create new board" ? (
                   <NavLink
@@ -96,8 +120,9 @@ export default function Board() {
                     <img
                       src={`https://picsum.photos/600/400?random=${idx + 10}`}
                       alt={title}
-                      className="w-full h-32 object-cover"
+                      className="w-full h-36 md:h-44 lg:h-48 object-cover"
                     />
+
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                       {title}
                     </div>
@@ -108,7 +133,7 @@ export default function Board() {
                     onClick={() => setShowCreateBoard(true)}
                     className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
                   >
-                    <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    <span className="text-gray-600 dark:text-gray-300 font-medium text-sm md:text-base">
                       + {title}
                     </span>
                   </div>
@@ -117,47 +142,46 @@ export default function Board() {
             </div>
           </section>
 
-          {/* Your Workspaces */}
-          <section className="mb-16">
-            <h2 className="text-lg sm:text-xl font-semibold mb-3">
+          {/* Your Workspaces Section */}
+          <section className="mb-20">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
               Your Workspaces
             </h2>
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-              {/* Workspace header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
+                  <div className="w-10 h-10 bg-primary text-white flex items-center justify-center rounded-md font-bold">
                     S
                   </div>
-                  <span className="font-semibold">TaskFlow Workspaces</span>
+                  <span className="font-semibold text-base sm:text-lg">
+                    TaskFlow Workspace
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <NavLink
-                    to="/workspaceboard"
-                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Boards
-                  </NavLink>
-                  <NavLink
-                    to="/workspacemember"
-                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Member
-                  </NavLink>
-                  <NavLink
-                    to="/workspacesetting"
-                    className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Setting
-                  </NavLink>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Upgrade
-                  </button>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-nowrap">
+                  {["Boards", "Member", "Setting", "Update"].map((item, i) => (
+                    <NavLink
+                      key={i}
+                      to={`/workspace${item.toLowerCase()}`}
+                      className="flex-shrink-0 px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap"
+                    >
+                      {item}
+                    </NavLink>
+                  ))}
                 </div>
               </div>
+              
 
-              {/* Workspace boards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Workspace Boards */}
+              <div
+                className="
+                grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-2 
+                lg:grid-cols-3 
+                gap-4 md:gap-6"
+              >
                 {["Boardup", "Create new board"].map((title, idx) =>
                   title !== "Create new board" ? (
                     <NavLink
@@ -168,8 +192,9 @@ export default function Board() {
                       <img
                         src={`https://picsum.photos/600/400?random=${idx + 20}`}
                         alt={title}
-                        className="w-full h-32 object-cover"
+                        className="w-full h-36 md:h-44 lg:h-48 object-cover"
                       />
+
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                         {title}
                       </div>
@@ -180,7 +205,7 @@ export default function Board() {
                       onClick={() => setShowCreateBoard(true)}
                       className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
                     >
-                      <span className="text-gray-600 dark:text-gray-300 font-medium">
+                      <span className="text-gray-600 dark:text-gray-300 font-medium text-sm md:text-base">
                         + {title}
                       </span>
                     </div>
@@ -190,11 +215,11 @@ export default function Board() {
             </div>
           </section>
 
-          {/* Floating chatbot button */}
+          {/* Floating Chatbot Button */}
           <img
             src="/src/assets/general/chatbot.png"
-            alt="Our Chatbot"
-            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
+            alt="Chatbot"
+            className="fixed bottom-4 right-4 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 z-40 rounded-full shadow-lg cursor-pointer bg-white dark:bg-gray-700"
             onClick={() => setShowChatbot(true)}
           />
         </main>
@@ -247,6 +272,7 @@ export default function Board() {
                   Boost your productivity by making it easier for everyone to
                   access boards in one location.
                 </p>
+                
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Workspace name
@@ -280,7 +306,7 @@ export default function Board() {
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
                 >
-                  ✖
+                  ✖️
                 </button>
               </div>
             </motion.div>
@@ -313,3 +339,6 @@ export default function Board() {
     </div>
   );
 }
+
+
+

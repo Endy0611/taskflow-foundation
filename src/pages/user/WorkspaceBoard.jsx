@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
@@ -57,14 +58,14 @@ export default function WorkspaceBoard() {
           <div className="mb-10">
               {/* Hamburger visible only on mobile */}
             <button
-              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              className="lg:hidden p-2 rounded hover:bg-blue-600"
               aria-label="Toggle sidebar"
               aria-expanded={sidebarOpen}
               onClick={() => setSidebarOpen((v) => !v)}
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mt-5">
               <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-lg">
                 TF
               </div>
@@ -78,6 +79,7 @@ export default function WorkspaceBoard() {
               </div>
             </div>
           </div>
+          
 
           {/* Your Boards */}
           <section className="mb-12">
@@ -134,6 +136,7 @@ export default function WorkspaceBoard() {
           />
         </main>
       </div>
+      
 
         <AnimatePresence>
         {showChatbot && (
@@ -216,7 +219,7 @@ export default function WorkspaceBoard() {
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
                 >
-                  ✖
+                  ✖️
                 </button>
               </div>
             </motion.div>
@@ -226,6 +229,7 @@ export default function WorkspaceBoard() {
     </div>
   );
 }
+
 
 function BoardCard({ title, subtitle, color, image, isCreate }) {
   return (
@@ -264,3 +268,5 @@ function BoardCard({ title, subtitle, color, image, isCreate }) {
     </motion.div>
   );
 }
+
+

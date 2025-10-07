@@ -137,8 +137,8 @@ export default function RegisterPage() {
           email: cleanEmail,
           password: formData.password,
           confirmedPassword: formData.confirmedPassword,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          givenName: formData.givenName,
+          familyNameName: formData.familyName,
           gender: normalizeGender(formData.gender),
         }),
       });
@@ -168,7 +168,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-700 via-blue-600 to-purple-700 p-6">
-      <div className="flex w-full max-w-6xl rounded-3xl bg-white shadow-xl overflow-hidden">
+      <div className="flex flex-col md:flex-row w-full max-w-6xl rounded-3xl bg-white shadow-xl overflow-hidden md:m-20">
         {/* Left image section */}
         <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-500 relative">
           <img
