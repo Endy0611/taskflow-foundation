@@ -52,7 +52,7 @@ export default function Board() {
         >
           {/* Hamburger Button (Mobile Only) */}
           <button
-            className="lg:hidden p-2 mb-4 rounded hover:bg-blue-600"
+            className="lg:hidden p-2 mb-4 rounded-md bg-primary text-white"
             aria-label="Toggle sidebar"
             onClick={() => setSidebarOpen((v) => !v)}
           >
@@ -151,7 +151,7 @@ export default function Board() {
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white flex items-center justify-center rounded-md font-bold">
+                  <div className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-md font-bold">
                     S
                   </div>
                   <span className="font-semibold text-base sm:text-lg">

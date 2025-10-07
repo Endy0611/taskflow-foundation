@@ -441,95 +441,113 @@ const HomeUserPage = () => {
           </div>
         </motion.div>
 
-        {/* Testimonials Section */}
-        <motion.section
-          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-400 mx-20"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+       {/* Testimonials Section */}
+<motion.section
+  className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-400 mx-4 sm:mx-10 lg:mx-20"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+>
+  <div className="max-w-6xl mx-auto">
+    <motion.h2
+      className="text-3xl lg:text-4xl text-primary font-bold text-center mb-12"
+      variants={fadeInUp}
+    >
+      Hear From Our <span className="text-orange-500">Happy Users</span>
+    </motion.h2>
+
+    {/* Scrollable container on mobile/tablet */}
+    <motion.div
+      className="
+        flex lg:grid 
+        lg:grid-cols-3 
+        gap-6 sm:gap-8 
+        overflow-x-auto lg:overflow-visible 
+        snap-x snap-mandatory 
+        scroll-smooth 
+        pb-6
+        scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600
+      "
+      variants={staggerContainer}
+    >
+      {[
+        {
+          name: "Koem Channy",
+          image: "/src/assets/home/profile1.png",
+          role: "Singer",
+          text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were absolutely amazing!",
+        },
+        {
+          name: "Mr. Beast",
+          image: "/src/assets/home/profile2.png",
+          role: "Youtuber",
+          text: "Want a smooth and stress-free workflow? TaskFlow has you covered! Their support team is super helpful and always ready with amazing solutions.",
+        },
+        {
+          name: "Panha Watt",
+          image: "/src/assets/home/profile3.png",
+          role: "Student",
+          text: "TaskFlow made task management effortless. The support team was always there with brilliant solutions! Smooth workflow, excellent solutions — thanks TaskFlow!",
+        },
+      ].map((user, idx) => (
+        <motion.div
+          key={idx}
+          className="
+            relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-md text-center 
+            flex-shrink-0 
+            w-72 sm:w-80 md:w-96 
+            snap-center 
+            lg:w-auto
+          "
+          variants={fadeInScale}
+          whileHover={{
+            y: -10,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+          }}
+          transition={{ type: "spring", stiffness: 300 }}
         >
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              className="text-3xl lg:text-4xl text-primary font-bold text-center mb-16"
-              variants={fadeInUp}
-            >
-              Hear From Our <span className="text-orange-500">Happy Users</span>
-            </motion.h2>
+          {/* Blue vertical line behind avatar */}
+          <motion.div
+            className="absolute flex top-0 left-1/2 transform -translate-x-1/2 h-12 w-full bg-primary rounded-lg"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            transition={{ duration: 0.5, delay: idx * 0.1 }}
+          ></motion.div>
 
-            <motion.div
-              className="grid md:grid-cols-3 gap-10"
-              variants={staggerContainer}
-            >
-              {[
-                {
-                  name: "Koem Channy",
-                  image: "/src/assets/home/profile1.png",
-                  role: "Singer",
-                  text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were absolutely amazing!",
-                },
-                {
-                  name: "Mr. Beast",
-                  image: "/src/assets/home/profile2.png",
-                  role: "Youtuber",
-                  text: "Want a smooth and stress-free workflow? TaskFlow has you covered! Their support team is super helpful and always ready with amazing solutions.",
-                },
-                {
-                  name: "Panha Watt",
-                  image: "/src/assets/home/profile3.png",
-                  role: "Student",
-                  text: "TaskFlow made task management effortless. The support team was always there with brilliant solutions! Smooth workflow, excellent solutions — thanks TaskFlow!",
-                },
-              ].map((user, idx) => (
-                <motion.div
-                  key={idx}
-                  className="relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-md text-center"
-                  variants={fadeInScale}
-                  whileHover={{
-                    y: -10,
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
-                  }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  {/* Blue vertical line behind avatar */}
-                  <motion.div
-                    className="absolute flex top-0 left-1/2 transform -translate-x-1/2 h-12 w-full bg-primary rounded-lg"
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  ></motion.div>
+          {/* Avatar */}
+          <motion.div
+            className="relative z-10 w-16 h-16 mx-auto rounded-full overflow-hidden border-4 border-white shadow-md mb-2"
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <img
+              src={user.image}
+              alt={user.role}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
 
-                  {/* Avatar */}
-                  <motion.div
-                    className="relative z-10 w-16 h-16 mx-auto rounded-full overflow-hidden border-4 border-white shadow-md mb-2"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <img
-                      src={user.image}
-                      alt={user.role}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.div>
-                  <h4 className="font-semibold text-primary">{user.name}</h4>
-                  <p className="text-gray-500 dark:text-gray-200 text-sm mb-5">
-                    {user.role}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed">
-                    "{user.text}"
-                  </p>
-                  <motion.div
-                    className="text-yellow-400"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                  >
-                    ⭐⭐⭐⭐⭐
-                  </motion.div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </motion.section>
+          <h4 className="font-semibold text-primary">{user.name}</h4>
+          <p className="text-gray-500 dark:text-gray-200 text-sm mb-5">
+            {user.role}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed">
+            "{user.text}"
+          </p>
+          <motion.div
+            className="text-yellow-400"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+          >
+            ⭐⭐⭐⭐⭐
+          </motion.div>
+        </motion.div>
+      ))}
+    </motion.div>
+  </div>
+</motion.section>
+
 
         {/* Development Team Carousel */}
         <motion.section

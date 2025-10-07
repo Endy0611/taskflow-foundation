@@ -14,9 +14,11 @@ export default function BoardB4Create() {
 
   // Handle sidebar reset when resizing
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => setSidebarOpen(false);
-    handleChange();
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (e) => {
+      if (!e.matches) setSidebarOpen(false);
+    };
+    handleChange(mq);
     mq.addEventListener("change", handleChange);
     return () => mq.removeEventListener("change", handleChange);
   }, []);
@@ -24,10 +26,10 @@ export default function BoardB4Create() {
   return (
     <div className="min-h-[93.5vh] flex flex-col dark:bg-gray-900 dark:text-white">
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Overlay for mobile */}
+        {/* Overlay for moAbile */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -49,7 +51,7 @@ export default function BoardB4Create() {
         >
           {/* Hamburger Button (Mobile Only) */}
           <button
-            className="md:hidden p-2 mb-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
+            className="lg:hidden p-2 mb-4 rounded-md bg-primary text-white"
             aria-label="Toggle sidebar"
             onClick={() => setSidebarOpen((v) => !v)}
           >
@@ -99,12 +101,12 @@ export default function BoardB4Create() {
             </h2>
             <div
               className="
-              grid 
-              grid-cols-1 
-              sm:grid-cols-2 
-              md:grid-cols-3 
-              lg:grid-cols-4 
-              gap-4 md:gap-6"
+                grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-3 
+                lg:grid-cols-4 
+                gap-4 md:gap-6"
             >
               {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
                 title !== "Create new board" ? (

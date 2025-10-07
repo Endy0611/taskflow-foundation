@@ -30,14 +30,15 @@ export default function SidebarB4CreateBoard({
         "transform transition-transform duration-300 will-change-transform",
         "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
         "border-r border-gray-300 dark:border-gray-700",
+        // hide on mobile + tablet (visible only on lg and up)
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
-        "md:static md:translate-x-0 md:inset-auto md:h-screen md:z-0", // <-- changed h-auto → h-screen
+        "lg:static lg:translate-x-0 lg:inset-auto lg:h-screen lg:z-0",
         "top-0",
       ].join(" ")}
     >
       <div className="p-4 text-sm">
-        {/* Close (mobile only) */}
-        <div className="flex items-center justify-between md:hidden mb-2">
+        {/* Close button (only visible below lg) */}
+        <div className="flex items-center justify-between lg:hidden mb-2">
           <span className="font-semibold">Menu</span>
           <button
             aria-label="Close sidebar"
@@ -58,9 +59,10 @@ export default function SidebarB4CreateBoard({
             to="/templateuser"
           />
         </div>
+
         <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
 
-        {/* Workspace */}
+        {/* Workspace section */}
         <div className="mt-6">
           <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
             Workspace
