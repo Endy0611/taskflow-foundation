@@ -29,6 +29,7 @@ import SwitchAccountPage from "./pages/profile/SwitchAccountPage";
 
 // ✅ Import your new SettingWorkspace page
 import SettingWorkspace from "./pages/user/SettingWorkspace";
+import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 
 // 404 fallback
 function NotFound() {
@@ -82,6 +83,7 @@ function App() {
           <Route path="/workspacemember" element={<WorkspaceMember />} /> {/* ✅ NEW */}
           {/* Optional REST-style alias (enable if you prefer): */}
           {/* <Route path="/workspace/:workspaceId/members" element={<WorkspaceMember />} /> */}
+          <Route path="/workspacesetting" element={<WorkspaceSetting/>}/>
         </Route>
 
         {/* 404 fallback */}
