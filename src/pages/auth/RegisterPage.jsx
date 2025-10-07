@@ -1,11 +1,26 @@
-// /src/pages/auth/RegisterPage.jsx
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import registerImage from "../../assets/general/register-pic.png";
-import { API_BASE, REGISTER_PATH } from "../../Implement/api";
+import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
-/* ---------------- helpers ---------------- */
+// Zod schema for register validation
+const registerSchema = z
+  .object({
+    username: z.string().min(2, { message: "Username is required" }),
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters" }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Helper functions
 const firstError = (d) => {
   if (!d) return null;
   if (typeof d === "string") return d;
@@ -50,7 +65,7 @@ const safeParseJSON = async (res) => {
   }
 };
 
-/* ---------------- component ---------------- */
+// RegisterPage Component
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -77,6 +92,8 @@ export default function RegisterPage() {
     () => String(formData.email || "").trim().toLowerCase(),
     [formData.email]
   );
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,17 +145,20 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}${REGISTER_PATH}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE}${import.meta.env.VITE_REGISTER_PATH}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          // No Authorization token needed for registration
+        },
+        credentials: "omit", // Ensure credentials aren't included unless needed
         body: JSON.stringify({
           username: cleanUsername,
           email: cleanEmail,
           password: formData.password,
           confirmedPassword: formData.confirmedPassword,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          familyName: formData.familyName,
+          givenName: formData.givenName,
           gender: normalizeGender(formData.gender),
         }),
       });
@@ -148,6 +168,8 @@ export default function RegisterPage() {
       if (res.ok) {
         setOkMsg(`Account created. You can now log in as "${cleanUsername}".`);
         setFormData((p) => ({ ...p, password: "", confirmedPassword: "" }));
+        // Redirect to login page after success
+        setTimeout(() => navigate("/login"), 1500);
       } else {
         const msg =
           firstError(data) ||
@@ -212,7 +234,7 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <input
                 name="givenName"
-                value={formData.firstName}
+                value={formData.givenName}
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="First Name"
@@ -221,7 +243,7 @@ export default function RegisterPage() {
               />
               <input
                 name="familyName"
-                value={formData.lastName}
+                value={formData.familyName}
                 onChange={handleChange}
                 disabled={loading}
                 placeholder="Last Name"
