@@ -27,22 +27,37 @@ function NavItem({ icon, text, to }) {
   );
 }
 
+
 export default function SidebarComponent({
   sidebarOpen,
   setSidebarOpen,
   setShowModal,
 }) {
   const [openDropdown, setOpenDropdown] = useState(false);
-
   return (
-    <>
-      {/* Toggle Button for iPad & Mobile */}
-      {/* <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2  text-white rounded-md shadow-md hover:bg-primary"
-        onClick={() => setSidebarOpen(true)}
-      >
-        <Menu size={20} />
-      </button> */}
+    <aside
+      className={[
+        "transform transition-transform duration-300 will-change-transform",
+        "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
+        "border-r border-gray-300 dark:border-gray-700",
+        // hide on mobile + tablet (visible only on lg and up)
+        sidebarOpen ? "translate-x-0" : "-translate-x-full",
+        "lg:static lg:translate-x-0 lg:inset-auto lg:h-screen lg:z-0",
+        "top-0",
+      ].join(" ")}
+    >
+      <div className="p-4 text-sm">
+        {/* Close button (only visible below lg) */}
+        <div className="flex items-center justify-between lg:hidden mb-2">
+          <span className="font-semibold">Menu</span>
+          <button
+            aria-label="Close sidebar"
+            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <X />
+          </button>
+        </div>
 
       <aside
         className={[
@@ -77,7 +92,11 @@ export default function SidebarComponent({
             />
           </div>
 
-          <div className="border-b my-4 border-gray-00 dark:border-gray-700" />
+          {/* Workspace */}
+        <div className="mt-6">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
+            Workspace
+          </h3>
 
           {/* Workspace */}
           <div className="mt-6">
