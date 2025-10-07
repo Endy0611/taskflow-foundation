@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import NavbarB4Login from "../nav&footer/NavbarB4Login";
-import NavbarComponent from "../nav&footer/NavbarComponent";
+
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../Implement/firebase/firebase-config";
+import NavbarB4Login from "../nav&footer/NavbarB4Login";
+import NavbarComponent from "../nav&footer/NavbarComponent";
 
 export default function DynamicNavbar({
   darkMode,
@@ -88,10 +89,7 @@ export default function DynamicNavbar({
   // ✅ Render based on login state
   if (!user) {
     return (
-      <NavbarB4Login
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-      />
+      <NavbarB4Login darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
     );
   }
 

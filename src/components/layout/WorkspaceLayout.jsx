@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from "react";
-import NavbarComponent from "../nav&footer/NavbarComponent";
+import NavbarComponent from "../navfooter/NavbarComponent";
+import DynamicNavbar from "./DynamicNavbar";
 import { Outlet, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Home, LayoutGrid, FileText, ChevronUp, ChevronDown, Menu } from "lucide-react";
+import {
+  X,
+  Home,
+  LayoutGrid,
+  FileText,
+  ChevronUp,
+  ChevronDown,
+  Menu,
+} from "lucide-react";
 
 function WorkspaceLayout() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(false);
 
-  // Initialize dark mode
   useEffect(() => {
-    const preferDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    if (preferDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
+    const isDark = localStorage.theme === "dark";
+    setDarkMode(isDark);
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, []);
 
   const toggleDarkMode = () => {
@@ -36,15 +39,13 @@ function WorkspaceLayout() {
 
   return (
     <>
-      <NavbarComponent
+      <DynamicNavbar
         darkMode={darkMode}
         toggleDarkMode={toggleDarkMode}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
         setShowModal={setShowModal}
       />
-      
-
 
       {/* Sidebar is here now */}
       <AnimatePresence>
@@ -57,7 +58,6 @@ function WorkspaceLayout() {
             className="fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900 
                        border-r border-gray-300 dark:border-gray-700 shadow-lg md:hidden"
           >
-            
             <div className="p-4 text-sm h-full flex flex-col">
               {/* Close button */}
               <div className="flex items-center justify-between mb-4">
@@ -105,12 +105,22 @@ function WorkspaceLayout() {
                 </h3>
                 <div
                   className={`flex items-center justify-between cursor-pointer p-2 rounded 
-                    ${openDropdown ? "bg-blue-700 text-white" : "text-gray-800 dark:text-gray-200"} 
+                    ${
+                      openDropdown
+                        ? "bg-blue-700 text-white"
+                        : "text-gray-800 dark:text-gray-200"
+                    } 
                     hover:bg-blue-600 hover:text-white`}
                   onClick={() => setOpenDropdown((v) => !v)}
                 >
-                  <span className="flex items-center gap-2 font-medium">🌍 TaskFlow</span>
-                  {openDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  <span className="flex items-center gap-2 font-medium">
+                    🌍 TaskFlow
+                  </span>
+                  {openDropdown ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
                 </div>
 
                 <AnimatePresence>

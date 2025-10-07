@@ -42,7 +42,7 @@ const safeParseJSON = async (res) => {
     return text ? JSON.parse(text) : null;
   } catch {
     return text || null;
-  }
+  } 
 };
 
 /* ---------------- component ---------------- */
@@ -135,22 +135,44 @@ export default function LoginPage() {
       if (which === "Facebook") provider = facebook;
       if (which === "GitHub") provider = github;
 
+      // Perform OAuth login
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // ✅ Save user info to localStorage (used by navbar)
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: user.displayName || "User",
-          email: user.email,
-          photoURL: user.photoURL || null,
-          provider: result.providerId,
-        })
-      );
+      // If the user is logging in using a social provider and their email exists in Firebase with another provider
+      const methods = await fetchSignInMethodsForEmail(auth, user.email);
+      if (methods.length && !methods.includes(provider.providerId)) {
+        // If user exists with another provider, we link the accounts
+        const pendingCred = result.credential;
+        const existingProviderId = methods[0];
+        let existingProvider;
 
-      setMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/homeuser"), 800);
+        // Determine which provider exists
+        if (existingProviderId === "google.com") existingProvider = google;
+        if (existingProviderId === "facebook.com") existingProvider = facebook;
+        if (existingProviderId === "github.com") existingProvider = github;
+
+        // Link the account with the existing provider
+        const linkedResult = await signInWithPopup(auth, existingProvider);
+        await linkWithCredential(linkedResult.user, pendingCred);
+
+        setMessage("Accounts linked successfully!");
+        setTimeout(() => navigate("/homeuser"), 800);
+      } else {
+        // If no conflict or no account exists, continue with the normal flow
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: user.displayName || "User",
+            email: user.email,
+            photoURL: user.photoURL || null,
+            provider: result.providerId,
+          })
+        );
+
+        setMessage("Login successful! Redirecting...");
+        setTimeout(() => navigate("/homeuser"), 800);
+      }
     } catch (err) {
       console.error(`${which} OAuth error:`, err);
       const code = err.code;
@@ -286,7 +308,7 @@ export default function LoginPage() {
                   Logging in…
                 </span>
               ) : (
-                <span>Sign in</span>
+                <span>Log in</span>
               )}
             </button>
           </form>
