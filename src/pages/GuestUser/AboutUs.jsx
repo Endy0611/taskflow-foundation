@@ -409,46 +409,50 @@ const AboutUs = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-20 justify-items-center">
-          {members.map((member, i) => (
-            <div
-              key={i}
-              className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
-            >
-              {/* Top Badge */}
-              <div className="absolute -top-3 left-0 bg-primary text-white px-4 py-1 rounded-tr-xl rounded-bl-xl">
-                <h3 className="font-semibold text-sm">{member.name}</h3>
-                <p className="text-xs opacity-80">{member.role}</p>
-              </div>
+  {members.map((member, i) => (
+    <div
+      key={i}
+      className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
+    >
+      {/* Top Badge - increased z-index */}
+      <div className="absolute -top-13 -left-10 bg-primary z-20 text-white px-30 py-3 h-25 rounded-tr-xl rounded-tl-xl rounded-bl-xl overflow-hidden">
+        <div className="w-20 h-20 rounded-full bg-[#173187] absolute -left-5 bottom-0"></div>
+        <h3 className="font-semibold text-sm">{member.name}</h3>
+        <p className="text-xs opacity-80">{member.role}</p>
+      </div>
 
-              {/* Quote */}
-              <p className="mt-10 italic text-gray-700 dark:text-gray-300">
-                “ {member.quote} ”
-              </p>
+      {/* Content - no z-index needed */}
+      <div>
+        {/* Quote */}
+        <p className="mt-10 italic text-gray-700 dark:text-gray-300">
+          “ {member.quote} ”
+        </p>
 
-              {/* Icons */}
-              <div className="flex gap-4 mt-8 text-2xl text-primary">
-                <a href={member.github} target="_blank" rel="noreferrer">
-                  <FaGithub className="hover:scale-110 transition-transform" />
-                </a>
-                <a href={member.email} target="_blank" rel="noreferrer">
-                  <FiMail className="hover:scale-110 transition-transform" />
-                </a>
-                <a href={member.linkedin} target="_blank" rel="noreferrer">
-                  <FaLinkedin className="hover:scale-110 transition-transform" />
-                </a>
-              </div>
-
-              {/* Profile Pic */}
-              <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
-                <img
-                  src={member.img}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          ))}
+        {/* Icons */}
+        <div className="flex gap-4 mt-8 text-2xl text-primary">
+          <a href={member.github} target="_blank" rel="noreferrer">
+            <FaGithub className="hover:scale-110 transition-transform" />
+          </a>
+          <a href={member.email} target="_blank" rel="noreferrer">
+            <FiMail className="hover:scale-110 transition-transform" />
+          </a>
+          <a href={member.linkedin} target="_blank" rel="noreferrer">
+            <FaLinkedin className="hover:scale-110 transition-transform" />
+          </a>
         </div>
+
+        {/* Profile Pic */}
+        <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
+          <img
+            src={member.img}
+            alt={member.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
       </section>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   ChevronUp,
   ChevronDown,
   X,
+  Menu,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
@@ -25,7 +26,6 @@ function NavItem({ icon, text, to }) {
     </NavLink>
   );
 }
-
 
 export default function SidebarComponent({
   sidebarOpen,
@@ -71,21 +71,23 @@ export default function SidebarComponent({
 
         <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
 
-          {/* Workspace */}
+        {/* Workspace */}
         <div className="mt-6">
-          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">
             Workspace
           </h3>
 
           <div
-            className={`flex items-center justify-between cursor-pointer p-2 rounded ${
+            className={`flex items-center bg-primary text-white justify-between cursor-pointer p-2 rounded ${
               openDropdown
                 ? "bg-[#1E40AF] text-white"
                 : "text-gray-800 dark:text-gray-200"
             } hover:bg-[#2563EB] hover:text-white`}
             onClick={() => setOpenDropdown((v) => !v)}
           >
-            <span className="flex items-center gap-2 font-medium">🌍 TaskFlow</span>
+            <span className="flex items-center gap-2 font-medium">
+              🌍 TaskFlow
+            </span>
             {openDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </div>
 
@@ -100,26 +102,25 @@ export default function SidebarComponent({
               >
                 <NavLink
                   to="/workspaceboard"
-                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                  className="block cursor-pointer hover:bg-[#2563EB] hover:text-white p-2"
                 >
                   Boards
                 </NavLink>
                 <NavLink
                   to="/workspacemember"
-                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                  className="block cursor-pointer hover:bg-[#2563EB] hover:text-white p-2"
                 >
                   Members
                 </NavLink>
                 <NavLink
                   to="/workspacesetting"
-                  className="block cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+                  className="block cursor-pointer hover:bg-[#2563EB] hover:text-white p-2"
                 >
                   Settings
                 </NavLink>
               </motion.div>
             )}
           </AnimatePresence>
-
 
           <button
             className="mt-3 text-[#1E40AF] dark:text-white text-sm hover:bg-[#2563EB] hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
