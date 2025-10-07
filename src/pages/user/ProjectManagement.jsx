@@ -128,7 +128,7 @@ export default function ProjectManagement() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
+          className="fixed top inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -138,31 +138,39 @@ export default function ProjectManagement() {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
         />
-          {/* Hamburger visible only on mobile */}
-            <button
-              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-              aria-label="Toggle sidebar"
-              aria-expanded={sidebarOpen}
-              onClick={() => setSidebarOpen((v) => !v)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
+         
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between px-6 py-3 bg-highlight dark:bg-gray-800">
-            <h1 className="text-lg font-semibold">TaskFlow</h1>
-            <button
-              onClick={() => setShowShare(true)}
-              className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700"
-            >
-              Share
-            </button>
-          </div>
+<main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
+
+  {/* Full-width Top Bar */}
+  <div className="w-full bg-highlight dark:bg-gray-800">
+    <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
+      <h1 className="text-lg font-semibold text-gray-700">TaskFlow</h1>
+      <button
+        onClick={() => setShowShare(true)}
+        className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700"
+      >
+        Share
+      </button>
+    </div>
+  </div>
+
+  {/* Hamburger BELOW Top Bar (mobile only) */}
+  <div className="md:hidden flex justify-start px-6 py-2 bg-white dark:bg-gray-900 mt-4 w-full">
+    <button
+      className="p-2 rounded-md bg-primary text-white hover:bg-blue-900 transition-colors"
+      aria-label="Toggle sidebar"
+      aria-expanded={sidebarOpen}
+      onClick={() => setSidebarOpen((v) => !v)}
+    >
+      <Menu className="w-6 h-6" />
+    </button>
+  </div>
+
 
           {/* Kanban Board */}
-          <div className="flex flex-wrap gap-4 p-6">
+          <div className="flex flex-wrap gap-4 p-6 justify-center md:justify-start">
+
             {lists.map((list) => (
               <div
                 key={list.id}

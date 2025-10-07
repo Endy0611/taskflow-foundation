@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
@@ -39,11 +40,11 @@ export default function WorkspaceSetting() {
         />
 
         {/* Main content */}
-        <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
+        <main className="flex-1 md:pl-10 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
           <div className="max-w-3xl space-y-8">
               {/* Hamburger visible only on mobile */}
             <button
-              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
+              className="lg:hidden p-2 rounded hover:bg-blue-600"
               aria-label="Toggle sidebar"
               aria-expanded={sidebarOpen}
               onClick={() => setSidebarOpen((v) => !v)}
@@ -99,6 +100,7 @@ export default function WorkspaceSetting() {
                 />
               </div>
             </section>
+            
 
             {/* Members */}
             <section>
@@ -203,6 +205,7 @@ export default function WorkspaceSetting() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
                   This is the name of your company, team or organization.
                 </p>
+                
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Workspace description
@@ -224,7 +227,7 @@ export default function WorkspaceSetting() {
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
                 >
-                  ✖
+                  ✖️
                 </button>
               </div>
             </motion.div>
@@ -253,3 +256,5 @@ function UserCard({ name, tag, color, role }) {
     </div>
   );
 }
+
+

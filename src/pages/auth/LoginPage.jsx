@@ -204,18 +204,22 @@ export default function LoginPage() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex">
-      <div className="relative z-10 mx-auto min-h-screen w-full max-w-6xl place-items-center px-4 flex justify-around">
+    <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex justify-center items-center">
+      <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl px-4 sm:px-6 md:px-8">
+        
+        {/* Illustration */}
         <img
           src={loginImage}
           alt="Login Illustration"
-          className="hidden md:block w-[500px] max-w-sm object-contain"
+          className="hidden lg:block lg:w-[500px] max-w-sm object-contain mr-0 lg:mr-12 mb-6 lg:mb-0"
         />
+
+        {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.35)]"
+          className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 sm:p-8 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.35)] mx-auto"
         >
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">
@@ -238,6 +242,7 @@ export default function LoginPage() {
 
           {/* Login form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username */}
             <label className="block">
               <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
                 <Mail className="h-4 w-4" /> Username
@@ -254,6 +259,7 @@ export default function LoginPage() {
               />
             </label>
 
+            {/* Password */}
             <label className="block">
               <span className="mb-1.5 inline-flex items-center gap-2 text-sm font-medium text-white/80">
                 <Lock className="h-4 w-4" /> Password
@@ -282,6 +288,7 @@ export default function LoginPage() {
               </div>
             </label>
 
+            {/* Remember & Forgot */}
             <div className="flex items-center justify-between text-sm">
               <label className="inline-flex items-center gap-2 text-white/80">
                 <input
@@ -297,6 +304,7 @@ export default function LoginPage() {
               </a>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -324,7 +332,7 @@ export default function LoginPage() {
             <button
               onClick={() => handleOAuth("Google")}
               disabled={loading}
-              className="flex flex-col w-full items-center justify-center gap-3"
+              className="flex flex-col w-full md:w-1/3 items-center justify-center gap-3"
             >
               <FcGoogle className="h-12 w-12" />
               <span className="text-sm font-medium">Google</span>
@@ -333,7 +341,7 @@ export default function LoginPage() {
             <button
               onClick={() => handleOAuth("Facebook")}
               disabled={loading}
-              className="flex flex-col w-full items-center justify-center gap-3"
+              className="flex flex-col w-full md:w-1/3 items-center justify-center gap-3"
             >
               <FaFacebook className="h-12 w-12 text-blue-400 bg-white rounded-full" />
               <span className="text-sm font-medium">Facebook</span>
@@ -342,7 +350,7 @@ export default function LoginPage() {
             <button
               onClick={() => handleOAuth("GitHub")}
               disabled={loading}
-              className="flex flex-col w-full items-center justify-center gap-3"
+              className="flex flex-col w-full md:w-1/3 items-center justify-center gap-3"
             >
               <FaGithub className="h-12 w-12 text-black bg-white rounded-full" />
               <span className="text-sm font-medium">GitHub</span>
