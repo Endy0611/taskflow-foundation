@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
 import { Menu } from "lucide-react";
@@ -11,6 +11,7 @@ export default function Board() {
   const [showModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
+  const { id } = useParams();
 
   // Handle sidebar reset when resizing
   useEffect(() => {
@@ -35,7 +36,6 @@ export default function Board() {
             onClick={() => setSidebarOpen(false)}
           />
         )}
-
         {/* Sidebar */}
         <SidebarComponent
           sidebarOpen={sidebarOpen}
@@ -156,6 +156,7 @@ export default function Board() {
                   <span className="font-semibold text-base sm:text-lg">
                     TaskFlow Workspace
                   </span>
+                  <span className="font-semibold">Workspaces</span>
                 </div>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-nowrap">
                   {["Boards", "Member", "Setting", "Update"].map((item, i) => (

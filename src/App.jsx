@@ -57,9 +57,11 @@ function App() {
         {/* Workspace */}
         <Route element={<WorkspaceLayout />}>
           <Route path="/boardb4create" element={<BoardB4Create />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/board/:workspaceId" element={<Board/>}/>
+          <Route path="/workspacemember" element={<WorkspaceMember/>}/>
           <Route path="/workspacesetting" element={<WorkspaceSetting />} />
-          <Route path="/workspaceboard" element={<WorkspaceBoard />} />
+          <Route path="/workspaceboard" element={<WorkspaceBoard/>} />
+          <Route path="/projectmanagement" element={<ProjectManagement/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

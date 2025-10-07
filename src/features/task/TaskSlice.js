@@ -1,55 +1,83 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { API_BASE } from '../../Implement/api';
 
-// Mock tasks data
-const mockTasks = [
-  {
-    id: 1,
-    title: 'Complete project documentation',
-    description: 'Write detailed documentation for the project',
-    status: 'in-progress',
-    priority: 'high',
-    dueDate: '2025-09-20',
-    assignedTo: 'user1',
-    workspaceId: 1,
-    createdBy: 'user1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    labels: ['documentation', 'urgent'],
-    comments: []
-  },
-  {
-    id: 2,
-    title: 'Setup development environment',
-    description: 'Configure development tools and dependencies',
-    status: 'todo',
-    priority: 'medium',
-    dueDate: '2025-09-15',
-    assignedTo: 'user2',
-    workspaceId: 1,
-    createdBy: 'user1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    labels: ['setup', 'development'],
-    comments: []
-  }
-];
-
-// Async thunk for fetching tasks
+// Fetch tasks by workspace or board
 export const fetchTasks = createAsyncThunk(
   'tasks/fetchTasks',
-  async (workspaceId) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return mockTasks.filter(task => task.workspaceId === workspaceId);
+  async ({ workspaceId, boardId }, { rejectWithValue }) => {
+    try {
+      const url = boardId
+        ? `${API_BASE}/boards/${boardId}/tasks`
+        : `${API_BASE}/workspaces/${workspaceId}/tasks`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to fetch tasks');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
-export const taskStatus = {
-    TODO: 'todo',
-    IN_PROGRESS: 'in-progress',
-    REVIEW: 'review',
-    COMPLETED: 'completed',
-};
+// Create a new task
+export const createTask = createAsyncThunk(
+  'tasks/createTask',
+  async ({ parentType, parentId, taskData }, { rejectWithValue }) => {
+    try {
+      const url = `${API_BASE}/${parentType}s/${parentId}/tasks`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(taskData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to create task');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Update a task
+export const updateTask = createAsyncThunk(
+  'tasks/updateTask',
+  async ({ taskId, updates }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to update task');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Delete a task
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (taskId, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.message || 'Failed to delete task');
+      }
+      return taskId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ================= Initial State ================= //
 
 const initialState = {
   tasks: [],
@@ -61,87 +89,35 @@ const initialState = {
     priority: 'all',
     assignedTo: null,
     searchQuery: '',
-    labels: []
-  }
+    labels: [],
+  },
 };
+
+// ================= Slice ================= //
 
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    addTask: (state, action) => {
-      state.tasks.push({
-        id: Date.now(),
-        ...action.payload,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        comments: [],
-        labels: action.payload.labels || []
-      });
-    },
-
-    updateTask: (state, action) => {
-      const { id, changes } = action.payload;
-      const task = state.tasks.find(t => t.id === id);
-      if (task) {
-        Object.assign(task, {
-          ...changes,
-          updatedAt: new Date().toISOString()
-        });
-      }
-    },
-
-    removeTask: (state, action) => {
-      state.tasks = state.tasks.filter(t => t.id !== action.payload);
-      if (state.currentTask?.id === action.payload) {
-        state.currentTask = null;
-      }
-    },
-
     setCurrentTask: (state, action) => {
-      state.currentTask = state.tasks.find(t => t.id === action.payload);
+      state.currentTask = state.tasks.find(t => t.id === action.payload) || null;
     },
-
-    addComment: (state, action) => {
-      const { taskId, comment } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId);
-      if (task) {
-        task.comments.push({
-          id: Date.now(),
-          text: comment,
-          createdAt: new Date().toISOString(),
-          createdBy: action.payload.userId
-        });
-      }
+    clearCurrentTask: (state) => {
+      state.currentTask = null;
     },
-
-    addLabel: (state, action) => {
-      const { taskId, label } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId);
-      if (task && !task.labels.includes(label)) {
-        task.labels.push(label);
-      }
-    },
-
-    removeLabel: (state, action) => {
-      const { taskId, label } = action.payload;
-      const task = state.tasks.find(t => t.id === taskId);
-      if (task) {
-        task.labels = task.labels.filter(l => l !== label);
-      }
-    },
-
     setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
     },
-
     clearFilters: (state) => {
       state.filters = initialState.filters;
+    },
+    clearTaskError: (state) => {
+      state.error = null;
     }
   },
-
   extraReducers: (builder) => {
     builder
+      // Fetch tasks
       .addCase(fetchTasks.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -152,66 +128,29 @@ const taskSlice = createSlice({
       })
       .addCase(fetchTasks.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+
+      // Create task
+      .addCase(createTask.fulfilled, (state, action) => {
+        state.tasks.push(action.payload);
+      })
+
+      // Update task
+      .addCase(updateTask.fulfilled, (state, action) => {
+        const index = state.tasks.findIndex(t => t.id === action.payload.id);
+        if (index !== -1) state.tasks[index] = action.payload;
+      })
+
+      // Delete task
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter(t => t.id !== action.payload);
+        if (state.currentTask?.id === action.payload) state.currentTask = null;
       });
   }
 });
 
-// Action creators
-export const {
-  addTask,
-  updateTask,
-  removeTask,
-  setCurrentTask,
-  addComment,
-  addLabel,
-  removeLabel,
-  setFilters,
-  clearFilters
-} = taskSlice.actions;
+// ================= Exports ================= //
 
-// Selectors
-export const selectAllTasks = (state) => state.tasks.tasks;
-export const selectCurrentTask = (state) => state.tasks.currentTask;
-export const selectTaskById = (state, taskId) =>
-  state.tasks.tasks.find(t => t.id === taskId);
-export const selectIsLoading = (state) => state.tasks.isLoading;
-export const selectError = (state) => state.tasks.error;
-export const selectFilters = (state) => state.tasks.filters;
-
-// Memoized selector for filtered tasks
-export const selectFilteredTasks = (state) => {
-  const { tasks } = state.tasks;
-  const { status, priority, assignedTo, searchQuery, labels } = state.tasks.filters;
-
-  let filtered = [...tasks];
-
-  if (status !== 'all') {
-    filtered = filtered.filter(t => t.status === status);
-  }
-
-  if (priority !== 'all') {
-    filtered = filtered.filter(t => t.priority === priority);
-  }
-
-  if (assignedTo) {
-    filtered = filtered.filter(t => t.assignedTo === assignedTo);
-  }
-
-  if (searchQuery) {
-    filtered = filtered.filter(t =>
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }
-
-  if (labels.length > 0) {
-    filtered = filtered.filter(t =>
-      labels.some(label => t.labels.includes(label))
-    );
-  }
-
-  return filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-};
-
+export const { setCurrentTask, clearCurrentTask, setFilters, clearFilters, clearTaskError } = taskSlice.actions;
 export default taskSlice.reducer;

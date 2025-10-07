@@ -1,167 +1,120 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { API_BASE } from '../../Implement/api';
 
-// Mock data
-const mockWorkspaces = [
-  {
-    id: 1,
-    name: 'Project Alpha',
-    description: 'Main development project',
-    members: [
-      { id: 'user1', role: 'owner', joinedAt: new Date().toISOString() }
-    ],
-    tasks: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    createdBy: 'user1',
-    settings: {
-      theme: 'light',
-      notifications: true,
-      visibility: 'private'
-    }
-  },
-  {
-    id: 2,
-    name: 'Project Beta',
-    description: 'Secondary project',
-    members: [
-      { id: 'user1', role: 'member', joinedAt: new Date().toISOString() }
-    ],
-    tasks: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    createdBy: 'user2',
-    settings: {
-      theme: 'dark',
-      notifications: true,
-      visibility: 'private'
-    }
-  }
-];
-
-// Async thunks for API calls
+// Fetch all workspaces for a user
 export const fetchWorkspaces = createAsyncThunk(
   'workspace/fetchWorkspaces',
-  async (userId) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // Return filtered mock data
-    return mockWorkspaces.filter(w => w.members.some(m => m.id === userId));
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/users/${userId}/workspaces`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to fetch workspaces');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
+
+// Fetch single workspace by ID
+export const fetchWorkspaceById = createAsyncThunk(
+  'workspace/fetchWorkspaceById',
+  async (workspaceId, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`https://taskflow-api.istad.co/workspaces/30`);
+      const data = await res.json();
+      console.log("workspace data from slice:", data);
+      if (!res.ok) throw new Error(data?.message || 'Failed to fetch workspace');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Create a workspace
+export const createWorkspace = createAsyncThunk(
+  'workspace/createWorkspace',
+  async (workspaceData, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/workspaces`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(workspaceData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to create workspace');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Update workspace
+export const updateWorkspace = createAsyncThunk(
+  'workspace/updateWorkspace',
+  async ({ workspaceId, updates }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/workspaces/${workspaceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to update workspace');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Delete workspace
+export const deleteWorkspace = createAsyncThunk(
+  'workspace/deleteWorkspace',
+  async (workspaceId, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/workspaces/${workspaceId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.message || 'Failed to delete workspace');
+      }
+      return workspaceId;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ================= Initial State ================= //
 
 const initialState = {
   workspaces: [],
   currentWorkspace: null,
   isLoading: false,
   error: null,
-  filters: {
-    sortBy: 'createdAt',
-    searchQuery: '',
-    filterByMember: null
-  }
 };
+
+// ================= Slice ================= //
 
 const workspaceSlice = createSlice({
   name: 'workspace',
   initialState,
   reducers: {
-    addWorkspace: (state, action) => {
-      state.workspaces.push({
-        id: Date.now(),
-        name: action.payload.name,
-        description: action.payload.description || '',
-        members: [{ 
-          id: action.payload.userId,
-          role: 'owner',
-          joinedAt: new Date().toISOString()
-        }],
-        tasks: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: action.payload.userId,
-        settings: {
-          theme: 'light',
-          notifications: true,
-          visibility: 'private'
-        }
-      });
-    },
-
-    removeWorkspace: (state, action) => {
-      state.workspaces = state.workspaces.filter(
-        (w) => w.id !== action.payload
-      );
-      if (state.currentWorkspace?.id === action.payload) {
-        state.currentWorkspace = null;
-      }
-    },
-
-    updateWorkspace: (state, action) => {
-      const { id, changes } = action.payload;
-      const workspace = state.workspaces.find((w) => w.id === id);
-      if (workspace) {
-        Object.assign(workspace, {
-          ...changes,
-          updatedAt: new Date().toISOString()
-        });
-      }
-    },
-
     setCurrentWorkspace: (state, action) => {
-      state.currentWorkspace = state.workspaces.find(
-        (w) => w.id === action.payload
-      );
+      state.currentWorkspace = state.workspaces.find(w => w.id === action.payload) || null;
     },
-
-    addMember: (state, action) => {
-      const { workspaceId, member } = action.payload;
-      const workspace = state.workspaces.find((w) => w.id === workspaceId);
-      if (workspace && !workspace.members.find(m => m.id === member.id)) {
-        workspace.members.push({
-          ...member,
-          joinedAt: new Date().toISOString()
-        });
-      }
+    clearCurrentWorkspace: (state) => {
+      state.currentWorkspace = null;
     },
-
-    updateMemberRole: (state, action) => {
-      const { workspaceId, memberId, newRole } = action.payload;
-      const workspace = state.workspaces.find((w) => w.id === workspaceId);
-      if (workspace) {
-        const member = workspace.members.find(m => m.id === memberId);
-        if (member) {
-          member.role = newRole;
-        }
-      }
-    },
-
-    removeMember: (state, action) => {
-      const { workspaceId, memberId } = action.payload;
-      const workspace = state.workspaces.find((w) => w.id === workspaceId);
-      if (workspace) {
-        workspace.members = workspace.members.filter(m => m.id !== memberId);
-      }
-    },
-
-    updateSettings: (state, action) => {
-      const { workspaceId, settings } = action.payload;
-      const workspace = state.workspaces.find((w) => w.id === workspaceId);
-      if (workspace) {
-        workspace.settings = { ...workspace.settings, ...settings };
-      }
-    },
-
-    setFilters: (state, action) => {
-      state.filters = { ...state.filters, ...action.payload };
-    },
-
-    clearFilters: (state) => {
-      state.filters = initialState.filters;
+    clearWorkspaceError: (state) => {
+      state.error = null;
     }
   },
-  
   extraReducers: (builder) => {
     builder
+      // Fetch all
       .addCase(fetchWorkspaces.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -172,62 +125,43 @@ const workspaceSlice = createSlice({
       })
       .addCase(fetchWorkspaces.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+
+      // Fetch single
+      .addCase(fetchWorkspaceById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchWorkspaceById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentWorkspace = action.payload;
+      })
+      .addCase(fetchWorkspaceById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // Create
+      .addCase(createWorkspace.fulfilled, (state, action) => {
+        state.workspaces.push(action.payload);
+      })
+
+      // Update
+      .addCase(updateWorkspace.fulfilled, (state, action) => {
+        const index = state.workspaces.findIndex(w => w.id === action.payload.id);
+        if (index !== -1) state.workspaces[index] = action.payload;
+      })
+
+      // Delete
+      .addCase(deleteWorkspace.fulfilled, (state, action) => {
+        state.workspaces = state.workspaces.filter(w => w.id !== action.payload);
+        if (state.currentWorkspace?.id === action.payload) state.currentWorkspace = null;
       });
   }
 });
 
-// Action creators
-export const {
-  addWorkspace,
-  removeWorkspace,
-  updateWorkspace,
-  setCurrentWorkspace,
-  addMember,
-  updateMemberRole,
-  removeMember,
-  updateSettings,
-  setFilters,
-  clearFilters
-} = workspaceSlice.actions;
+// ================= Exports ================= //
 
-// Selectors
-export const selectAllWorkspaces = (state) => state.workspace.workspaces;
-export const selectCurrentWorkspace = (state) => state.workspace.currentWorkspace;
-export const selectWorkspaceById = (state, workspaceId) =>
-  state.workspace.workspaces.find((w) => w.id === workspaceId);
-export const selectWorkspaceMembers = (state, workspaceId) =>
-  state.workspace.workspaces.find((w) => w.id === workspaceId)?.members || [];
-export const selectIsLoading = (state) => state.workspace.isLoading;
-export const selectError = (state) => state.workspace.error;
-export const selectFilters = (state) => state.workspace.filters;
-
-// Memoized selectors for filtered/sorted workspaces
-export const selectFilteredWorkspaces = (state) => {
-  const { workspaces } = state.workspace;
-  const { sortBy, searchQuery, filterByMember } = state.workspace.filters;
-
-  let filtered = [...workspaces];
-
-  if (searchQuery) {
-    filtered = filtered.filter(w => 
-      w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      w.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }
-
-  if (filterByMember) {
-    filtered = filtered.filter(w =>
-      w.members.some(m => m.id === filterByMember)
-    );
-  }
-
-  return filtered.sort((a, b) => {
-    if (sortBy === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-};
-
+export const { setCurrentWorkspace, clearCurrentWorkspace, clearWorkspaceError } = workspaceSlice.actions;
 export default workspaceSlice.reducer;

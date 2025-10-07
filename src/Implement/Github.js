@@ -62,12 +62,13 @@ export const useLogin = () => {
     const base =
       ghUser?.displayName?.trim() ||
       (email.includes("@") ? email.split("@")[0] : `gh_${uid.slice(0, 8)}`);
-    const username = base.replace(/\W+/g, "_").slice(0, 20) || `gh_${uid.slice(0, 8)}`;
+    const username =
+      base.replace(/\W+/g, "_").slice(0, 20) || `gh_${uid.slice(0, 8)}`;
     const password = uid; // dummy password to pair with your API
     return { email, username, password };
   };
 
-  // Login first; if not found -> Register; if register no token -> Re-login once
+  // Login first; if not found -> Register; if register no accessToken -> Re-login once
   const authenticateWithBackend = async (ghUser) => {
     const { email, username, password } = buildIdentity(ghUser);
 
@@ -75,7 +76,11 @@ export const useLogin = () => {
     const login1 = await postJSON(`${API_BASE}/login`, { email, password });
     if (login1.ok) {
       return {
-        token: login1.data?.token ?? login1.data?.access_token ?? login1.data?.jwt ?? null,
+        accessToken:
+          login1.data?.accessToken ??
+          login1.data?.access_token ??
+          login1.data?.jwt ??
+          null,
         user: login1.data?.user ?? null,
       };
     }
@@ -91,27 +96,42 @@ export const useLogin = () => {
       });
 
       if (reg.ok) {
-        if (reg.data?.token || reg.data?.access_token || reg.data?.jwt) {
+        if (reg.data?.accessToken || reg.data?.access_token || reg.data?.jwt) {
           return {
-            token: reg.data.token ?? reg.data.access_token ?? reg.data.jwt ?? null,
+            accessToken:
+              reg.data.accessToken ??
+              reg.data.access_token ??
+              reg.data.jwt ??
+              null,
             user: reg.data?.user ?? null,
           };
         }
-        // 3) if register ok but no token -> login once
+        // 3) if register ok but no accessToken -> login once
         const login2 = await postJSON(`${API_BASE}/login`, { email, password });
         if (login2.ok) {
           return {
-            token: login2.data?.token ?? login2.data?.access_token ?? login2.data?.jwt ?? null,
+            accessToken:
+              login2.data?.accessToken ??
+              login2.data?.access_token ??
+              login2.data?.jwt ??
+              null,
             user: login2.data?.user ?? null,
           };
         }
       } else {
         // register 5xx? try login once more silently
         if (reg.status >= 500) {
-          const login3 = await postJSON(`${API_BASE}/login`, { email, password });
+          const login3 = await postJSON(`${API_BASE}/login`, {
+            email,
+            password,
+          });
           if (login3.ok) {
             return {
-              token: login3.data?.token ?? login3.data?.access_token ?? login3.data?.jwt ?? null,
+              accessToken:
+                login3.data?.accessToken ??
+                login3.data?.access_token ??
+                login3.data?.jwt ??
+                null,
               user: login3.data?.user ?? null,
             };
           }
@@ -120,7 +140,7 @@ export const useLogin = () => {
     }
 
     // other errors/network -> silent
-    return { token: null, user: null };
+    return { accessToken: null, user: null };
   };
 
   const login = async () => {
@@ -132,9 +152,11 @@ export const useLogin = () => {
       if (!result) return;
 
       // Backend auth (login-first with register fallback)
-      const { token, user: backendUser } = await authenticateWithBackend(result.user);
-      if (token) {
-        localStorage.setItem("token", token); // unify with your other hooks
+      const { accessToken, user: backendUser } = await authenticateWithBackend(
+        result.user
+      );
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken); // unify with your other hooks
       }
 
       setUser({ ...result.user, ...(backendUser || {}) });
@@ -151,7 +173,7 @@ export const useLogin = () => {
     setIsPending(true);
     try {
       await signOut(auth);
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("app_token"); // clean up old key if used elsewhere
       setUser(null);
     } catch (e) {
