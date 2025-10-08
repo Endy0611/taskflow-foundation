@@ -1,31 +1,111 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
 import { Menu } from "lucide-react";
+import { http } from "../../services/http";
 
 export default function Board() {
+  const params = useParams();
+  // Support both /board/:workspaceId and /board/:id
+  const workspaceId = params.workspaceId ?? params.id ?? null;
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
 
-  // Handle sidebar reset when resizing
+  // Current workspace (name/theme cached so header never flashes)
+  const [workspace, setWorkspace] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("last_workspace") || "{}");
+    } catch {
+      return {};
+    }
+  });
+  const [loadingWs, setLoadingWs] = useState(false);
+  const [wsError, setWsError] = useState(null);
+
+  // Initial letter avatar
+  const wsInitial = useMemo(() => {
+    const n = (workspace?.name || "Workspace").trim();
+    return n ? n.charAt(0).toUpperCase() : "W";
+  }, [workspace?.name]);
+
+  // Fetch workspace detail whenever :id changes
   useEffect(() => {
-  const mq = window.matchMedia("(min-width: 1024px)");
-  const handleChange = (e) => {
-    if (!e.matches) setSidebarOpen(false);
-  };
-  handleChange(mq);
-  mq.addEventListener("change", handleChange);
-  return () => mq.removeEventListener("change", handleChange);
-}, []);
+    if (!workspaceId) return;
+
+    let cancelled = false;
+    (async () => {
+      setLoadingWs(true);
+      setWsError(null);
+      try {
+        const data = await http(`/workspaces/${workspaceId}`, { method: "GET" });
+
+        // resolve id from HAL links if needed
+        const resolvedId =
+          data?.id ??
+          (() => {
+            const href = data?._links?.self?.href || data?.links?.self?.href || "";
+            if (!href) return workspaceId;
+            try {
+              const url = new URL(href, window.location.origin);
+              const segs = url.pathname.split("/").filter(Boolean);
+              return segs.pop() || workspaceId;
+            } catch {
+              const segs = href.split("/").filter(Boolean);
+              return segs.pop() || workspaceId;
+            }
+          })();
+
+        const normalized = {
+          id: String(resolvedId),
+          name: data?.name ?? workspace?.name ?? "Workspace",
+          theme: data?.theme ?? workspace?.theme ?? "",
+          ...data,
+        };
+
+        if (!cancelled) {
+          setWorkspace(normalized);
+
+          // ✅ persist so Sidebar + other pages show the real name/theme
+          localStorage.setItem("last_workspace", JSON.stringify(normalized));
+          localStorage.setItem("current_workspace_id", normalized.id || "");
+          localStorage.setItem("current_workspace_name", normalized.name || "");
+          localStorage.setItem("current_workspace_theme", normalized.theme || "");
+
+          // 🔔 tell all open sidebars to reload their list immediately
+          localStorage.setItem("refresh_workspaces", String(Date.now()));
+        }
+      } catch (e) {
+        if (!cancelled) setWsError(e?.message || "Failed to load workspace.");
+      } finally {
+        if (!cancelled) setLoadingWs(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId]);
+
+  // Close sidebar on < lg
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (e) => {
+      if (!e.matches) setSidebarOpen(false);
+    };
+    handleChange(mq);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -43,14 +123,15 @@ export default function Board() {
           setShowModal={setShowModal}
         />
 
-          <main
+        {/* Content */}
+        <main
           className="relative flex-1 overflow-y-auto 
           px-3 sm:px-6 lg:px-10 
           pt-5 sm:pt-8 lg:pt-10 
           bg-gray-100 dark:bg-gray-950 
           transition-all duration-300 ease-in-out"
         >
-          {/* Hamburger Button (Mobile Only) */}
+          {/* Hamburger (Mobile) */}
           <button
             className="lg:hidden p-2 mb-4 rounded-md bg-primary text-white"
             aria-label="Toggle sidebar"
@@ -58,6 +139,30 @@ export default function Board() {
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          {/* Workspace header */}
+          <section className="mb-6">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center text-xl font-bold rounded">
+                {wsInitial}
+              </div>
+              <div>
+                <h1 className="text-lg md:text-xl font-semibold">
+                  {workspace?.name || "Workspace"}
+                  {workspace?.theme ? (
+                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                      · {workspace.theme}
+                    </span>
+                  ) : null}
+                </h1>
+                {loadingWs ? (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Loading workspace…</p>
+                ) : wsError ? (
+                  <p className="text-xs text-red-600 dark:text-red-400">{wsError}</p>
+                ) : null}
+              </div>
+            </div>
+          </section>
 
           {/* Templates Section */}
           <section className="mb-10">
@@ -97,9 +202,7 @@ export default function Board() {
 
           {/* Recently Viewed Section */}
           <section className="mb-10">
-            <h2 className="text-lg md:text-xl font-semibold mb-4">
-              Recently viewed
-            </h2>
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Recently viewed</h2>
             <div
               className="
                 grid 
@@ -121,7 +224,6 @@ export default function Board() {
                       alt={title}
                       className="w-full h-36 md:h-44 lg:h-48 object-cover"
                     />
-
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                       {title}
                     </div>
@@ -141,21 +243,20 @@ export default function Board() {
             </div>
           </section>
 
-          {/* Your Workspaces Section */}
+          {/* Your Workspaces Section (placeholder grid) */}
           <section className="mb-20">
-            <h2 className="text-lg md:text-xl font-semibold mb-4">
-              Your Workspaces
-            </h2>
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Your Workspaces</h2>
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-md font-bold">
-                    S
+                    {wsInitial}
                   </div>
                   <span className="font-semibold text-base sm:text-lg">
-                    TaskFlow Workspace
+                    {workspace?.name || "TaskFlow Workspace"}
                   </span>
+                  <span className="font-semibold">Workspaces</span>
                 </div>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-nowrap">
                   {["Boards", "Member", "Setting", "Update"].map((item, i) => (
@@ -170,7 +271,7 @@ export default function Board() {
                 </div>
               </div>
 
-              {/* Workspace Boards */}
+              {/* Boards (placeholder) */}
               <div
                 className="
                 grid 
@@ -192,7 +293,6 @@ export default function Board() {
                         alt={title}
                         className="w-full h-36 md:h-44 lg:h-48 object-cover"
                       />
-
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                         {title}
                       </div>
@@ -222,6 +322,8 @@ export default function Board() {
           />
         </main>
       </div>
+
+      {/* Chatbot Modal */}
       <AnimatePresence>
         {showChatbot && (
           <>
@@ -244,7 +346,8 @@ export default function Board() {
           </>
         )}
       </AnimatePresence>
-      {/* Modal */}
+
+      {/* Create Workspace Modal (kept UI; real creation lives elsewhere) */}
       <AnimatePresence>
         {showModal && (
           <>
@@ -263,12 +366,10 @@ export default function Board() {
               transition={{ duration: 0.2 }}
             >
               <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
-                <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let’s build a Workspace
-                </h2>
+                <h2 className="text-xl md:text-2xl font-bold mb-2">Let’s build a Workspace</h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
-                  Boost your productivity by making it easier for everyone to
-                  access boards in one location.
+                  Boost your productivity by making it easier for everyone to access boards in one
+                  location.
                 </p>
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -311,6 +412,7 @@ export default function Board() {
         )}
       </AnimatePresence>
 
+      {/* Create Board Modal */}
       <AnimatePresence>
         {showCreateBoard && (
           <>

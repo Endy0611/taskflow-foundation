@@ -1,3 +1,4 @@
+// src/pages/auth/LoginPage.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -42,7 +43,7 @@ const safeParseJSON = async (res) => {
     return text ? JSON.parse(text) : null;
   } catch {
     return text || null;
-  } 
+  }
 };
 
 /* ---------------- component ---------------- */
@@ -98,7 +99,21 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Save tokens and user info
+      // 🔐 Save backend tokens so future API calls include Authorization header
+      const token =
+        data?.accessToken || data?.token || data?.jwt || data?.id_token || data?.idToken;
+      if (token) {
+        localStorage.setItem("auth_token", token);   // used by services/http.js
+        localStorage.setItem("accessToken", token);  // alias some code reads
+      }
+      if (data?.refreshToken) {
+        localStorage.setItem("refresh_token", data.refreshToken);
+      }
+      if (data?.user) {
+        localStorage.setItem("auth_user", JSON.stringify(data.user));
+      }
+
+      // Keep your existing user fallback (optional UI data)
       if (data?.user) {
         localStorage.setItem("user", JSON.stringify(data.user));
       } else {
@@ -135,31 +150,44 @@ export default function LoginPage() {
       if (which === "Facebook") provider = facebook;
       if (which === "GitHub") provider = github;
 
-      // Perform OAuth login
+      // OAuth login
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // If the user is logging in using a social provider and their email exists in Firebase with another provider
+      // 🔄 Try exchanging Firebase ID token for backend token
+      await saveBackendTokenFromFirebaseUser(user);
+
+      // If the email exists with a different provider, link accounts
       const methods = await fetchSignInMethodsForEmail(auth, user.email);
       if (methods.length && !methods.includes(provider.providerId)) {
-        // If user exists with another provider, we link the accounts
         const pendingCred = result.credential;
         const existingProviderId = methods[0];
         let existingProvider;
 
-        // Determine which provider exists
         if (existingProviderId === "google.com") existingProvider = google;
         if (existingProviderId === "facebook.com") existingProvider = facebook;
         if (existingProviderId === "github.com") existingProvider = github;
 
-        // Link the account with the existing provider
         const linkedResult = await signInWithPopup(auth, existingProvider);
         await linkWithCredential(linkedResult.user, pendingCred);
+
+        // Ensure token saved after linking as well
+        await saveBackendTokenFromFirebaseUser(linkedResult.user);
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: linkedResult.user.displayName || "User",
+            email: linkedResult.user.email,
+            photoURL: linkedResult.user.photoURL || null,
+            provider: linkedResult.providerId,
+          })
+        );
 
         setMessage("Accounts linked successfully!");
         setTimeout(() => navigate("/homeuser"), 800);
       } else {
-        // If no conflict or no account exists, continue with the normal flow
+        // Normal flow
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -191,6 +219,10 @@ export default function LoginPage() {
 
           const linkedResult = await signInWithPopup(auth, existingProvider);
           await linkWithCredential(linkedResult.user, pendingCred);
+
+          // Save tokens after linking
+          await saveBackendTokenFromFirebaseUser(linkedResult.user);
+
           setMessage("Accounts linked successfully!");
           setTimeout(() => navigate("/homeuser"), 800);
         }
@@ -199,6 +231,38 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Helper: exchange Firebase ID token for backend token (or fallback to ID token)
+  async function saveBackendTokenFromFirebaseUser(user) {
+    try {
+      const idToken = await user.getIdToken();
+      // If your backend supports Firebase authentication exchange:
+      const r = await fetch(`${API_BASE}/auth/firebase`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+        credentials: "omit",
+      });
+      const apiData = await r.json().catch(() => null);
+
+      const token =
+        (r.ok && (apiData?.accessToken || apiData?.token || apiData?.jwt)) || idToken;
+
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("accessToken", token);
+      if (apiData?.refreshToken) {
+        localStorage.setItem("refresh_token", apiData.refreshToken);
+      }
+      if (apiData?.user) {
+        localStorage.setItem("auth_user", JSON.stringify(apiData.user));
+      }
+    } catch {
+      // As a safe fallback, at least store Firebase ID token
+      const idToken = await user.getIdToken();
+      localStorage.setItem("auth_token", idToken);
+      localStorage.setItem("accessToken", idToken);
     }
   }
 
@@ -358,7 +422,7 @@ export default function LoginPage() {
               Create one
             </Link>
           </p>
-        </motion.div>
+        </motion.div>{/*  */}
       </div>
     </div>
   );

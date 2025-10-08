@@ -24,7 +24,11 @@ export const useLoginWithFacebook = () => {
 
   // ---------- helpers (no throws to keep UI smooth) ----------
   const safeParseJSON = (text) => {
-    try { return text ? JSON.parse(text) : null; } catch { return null; }
+    try {
+      return text ? JSON.parse(text) : null;
+    } catch {
+      return null;
+    }
   };
 
   // POST helper -> returns { ok, status, data }
@@ -62,13 +66,14 @@ export const useLoginWithFacebook = () => {
       `fb_${uid.slice(0, 8)}`;
 
     // Sanitize + clamp
-    const username = baseName.replace(/\W+/g, "_").slice(0, 20) || `fb_${uid.slice(0, 8)}`;
+    const username =
+      baseName.replace(/\W+/g, "_").slice(0, 20) || `fb_${uid.slice(0, 8)}`;
     const password = uid; // dummy password
 
     return { email, username, password };
   };
 
-  // Login first; on 401/404/409/422 -> register; if register returns no token -> re-login once
+  // Login first; on 401/404/409/422 -> register; if register returns no accessToken -> re-login once
   const authenticateWithBackend = async (fbUser) => {
     const { email, username, password } = buildIdentity(fbUser);
 
@@ -76,7 +81,11 @@ export const useLoginWithFacebook = () => {
     const login1 = await postJSON(`${API_BASE}/login`, { email, password });
     if (login1.ok) {
       return {
-        token: login1.data?.token ?? login1.data?.access_token ?? login1.data?.jwt ?? null,
+        accessToken:
+          login1.data?.accessToken ??
+          login1.data?.access_token ??
+          login1.data?.jwt ??
+          null,
         user: login1.data?.user ?? null,
       };
     }
@@ -87,33 +96,48 @@ export const useLoginWithFacebook = () => {
         username,
         email,
         password,
-        confirmed_password: password,        // some APIs expect this
-        password_confirmation: password,     // some expect this instead
+        confirmed_password: password, // some APIs expect this
+        password_confirmation: password, // some expect this instead
       });
 
       if (reg.ok) {
-        // Some APIs return token directly on register
-        if (reg.data?.token || reg.data?.access_token || reg.data?.jwt) {
+        // Some APIs return accessToken directly on register
+        if (reg.data?.accessToken || reg.data?.access_token || reg.data?.jwt) {
           return {
-            token: reg.data.token ?? reg.data.access_token ?? reg.data.jwt ?? null,
+            accessToken:
+              reg.data.accessToken ??
+              reg.data.access_token ??
+              reg.data.jwt ??
+              null,
             user: reg.data?.user ?? null,
           };
         }
-        // 3) No token? Try login once
+        // 3) No accessToken? Try login once
         const login2 = await postJSON(`${API_BASE}/login`, { email, password });
         if (login2.ok) {
           return {
-            token: login2.data?.token ?? login2.data?.access_token ?? login2.data?.jwt ?? null,
+            accessToken:
+              login2.data?.accessToken ??
+              login2.data?.access_token ??
+              login2.data?.jwt ??
+              null,
             user: login2.data?.user ?? null,
           };
         }
       } else {
         // Register 500? Could be server-side validation. Try login one more time silently.
         if (reg.status >= 500) {
-          const login3 = await postJSON(`${API_BASE}/login`, { email, password });
+          const login3 = await postJSON(`${API_BASE}/login`, {
+            email,
+            password,
+          });
           if (login3.ok) {
             return {
-              token: login3.data?.token ?? login3.data?.access_token ?? login3.data?.jwt ?? null,
+              accessToken:
+                login3.data?.accessToken ??
+                login3.data?.access_token ??
+                login3.data?.jwt ??
+                null,
               user: login3.data?.user ?? null,
             };
           }
@@ -122,7 +146,7 @@ export const useLoginWithFacebook = () => {
     }
 
     // Other cases (network/CORS/5xx) -> silent fallback
-    return { token: null, user: null };
+    return { accessToken: null, user: null };
   };
 
   const facebookLogin = async () => {
@@ -131,8 +155,10 @@ export const useLoginWithFacebook = () => {
       const result = await signInWithPopup(auth, provider);
       if (!result) return;
 
-      const { token, user: backendUser } = await authenticateWithBackend(result.user);
-      if (token) localStorage.setItem("token", token);
+      const { accessToken, user: backendUser } = await authenticateWithBackend(
+        result.user
+      );
+      if (accessToken) localStorage.setItem("accessToken", accessToken);
 
       // Keep Firebase session regardless of backend status
       setUser({ ...result.user, ...(backendUser || {}) });
@@ -147,7 +173,7 @@ export const useLoginWithFacebook = () => {
     setIsPending(true);
     try {
       await signOut(auth);
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
       setUser(null);
     } catch (e) {
       console.error("Logout error:", e); // silent

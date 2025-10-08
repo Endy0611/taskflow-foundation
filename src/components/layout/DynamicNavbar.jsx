@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import NavbarB4Login from "../navfooter/NavbarB4Login";
-import NavbarComponent from "../navfooter/NavbarComponent";
+import NavbarB4Login from "../nav&footer/NavbarB4Login";
+import NavbarComponent from "../nav&footer/NavbarComponent";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../Implement/firebase/firebase-config";
 

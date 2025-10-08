@@ -1,16 +1,26 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
-import workspaceReducer from '../features/workspace/workspaceSlice';
-import taskReducer from '../features/tasks/taskSlice';
-import themeReducer from '../features/theme/themeSlice';
+import authReducer from '../features/auth/AuthSlice';
+import workspaceReducer from '../features/workspace/WorkspaceSlice';
+import taskReducer from '../features/task/TaskSlice'
+import boadsReducer from '../features/board/BoardSlice';
+import cardReducer from '../features/cards/CardSlice';
+import checklistReducer from '../features/checklist/ChecklistSlice';
+import { workspaceApi } from '../features/workspace/workspaceApi';
+
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     workspace: workspaceReducer,
     tasks: taskReducer,
-    theme: themeReducer,
+    board: boadsReducer,
+    card: cardReducer,
+    checklist: checklistReducer,
+    
+    [workspaceApi.reducerPath]: workspaceApi.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(workspaceApi.middleware),
 });
 
 

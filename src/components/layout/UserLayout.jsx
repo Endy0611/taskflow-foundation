@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import FooterB4Login from "../navfooter/FooterB4Login";
+import FooterB4Login from "../nav&footer/FooterB4Login";
 import DynamicNavbar from "./DynamicNavbar";
 import { Outlet } from "react-router-dom";
 

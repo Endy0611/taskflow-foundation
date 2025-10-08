@@ -60,9 +60,12 @@ export const useLoginWithGoogle = () => {
       gUser?.email && /\S+@\S+\.\S+/.test(gUser.email)
         ? gUser.email
         : `${uid}@example.com`;
-    const base =
-      (gUser?.displayName || (email.includes("@") ? email.split("@")[0] : `gg_${uid.slice(0, 8)}`)).trim();
-    const username = (base.replace(/\W+/g, "_").slice(0, 20) || `gg_${uid.slice(0, 8)}`);
+    const base = (
+      gUser?.displayName ||
+      (email.includes("@") ? email.split("@")[0] : `gg_${uid.slice(0, 8)}`)
+    ).trim();
+    const username =
+      base.replace(/\W+/g, "_").slice(0, 20) || `gg_${uid.slice(0, 8)}`;
     let password = `${uid}-Gg!2025`;
     if (password.length < 12) password = (password + "A1!").padEnd(12, "X");
     return { email, username, password };
@@ -76,7 +79,11 @@ export const useLoginWithGoogle = () => {
     const login1 = await postJSON(`${API_BASE}/login`, { email, password });
     if (login1.ok) {
       return {
-        token: login1.data?.token ?? login1.data?.access_token ?? login1.data?.jwt ?? null,
+        accessToken:
+          login1.data?.accessToken ??
+          login1.data?.access_token ??
+          login1.data?.jwt ??
+          null,
         user: login1.data?.user ?? null,
       };
     }
@@ -92,17 +99,25 @@ export const useLoginWithGoogle = () => {
       });
 
       if (reg.ok) {
-        if (reg.data?.token || reg.data?.access_token || reg.data?.jwt) {
+        if (reg.data?.accessToken || reg.data?.access_token || reg.data?.jwt) {
           return {
-            token: reg.data.token ?? reg.data.access_token ?? reg.data.jwt ?? null,
+            accessToken:
+              reg.data.accessToken ??
+              reg.data.access_token ??
+              reg.data.jwt ??
+              null,
             user: reg.data?.user ?? null,
           };
         }
-        // 3) register ok but no token → try login once
+        // 3) register ok but no accessToken → try login once
         const login2 = await postJSON(`${API_BASE}/login`, { email, password });
         if (login2.ok) {
           return {
-            token: login2.data?.token ?? login2.data?.access_token ?? login2.data?.jwt ?? null,
+            accessToken:
+              login2.data?.accessToken ??
+              login2.data?.access_token ??
+              login2.data?.jwt ??
+              null,
             user: login2.data?.user ?? null,
           };
         }
@@ -111,14 +126,18 @@ export const useLoginWithGoogle = () => {
         const login3 = await postJSON(`${API_BASE}/login`, { email, password });
         if (login3.ok) {
           return {
-            token: login3.data?.token ?? login3.data?.access_token ?? login3.data?.jwt ?? null,
+            accessToken:
+              login3.data?.accessToken ??
+              login3.data?.access_token ??
+              login3.data?.jwt ??
+              null,
             user: login3.data?.user ?? null,
           };
         }
       }
     }
 
-    return { token: null, user: null };
+    return { accessToken: null, user: null };
   };
 
   const googleLogin = async () => {
@@ -127,8 +146,10 @@ export const useLoginWithGoogle = () => {
       const res = await signInWithPopup(auth, provider);
       if (!res) return;
 
-      const { token, user: backendUser } = await authenticateWithBackend(res.user);
-      if (token) localStorage.setItem("token", token);
+      const { accessToken, user: backendUser } = await authenticateWithBackend(
+        res.user
+      );
+      if (accessToken) localStorage.setItem("accessToken", accessToken);
 
       setUser({ ...res.user, ...(backendUser || {}) });
     } finally {
@@ -140,7 +161,7 @@ export const useLoginWithGoogle = () => {
     setIsPending(true);
     try {
       await signOut(auth);
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
       setUser(null);
     } finally {
       setIsPending(false);

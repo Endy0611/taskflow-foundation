@@ -21,14 +21,15 @@ import TemplateUser from "./pages/user/TemplateUser";
 import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import Board from "./pages/user/Board";
-import WorkspaceMember from "./pages/user/WorkspaceMember"; // ✅ NEW
+import WorkspaceMember from "./pages/user/WorkspaceMember";
 
 // Profile & Switch Account
 import ProfilePage from "./pages/profile/ProfilePage";
 import SwitchAccountPage from "./pages/profile/SwitchAccountPage";
 
-// ✅ Import your new SettingWorkspace page
+// Settings / Project pages (make names consistent!)
 import SettingWorkspace from "./pages/user/SettingWorkspace";
+import ProjectManagement from "./pages/user/ProjectManagement";
 
 // 404 fallback
 function NotFound() {
@@ -71,20 +72,21 @@ function App() {
           <Route path="/templateuser" element={<TemplateUser />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/switch-account" element={<SwitchAccountPage />} />
+          {/* Keep a single, consistent settings route */}
           <Route path="/settingworkspace" element={<SettingWorkspace />} />
         </Route>
 
         {/* Workspace routes */}
         <Route element={<WorkspaceLayout />}>
           <Route path="/boardb4create" element={<BoardB4Create />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/board/:workspaceId" element={<Board />} />
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
-          <Route path="/workspacemember" element={<WorkspaceMember />} /> {/* ✅ NEW */}
-          {/* Optional REST-style alias (enable if you prefer): */}
-          {/* <Route path="/workspace/:workspaceId/members" element={<WorkspaceMember />} /> */}
+          <Route path="/workspacemember" element={<WorkspaceMember />} />
+          <Route path="/projectmanagement" element={<ProjectManagement />} />
+          {/* Removed /workspacesetting to avoid the undefined <WorkspaceSetting /> */}
         </Route>
 
-        {/* 404 fallback */}
+        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

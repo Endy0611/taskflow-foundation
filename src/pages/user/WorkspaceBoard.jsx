@@ -4,14 +4,23 @@ import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { NavLink } from "react-router-dom";
 import { Menu } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchWorkspaces } from "../../features/workspace/WorkspaceSlice";
 
 export default function WorkspaceBoard() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+  const dispatch = useDispatch();
+  const {workspaces}  = useSelector((state) => state.workspace);
 
-  // Initialize dark mode
+  useEffect(()=>{
+    dispatch(fetchWorkspaces())
+  },[dispatch])
+  
+  
+  console.log(workspaces)
   useEffect(() => {
     const preferDark =
       localStorage.theme === "dark" ||

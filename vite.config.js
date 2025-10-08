@@ -11,8 +11,11 @@ export default defineConfig({
       "/api": {
         target: "https://taskflow-api.istad.co",
         changeOrigin: true,
+        secure: false,
         rewrite: (p) => p.replace(/^\/api/, ""),
       },
     },
   },
 });
+
+

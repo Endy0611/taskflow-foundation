@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
-import { Menu, PencilRulerIcon } from "lucide-react";
+import { Menu, PencilRuler } from "lucide-react"; // ✅ correct Lucide icon
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { NavLink } from "react-router-dom";
 
@@ -9,6 +9,13 @@ export default function WorkspaceSetting() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+
+  // figure out the best next URL for "Continue"
+  const workspaceId = useMemo(
+    () => localStorage.getItem("current_workspace_id"),
+    []
+  );
+  const continueHref = workspaceId ? `/board/${workspaceId}` : "/workspaceboard";
 
   // Reset sidebar when resizing
   useEffect(() => {
@@ -41,7 +48,7 @@ export default function WorkspaceSetting() {
         {/* Main content */}
         <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
           <div className="max-w-3xl space-y-8">
-              {/* Hamburger visible only on mobile */}
+            {/* Hamburger visible only on mobile */}
             <button
               className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
               aria-label="Toggle sidebar"
@@ -50,6 +57,7 @@ export default function WorkspaceSetting() {
             >
               <Menu className="w-6 h-6" />
             </button>
+
             {/* Workspace header */}
             <div className="flex items-center gap-3 flex-wrap">
               <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-3xl font-bold rounded">
@@ -57,7 +65,7 @@ export default function WorkspaceSetting() {
               </div>
               <div>
                 <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                  Schedula Workspace <PencilRulerIcon />
+                  Schedula Workspace <PencilRuler />
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1">
                   🔒 Private
@@ -106,39 +114,28 @@ export default function WorkspaceSetting() {
                 Members
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UserCard
-                  name="Dorn Dana"
-                  tag="DD"
-                  color="bg-red-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Mon Sreynet"
-                  tag="MS"
-                  color="bg-blue-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Lonh Reaksmey"
-                  tag="LR"
-                  color="bg-purple-500"
-                  role="Member"
-                />
-                <UserCard
-                  name="Ong Endy"
-                  tag="OE"
-                  color="bg-teal-500"
-                  role="Member"
-                />
+                <UserCard name="Dorn Dana" tag="DD" color="bg-red-500" role="Member" />
+                <UserCard name="Mon Sreynet" tag="MS" color="bg-blue-500" role="Member" />
+                <UserCard name="Lonh Reaksmey" tag="LR" color="bg-purple-500" role="Member" />
+                <UserCard name="Ong Endy" tag="OE" color="bg-teal-500" role="Member" />
               </div>
             </section>
-               {/* Floating chatbot button */}
-          <img
-            src="/src/assets/general/chatbot.png"
-            alt="Our Chatbot"
-            className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white" 
-            onClick={() => setShowChatbot(true)}
-          />
+
+            {/* Continue button */}
+            <NavLink
+              to={continueHref}
+              className="inline-block bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            >
+              Continue
+            </NavLink>
+
+            {/* Floating chatbot button */}
+            <img
+              src="/src/assets/general/chatbot.png"
+              alt="Our Chatbot"
+              className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
+              onClick={() => setShowChatbot(true)}
+            />
           </div>
         </main>
       </div>
@@ -165,6 +162,7 @@ export default function WorkspaceSetting() {
           </>
         )}
       </AnimatePresence>
+
       {/* Modal */}
       <AnimatePresence>
         {showModal && (
@@ -214,8 +212,8 @@ export default function WorkspaceSetting() {
                 />
 
                 <NavLink
-                  to="/board"
-                  className="block w-full text-center bg-primary text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  to={continueHref}
+                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 >
                   Continue
                 </NavLink>

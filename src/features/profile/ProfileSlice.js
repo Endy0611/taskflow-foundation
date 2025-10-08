@@ -1,96 +1,69 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import * as Api from '../../Implement/api.js'; // include .js
+// then use Api.getCurrentUser(), Api.PATHS, etc.
+import { http } from '../../services/http.js';
 
-// Mock profile data
-const mockProfile = {
-  id: 'user1',
-  name: 'Tith Cholna',
-  email: 'tithcholna742@gamil.com',
-  avatar: '../../assets/members/cholna.jpg',
-  role: 'user',
-  bio: 'Software Developer',
-  phone: '+1234567890',
-  location: 'Toek Laok, Phnom Penh',
-  joinedAt: new Date().toISOString(),
-  settings: {
-    notifications: true,
-    theme: 'light',
-    language: 'kh'
-  }
-};
-
-// Async thunk for fetching profile
+// Fetch a user profile by ID
 export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
   async (userId, { rejectWithValue }) => {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if user exists
-      const user = mockProfile[userId];
-      if (!user) {
-        throw new Error('User not found');
-      }
-      
-      return user;
+      const res = await fetch(`${API_BASE}/users/${userId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to fetch profile');
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
+// Update user profile
+export const updateProfile = createAsyncThunk(
+  'profile/updateProfile',
+  async ({ userId, updates }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || 'Failed to update profile');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ================= Initial State ================= //
+
 const initialState = {
   profile: null,
   isLoading: false,
   error: null,
-  settings: {
-    notifications: true,
-    theme: 'light',
-    language: 'en'
-  }
+  lastUpdated: null,
 };
+
+// ================= Slice ================= //
 
 const profileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
-    setProfile: (state, action) => {
-      state.profile = action.payload;
-    },
-
-    updateProfile: (state, action) => {
-      state.profile = {
-        ...state.profile,
-        ...action.payload,
-        updatedAt: new Date().toISOString()
-      };
-    },
-
-    updateAvatar: (state, action) => {
-      if (state.profile) {
-        state.profile.avatar = action.payload;
-        state.profile.updatedAt = new Date().toISOString();
-      }
-    },
-
-    updateSettings: (state, action) => {
-      state.settings = {
-        ...state.settings,
-        ...action.payload
-      };
-      if (state.profile) {
-        state.profile.settings = state.settings;
-      }
-    },
-
     clearProfile: (state) => {
       state.profile = null;
       state.error = null;
+      state.lastUpdated = null;
+    },
+    clearProfileError: (state) => {
+      state.error = null;
     }
   },
-
   extraReducers: (builder) => {
     builder
+      // Fetch profile
       .addCase(fetchProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -98,28 +71,31 @@ const profileSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.profile = action.payload;
+        state.lastUpdated = new Date().toISOString();
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+
+      // Update profile
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.profile = action.payload;
+        state.lastUpdated = new Date().toISOString();
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   }
 });
 
-// Action creators
-export const {
-  setProfile,
-  updateProfile,
-  updateAvatar,
-  updateSettings,
-  clearProfile
-} = profileSlice.actions;
+// ================= Exports ================= //
 
-// Selectors
-export const selectProfile = (state) => state.profile.profile;
-export const selectIsLoading = (state) => state.profile.isLoading;
-export const selectError = (state) => state.profile.error;
-export const selectSettings = (state) => state.profile.settings;
-export const selectTheme = (state) => state.profile.settings.theme;
-
+export const { clearProfile, clearProfileError } = profileSlice.actions;
 export default profileSlice.reducer;

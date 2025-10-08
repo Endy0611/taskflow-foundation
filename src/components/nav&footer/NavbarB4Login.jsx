@@ -6,7 +6,6 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHoveringNav, setIsHoveringNav] = useState(false);
 
-
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Features", path: "/features" },
@@ -14,14 +13,22 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
     { name: "About Us", path: "/about" },
   ];
 
+  // Effect to apply dark mode when darkMode prop changes
   useEffect(() => {
     const root = window.document.documentElement;
-    if (darkMode) root.classList.add("dark");
-    else root.classList.remove("dark");
+    if (darkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
   }, [darkMode]);
 
   return (
-    <nav className="font-roboto fixed top-0 w-full z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+    <nav
+      className={`font-roboto fixed top-0 w-full z-50 ${
+        darkMode ? "bg-gray-900/70 dark:bg-gray-900/70" : "bg-white/70"
+      } backdrop-blur-md border-b border-gray-200 dark:border-gray-700`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[65px]">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
@@ -30,7 +37,9 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
           </div>
           <NavLink
             to="/"
-            className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight"
+            className={`text-xl sm:text-2xl font-bold ${
+              darkMode ? "text-gray-100" : "text-gray-800"
+            } tracking-tight`}
           >
             TaskFlow
           </NavLink>
@@ -59,7 +68,9 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
         <div className="flex items-center gap-3">
           <NavLink
             to="/login"
-            className="hidden lg:block text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className={`hidden lg:block ${
+              darkMode ? "text-gray-200" : "text-gray-700"
+            } font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition`}
           >
             Log in
           </NavLink>
@@ -70,6 +81,7 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
             Sign up - It's free!
           </NavLink>
 
+          {/* Dark Mode Toggle */}
           {darkMode ? (
             <Sun
               size={22}
@@ -84,8 +96,9 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
             />
           )}
 
+          {/* Mobile Menu Button */}
           <button
-            className="lg:hidden text-gray-800 dark:text-gray-200"
+            className={`lg:hidden ${darkMode ? "text-gray-200" : "text-gray-800"}`}
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -99,7 +112,11 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3">
+        <div
+          className={`${
+            darkMode ? "bg-gray-900 dark:bg-gray-900" : "bg-white"
+          } border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3`}
+        >
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
@@ -112,7 +129,9 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
           ))}
           <NavLink
             to="/login"
-            className="block text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className={`block ${
+              darkMode ? "text-gray-200" : "text-gray-700"
+            } px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
           >
             Log in
           </NavLink>
