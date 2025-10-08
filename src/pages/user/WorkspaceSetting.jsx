@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
@@ -113,10 +112,30 @@ export default function WorkspaceSetting() {
         <section className="mb-6">
           <h2 className="font-semibold mb-3 text-base md:text-lg">Members</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <UserCard name="Dorn Dana" tag="DD" color="bg-red-500" role="Member" />
-            <UserCard name="Mon Sreynet" tag="MS" color="bg-blue-500" role="Member" />
-            <UserCard name="Lonh Reaksmey" tag="LR" color="bg-purple-500" role="Member" />
-            <UserCard name="Ong Endy" tag="OE" color="bg-teal-500" role="Member" />
+            <UserCard
+              name="Dorn Dana"
+              tag="DD"
+              color="bg-red-500"
+              role="Member"
+            />
+            <UserCard
+              name="Mon Sreynet"
+              tag="MS"
+              color="bg-blue-500"
+              role="Member"
+            />
+            <UserCard
+              name="Lonh Reaksmey"
+              tag="LR"
+              color="bg-purple-500"
+              role="Member"
+            />
+            <UserCard
+              name="Ong Endy"
+              tag="OE"
+              color="bg-teal-500"
+              role="Member"
+            />
           </div>
         </section>
 
@@ -173,7 +192,7 @@ export default function WorkspaceSetting() {
             >
               <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
                 <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let's build a Workspace
+                  Let’s build a Workspace
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
                   Boost your productivity by making it easier for everyone to
@@ -212,7 +231,7 @@ export default function WorkspaceSetting() {
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
                 >
-                  ✖
+                  ✖️
                 </button>
               </div>
             </motion.div>

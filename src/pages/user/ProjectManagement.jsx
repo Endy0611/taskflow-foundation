@@ -1,10 +1,10 @@
-// ProjectManagement.jsx
 import React, { useState, useEffect } from "react";
 import { Menu, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { ShareBoardComponent } from "../../components/task/ShareBoardComponent";
+import TaskDetailComponent from "../../components/task/TaskDetailComponent"; // ✅ import this
 
 export default function ProjectManagement() {
   const [lists, setLists] = useState([
@@ -13,32 +13,17 @@ export default function ProjectManagement() {
       id: "list-2",
       title: "Project Resources",
       cards: [
-        {
-          id: "card-1",
-          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
-        },
-        {
-          id: "card-2",
-          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
-        },
+        { id: "card-1", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
+        { id: "card-2", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
       ],
     },
     {
       id: "list-3",
       title: "To Do",
       cards: [
-        {
-          id: "card-3",
-          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
-        },
-        {
-          id: "card-4",
-          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
-        },
-        {
-          id: "card-5",
-          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
-        },
+        { id: "card-3", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
+        { id: "card-4", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
+        { id: "card-5", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
       ],
     },
     {
@@ -69,6 +54,9 @@ export default function ProjectManagement() {
 
   // Share modal
   const [showShare, setShowShare] = useState(false);
+
+  // ✅ Task Detail modal
+  const [selectedCard, setSelectedCard] = useState(null);
 
   /** ====== Drag & Drop ====== */
   const onDragStart = (e, fromListId, cardId) => {
@@ -138,39 +126,36 @@ export default function ProjectManagement() {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
         />
-         
+
         {/* Main Content */}
-<main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
+          {/* Full-width Top Bar */}
+          <div className="w-full bg-highlight dark:bg-gray-800">
+            <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
+              <h1 className="text-lg font-semibold text-gray-700">TaskFlow</h1>
+              <button
+                onClick={() => setShowShare(true)}
+                className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700"
+              >
+                Share
+              </button>
+            </div>
+          </div>
 
-  {/* Full-width Top Bar */}
-  <div className="w-full bg-highlight dark:bg-gray-800">
-    <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
-      <h1 className="text-lg font-semibold text-gray-700">TaskFlow</h1>
-      <button
-        onClick={() => setShowShare(true)}
-        className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700"
-      >
-        Share
-      </button>
-    </div>
-  </div>
-
-  {/* Hamburger BELOW Top Bar (mobile only) */}
-  <div className="md:hidden flex justify-start px-6 py-2 bg-white dark:bg-gray-900 mt-4 w-full">
-    <button
-      className="p-2 rounded-md bg-primary text-white hover:bg-blue-900 transition-colors"
-      aria-label="Toggle sidebar"
-      aria-expanded={sidebarOpen}
-      onClick={() => setSidebarOpen((v) => !v)}
-    >
-      <Menu className="w-6 h-6" />
-    </button>
-  </div>
-
+          {/* Hamburger BELOW Top Bar (mobile only) */}
+          <div className="md:hidden flex justify-start px-6 py-2 bg-white dark:bg-gray-900 mt-4 w-full">
+            <button
+              className="p-2 rounded-md bg-primary text-white hover:bg-blue-900 transition-colors"
+              aria-label="Toggle sidebar"
+              aria-expanded={sidebarOpen}
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
 
           {/* Kanban Board */}
           <div className="flex flex-wrap gap-4 p-6 justify-center md:justify-start">
-
             {lists.map((list) => (
               <div
                 key={list.id}
@@ -190,7 +175,8 @@ export default function ProjectManagement() {
                       key={card.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, list.id, card.id)}
-                      className="bg-white dark:bg-gray-700 rounded-md shadow px-3 py-2 text-sm whitespace-pre-line cursor-grab active:cursor-grabbing dark:text-gray-100"
+                      onClick={() => setSelectedCard(card)} // ✅ double click to open modal
+                      className="bg-white dark:bg-gray-700 rounded-md shadow px-3 py-2 text-sm whitespace-pre-line cursor-pointer hover:bg-gray-50 active:cursor-grabbing dark:text-gray-100"
                     >
                       {card.text}
                     </div>
@@ -274,6 +260,7 @@ export default function ProjectManagement() {
           </div>
         </main>
       </div>
+
       {/* Floating chatbot button */}
       <img
         src="/src/assets/general/chatbot.png"
@@ -299,6 +286,33 @@ export default function ProjectManagement() {
               className="relative"
             >
               <ShareBoardComponent onClose={() => setShowShare(false)} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ✅ Task Detail Modal */}
+      <AnimatePresence>
+        {selectedCard && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedCard(null)} // close when clicking outside
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative"
+              onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicked inside
+            >
+              <TaskDetailComponent
+                card={selectedCard}
+                onClose={() => setSelectedCard(null)} // optional prop
+              />
             </motion.div>
           </motion.div>
         )}

@@ -239,6 +239,7 @@ export default function WorkspaceMembers() {
       </AnimatePresence>
 
       {/* Workspace Modal */}
+
       <AnimatePresence>
         {showModal && (
           <>
@@ -258,14 +259,13 @@ export default function WorkspaceMembers() {
             >
               <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
                 <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let's build a Workspace
+                  Let’s build a Workspace
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
                   Boost your productivity by making it easier for everyone to
                   access boards in one location.
                 </p>
 
-                {/* Inputs */}
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Workspace name
                 </label>
@@ -289,10 +289,17 @@ export default function WorkspaceMembers() {
 
                 <NavLink
                   to="/board"
-                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="block w-full text-center bg-primary text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 >
                   Continue
                 </NavLink>
+
+                <button
+                  className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
+                  onClick={() => setShowModal(false)}
+                >
+                  ✖️
+                </button>
               </div>
             </motion.div>
           </>
