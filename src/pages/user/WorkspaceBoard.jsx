@@ -95,9 +95,19 @@ export default function WorkspaceBoard() {
               Your Boards
             </h2>
             <div className="grid gap-4 sm:gap-6 xl:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-              <NavLink to="/projectmanagement" className="block">
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
                 <BoardCard
                   title="Project Management"
+                  image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
                   color="from-blue-600 to-indigo-500"
                 />
               </NavLink>
@@ -120,22 +130,54 @@ export default function WorkspaceBoard() {
               All Boards in this Workspace
             </h2>
             <div className="grid gap-4 sm:gap-6 xl:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
-              <NavLink to="/projectmanagement" className="block">
+              {/* Project Management */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
                 <BoardCard
                   title="Project Management"
                   image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
                 />
               </NavLink>
-              <NavLink to="/projectmanagement" className="block">
+
+              {/* Java - Expense Tracker */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
                 <BoardCard
                   title="Java - Expense Tracker"
                   image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
                 />
               </NavLink>
-              <NavLink to="/projectmanagement" className="block">
+
+              {/* Document */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
                 <BoardCard
                   title="Document"
-                  image="https://images.unsplash.com/photo-1587614295999-6f0de2c48f9f?q=80&w=800&auto=format&fit=crop"
+                  image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
                 />
               </NavLink>
 

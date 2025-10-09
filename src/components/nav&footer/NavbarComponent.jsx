@@ -61,7 +61,7 @@ export default function NavbarComponent({
       <div className="hidden md:flex items-center flex-1 max-w-md lg:max-w-lg mx-4">
         <div className="flex-1 px-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200/80 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-white w-4 h-4" />
             <input
               type="text"
               placeholder="Search"

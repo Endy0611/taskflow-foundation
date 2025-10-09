@@ -73,23 +73,30 @@ export default function BoardB4Create() {
               gap-4 md:gap-6"
             >
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
-                (title, idx) => (
-                  <NavLink
-                    key={idx}
-                    to="/projectmanagement"
-                    className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
-                  >
-                    <img
-                      src={`https://picsum.photos/600/400?random=${idx + 1}`}
-                      alt={title}
-                      className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
-                    />
-
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
-                      {title}
-                    </div>
-                  </NavLink>
-                )
+                (title, idx) => {
+                  const imgUrl = `https://picsum.photos/1200/800?random=${
+                    idx + 1
+                  }`;
+                  return (
+                    <NavLink
+                      key={idx}
+                      to="/projectmanagement"
+                      onClick={() =>
+                        localStorage.setItem("boardBackground", imgUrl)
+                      }
+                      className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={title}
+                        className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
+                        {title}
+                      </div>
+                    </NavLink>
+                  );
+                }
               )}
             </div>
           </section>
@@ -108,19 +115,24 @@ export default function BoardB4Create() {
                 lg:grid-cols-4 
                 gap-4 md:gap-6"
             >
-              {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
-                title !== "Create new board" ? (
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) => {
+                const imgUrl = `https://picsum.photos/1200/800?random=${
+                  idx + 10
+                }`;
+                return title !== "Create new board" ? (
                   <NavLink
                     key={idx}
                     to="/projectmanagement"
+                    onClick={() =>
+                      localStorage.setItem("boardBackground", imgUrl)
+                    }
                     className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
                   >
                     <img
-                      src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                      src={imgUrl}
                       alt={title}
                       className="w-full h-36 md:h-44 lg:h-48 object-cover"
                     />
-
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                       {title}
                     </div>
@@ -135,8 +147,8 @@ export default function BoardB4Create() {
                       + {title}
                     </span>
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
           </section>
 
@@ -179,19 +191,24 @@ export default function BoardB4Create() {
                 lg:grid-cols-3 
                 gap-4 md:gap-6"
               >
-                {["Boardup", "Create new board"].map((title, idx) =>
-                  title !== "Create new board" ? (
+                {["Boardup", "Create new board"].map((title, idx) => {
+                  const imgUrl = `https://picsum.photos/1200/800?random=${
+                    idx + 20
+                  }`;
+                  return title !== "Create new board" ? (
                     <NavLink
                       key={idx}
                       to="/projectmanagement"
+                      onClick={() =>
+                        localStorage.setItem("boardBackground", imgUrl)
+                      }
                       className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
                     >
                       <img
-                        src={`https://picsum.photos/600/400?random=${idx + 20}`}
+                        src={imgUrl}
                         alt={title}
                         className="w-full h-36 md:h-44 lg:h-48 object-cover"
                       />
-
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                         {title}
                       </div>
@@ -206,8 +223,8 @@ export default function BoardB4Create() {
                         + {title}
                       </span>
                     </div>
-                  )
-                )}
+                  );
+                })}
               </div>
             </div>
           </section>

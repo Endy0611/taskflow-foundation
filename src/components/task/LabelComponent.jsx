@@ -18,6 +18,7 @@ export default function LabelComponent({
   const [editingLabelData, setEditingLabelData] = useState(null);
   const [creatingLabel, setCreatingLabel] = useState(false);
   const [newLabel, setNewLabel] = useState({ title: "", color: "#22c55e" });
+  const [searchTerm, setSearchTerm] = useState(""); // 🔍 Search state
 
   // 🔁 Update checked state based on TaskDetail selection
   useEffect(() => {
@@ -55,10 +56,14 @@ export default function LabelComponent({
     setNewLabel({ title: "", color: "#22c55e" });
   };
 
-  // ✅ Toggle label for Trello-style selection
   const toggleLabel = (label) => {
-    onToggleLabel(label); // send full label object (title + color)
+    onToggleLabel(label);
   };
+
+  // 🔍 Filter labels based on search
+  const filteredLabels = labels.filter((l) =>
+    l.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-80 p-4 relative border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
@@ -72,35 +77,42 @@ export default function LabelComponent({
 
       <h2 className="text-lg font-semibold mb-3 text-center">Labels</h2>
 
+      {/* 🔍 Search Input */}
       <input
         type="text"
         placeholder="Search labels..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
       />
 
       <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-2">Labels</h3>
 
       <div className="space-y-2">
-        {labels.map((l) => (
-          <div key={l.id} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={l.checked}
-              onChange={() => toggleLabel(l)}
-              className="w-4 h-4 rounded border-gray-400 text-blue-600 dark:bg-gray-700 dark:border-gray-500 cursor-pointer"
-            />
-            <div
-              className="h-6 flex-1 rounded-sm flex items-center justify-center text-white text-sm font-medium"
-              style={{ backgroundColor: l.color }}
-            >
-              {l.title}
+        {filteredLabels.length > 0 ? (
+          filteredLabels.map((l) => (
+            <div key={l.id} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={l.checked}
+                onChange={() => toggleLabel(l)}
+                className="w-4 h-4 rounded border-gray-400 text-blue-600 dark:bg-gray-700 dark:border-gray-500 cursor-pointer"
+              />
+              <div
+                className="h-6 flex-1 rounded-sm flex items-center justify-center text-white text-sm font-medium"
+                style={{ backgroundColor: l.color }}
+              >
+                {l.title}
+              </div>
+              <Pencil
+                className="w-4 h-4 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-gray-900 dark:hover:text-white"
+                onClick={() => openEditor(l)}
+              />
             </div>
-            <Pencil
-              className="w-4 h-4 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-gray-900 dark:hover:text-white"
-              onClick={() => openEditor(l)}
-            />
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-sm text-gray-400 italic">No matching labels found</p>
+        )}
 
         {creatingLabel && (
           <div className="flex flex-col gap-2 mt-4">
@@ -113,7 +125,7 @@ export default function LabelComponent({
               }
               className="border border-gray-300 dark:border-gray-600 px-2 py-1 rounded bg-white dark:bg-gray-700"
             />
-            <h2>Choose your Label color:</h2>
+            <h2 className="text-sm text-gray-500">Choose your label color:</h2>
             <input
               type="color"
               value={newLabel.color}

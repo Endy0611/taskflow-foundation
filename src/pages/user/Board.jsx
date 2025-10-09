@@ -14,18 +14,17 @@ export default function Board() {
 
   // Handle sidebar reset when resizing
   useEffect(() => {
-  const mq = window.matchMedia("(min-width: 1024px)");
-  const handleChange = (e) => {
-    if (!e.matches) setSidebarOpen(false);
-  };
-  handleChange(mq);
-  mq.addEventListener("change", handleChange);
-  return () => mq.removeEventListener("change", handleChange);
-}, []);
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (e) => {
+      if (!e.matches) setSidebarOpen(false);
+    };
+    handleChange(mq);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      
       {/* Main */}
       <div className="flex flex-1 overflow-hidden">
         {/* Overlay for mobile */}
@@ -43,7 +42,7 @@ export default function Board() {
           setShowModal={setShowModal}
         />
 
-          <main
+        <main
           className="relative flex-1 overflow-y-auto 
           px-3 sm:px-6 lg:px-10 
           pt-5 sm:pt-8 lg:pt-10 
@@ -74,27 +73,33 @@ export default function Board() {
               gap-4 md:gap-6"
             >
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
-                (title, idx) => (
-                  <NavLink
-                    key={idx}
-                    to="/projectmanagement"
-                    className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
-                  >
-                    <img
-                      src={`https://picsum.photos/600/400?random=${idx + 1}`}
-                      alt={title}
-                      className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
-                    />
-
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
-                      {title}
-                    </div>
-                  </NavLink>
-                )
+                (title, idx) => {
+                  const imgUrl = `https://picsum.photos/1200/800?random=${
+                    idx + 1
+                  }`;
+                  return (
+                    <NavLink
+                      key={idx}
+                      to="/projectmanagement"
+                      onClick={() =>
+                        localStorage.setItem("boardBackground", imgUrl)
+                      }
+                      className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={title}
+                        className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
+                        {title}
+                      </div>
+                    </NavLink>
+                  );
+                }
               )}
             </div>
           </section>
-          
 
           {/* Recently Viewed Section */}
           <section className="mb-10">
@@ -110,19 +115,24 @@ export default function Board() {
                 lg:grid-cols-4 
                 gap-4 md:gap-6"
             >
-              {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
-                title !== "Create new board" ? (
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) => {
+                const imgUrl = `https://picsum.photos/1200/800?random=${
+                  idx + 10
+                }`;
+                return title !== "Create new board" ? (
                   <NavLink
                     key={idx}
                     to="/projectmanagement"
+                    onClick={() =>
+                      localStorage.setItem("boardBackground", imgUrl)
+                    }
                     className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
                   >
                     <img
-                      src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                      src={imgUrl}
                       alt={title}
                       className="w-full h-36 md:h-44 lg:h-48 object-cover"
                     />
-
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                       {title}
                     </div>
@@ -137,8 +147,8 @@ export default function Board() {
                       + {title}
                     </span>
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
           </section>
 
@@ -170,7 +180,6 @@ export default function Board() {
                   ))}
                 </div>
               </div>
-              
 
               {/* Workspace Boards */}
               <div
@@ -182,19 +191,24 @@ export default function Board() {
                 lg:grid-cols-3 
                 gap-4 md:gap-6"
               >
-                {["Boardup", "Create new board"].map((title, idx) =>
-                  title !== "Create new board" ? (
+                {["Boardup", "Create new board"].map((title, idx) => {
+                  const imgUrl = `https://picsum.photos/1200/800?random=${
+                    idx + 20
+                  }`;
+                  return title !== "Create new board" ? (
                     <NavLink
                       key={idx}
                       to="/projectmanagement"
+                      onClick={() =>
+                        localStorage.setItem("boardBackground", imgUrl)
+                      }
                       className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
                     >
                       <img
-                        src={`https://picsum.photos/600/400?random=${idx + 20}`}
+                        src={imgUrl}
                         alt={title}
                         className="w-full h-36 md:h-44 lg:h-48 object-cover"
                       />
-
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
                         {title}
                       </div>
@@ -209,8 +223,8 @@ export default function Board() {
                         + {title}
                       </span>
                     </div>
-                  )
-                )}
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -272,7 +286,6 @@ export default function Board() {
                   Boost your productivity by making it easier for everyone to
                   access boards in one location.
                 </p>
-                
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Workspace name
@@ -339,6 +352,3 @@ export default function Board() {
     </div>
   );
 }
-
-
-

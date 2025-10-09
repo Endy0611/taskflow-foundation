@@ -4,19 +4,31 @@ import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { ShareBoardComponent } from "../../components/task/ShareBoardComponent";
-import TaskDetailComponent from "../../components/task/TaskDetailComponent"; // ✅ import this
+import TaskDetailComponent from "../../components/task/TaskDetailComponent";
 
 export default function ProjectManagement() {
   const [lists, setLists] = useState([
-    { id: "list-1", title: "TaskFlow", cards: [], showMenu: false, isEditing: false },
+    {
+      id: "list-1",
+      title: "TaskFlow",
+      cards: [],
+      showMenu: false,
+      isEditing: false,
+    },
     {
       id: "list-2",
       title: "Project Resources",
       showMenu: false,
       isEditing: false,
       cards: [
-        { id: "card-1", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
-        { id: "card-2", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
+        {
+          id: "card-1",
+          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
+        },
+        {
+          id: "card-2",
+          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
+        },
       ],
     },
     {
@@ -25,9 +37,18 @@ export default function ProjectManagement() {
       showMenu: false,
       isEditing: false,
       cards: [
-        { id: "card-3", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
-        { id: "card-4", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
-        { id: "card-5", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
+        {
+          id: "card-3",
+          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
+        },
+        {
+          id: "card-4",
+          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
+        },
+        {
+          id: "card-5",
+          text: 'Project "Teamwork Dream Work"\nLaunch Timeline',
+        },
       ],
     },
     {
@@ -58,11 +79,24 @@ export default function ProjectManagement() {
   const [activeListForCard, setActiveListForCard] = useState(null);
   const [newCardText, setNewCardText] = useState("");
 
-  // Share modal
+  // Share + Task detail modals
   const [showShare, setShowShare] = useState(false);
-
-  // ✅ Task Detail modal
   const [selectedCard, setSelectedCard] = useState(null);
+
+  // Background image state
+  const [backgroundImage, setBackgroundImage] = useState("");
+
+  useEffect(() => {
+    const selectedBg = localStorage.getItem("selectedBackground");
+    if (selectedBg) {
+      setBackgroundImage(selectedBg);
+      localStorage.setItem("boardBackground", selectedBg);
+      localStorage.removeItem("selectedBackground"); // clear after applying
+    } else {
+      const savedBg = localStorage.getItem("boardBackground");
+      if (savedBg) setBackgroundImage(savedBg);
+    }
+  }, []);
 
   /** ====== Drag & Drop ====== */
   const onDragStart = (e, fromListId, cardId) => {
@@ -114,7 +148,7 @@ export default function ProjectManagement() {
     setActiveListForCard(null);
   };
 
-  // Reset sidebar when resizing
+  // Reset sidebar on resize
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const handleChange = () => setSidebarOpen(false);
@@ -141,9 +175,21 @@ export default function ProjectManagement() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
-          {/* Full-width Top Bar */}
-          <div className="w-full bg-highlight dark:bg-gray-800">
+        <main
+          className="flex-1 overflow-y-auto relative"
+          style={{
+            backgroundImage: backgroundImage
+              ? `url(${backgroundImage})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="absolute inset-0" />
+
+          {/* ===== Top Bar ===== */}
+          <div className="relative z-10 w-full bg-highlight dark:bg-gray-800">
             <div className="flex items-center justify-between px-6 py-3 max-w-7xl mx-auto">
               <h1 className="text-lg font-semibold text-gray-700">TaskFlow</h1>
               <button
@@ -155,8 +201,8 @@ export default function ProjectManagement() {
             </div>
           </div>
 
-          {/* Hamburger BELOW Top Bar (mobile only) */}
-          <div className="md:hidden flex justify-start px-6 py-2 bg-white dark:bg-gray-900 mt-4 w-full">
+          {/* ===== Hamburger (mobile) ===== */}
+          <div className="relative z-10 md:hidden flex justify-start px-6 mt-4 w-full">
             <button
               className="p-2 rounded-md bg-primary text-white hover:bg-blue-900 transition-colors"
               aria-label="Toggle sidebar"
@@ -167,8 +213,8 @@ export default function ProjectManagement() {
             </button>
           </div>
 
-          {/* Kanban Board */}
-          <div className="flex flex-wrap gap-4 p-6 justify-center md:justify-start">
+          {/* ===== Kanban Board ===== */}
+          <div className="relative z-10 flex flex-wrap gap-4 p-6 justify-center md:justify-start">
             {lists.map((list) => (
               <div
                 key={list.id}
@@ -185,7 +231,9 @@ export default function ProjectManagement() {
                       onChange={(e) =>
                         setLists((prev) =>
                           prev.map((l) =>
-                            l.id === list.id ? { ...l, title: e.target.value } : l
+                            l.id === list.id
+                              ? { ...l, title: e.target.value }
+                              : l
                           )
                         )
                       }
@@ -238,7 +286,9 @@ export default function ProjectManagement() {
                         </button>
                         <button
                           onClick={() =>
-                            setLists((prev) => prev.filter((l) => l.id !== list.id))
+                            setLists((prev) =>
+                              prev.filter((l) => l.id !== list.id)
+                            )
                           }
                           className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
                         >
@@ -271,7 +321,7 @@ export default function ProjectManagement() {
                       value={newCardText}
                       onChange={(e) => setNewCardText(e.target.value)}
                       className="w-full focus:outline-none rounded px-2 py-1 text-sm mb-2 bg-white dark:bg-gray-700 dark:text-gray-100"
-                      placeholder="Enter card title..."
+                      placeholder="Enter task title..."
                     />
                     <div className="flex gap-2">
                       <button
@@ -296,7 +346,7 @@ export default function ProjectManagement() {
                     onClick={() => setActiveListForCard(list.id)}
                     className="text-xs text-white mt-2 bg-primary p-2 rounded dark:bg-purple-600 dark:hover:bg-purple-700"
                   >
-                    + Add Card
+                    + Add Task
                   </button>
                 )}
               </div>
@@ -306,11 +356,13 @@ export default function ProjectManagement() {
             <div className="w-64">
               {showAddList ? (
                 <div className="bg-highlight dark:bg-gray-800 p-3 rounded-lg shadow">
-                  <p className="text-center text-black font-semibold pb-2">Create List</p>
+                  <p className="text-center text-black font-semibold pb-2">
+                    Create Card
+                  </p>
                   <input
                     value={newListName}
                     onChange={(e) => setNewListName(e.target.value)}
-                    placeholder="List name"
+                    placeholder="Card name"
                     className="w-full border dark:border-gray-600 rounded px-2 py-1 mb-2 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
                   />
                   <div className="flex gap-2">
@@ -334,7 +386,7 @@ export default function ProjectManagement() {
                   className="bg-highlight text-primary dark:bg-gray-800 px-4 py-3 w-full rounded-lg flex items-center justify-center hover:bg-teal-300 dark:hover:bg-gray-700"
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  <span className="text-sm font-medium">Add List</span>
+                  <span className="text-sm font-medium">Add Card</span>
                 </button>
               )}
             </div>
@@ -342,7 +394,7 @@ export default function ProjectManagement() {
         </main>
       </div>
 
-      {/* Floating chatbot button */}
+      {/* ===== Floating Chatbot Button ===== */}
       <img
         src="/src/assets/general/chatbot.png"
         alt="Our Chatbot"
@@ -350,11 +402,11 @@ export default function ProjectManagement() {
         onClick={() => setShowChatbot(true)}
       />
 
-      {/* Share Modal */}
+      {/* ===== Share Modal ===== */}
       <AnimatePresence>
         {showShare && (
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -372,7 +424,7 @@ export default function ProjectManagement() {
         )}
       </AnimatePresence>
 
-      {/* ✅ Task Detail Modal */}
+      {/* ===== Task Detail Modal ===== */}
       <AnimatePresence>
         {selectedCard && (
           <motion.div
@@ -408,7 +460,7 @@ export default function ProjectManagement() {
         )}
       </AnimatePresence>
 
-      {/* Chatbot */}
+      {/* ===== Chatbot Modal ===== */}
       <AnimatePresence>
         {showChatbot && (
           <>
