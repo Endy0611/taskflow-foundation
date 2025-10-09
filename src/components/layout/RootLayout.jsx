@@ -1,6 +1,6 @@
 // src/components/layout/RootLayout.jsx
 import React, { useEffect, useState } from "react";
-import NavbarB4Login from "../navfooter/NavbarB4Login";
+import NavbarB4Login from "../nav&footer/NavbarB4Login";
 
 import ScrollToTop from "./ScrollToTop";
 import DynamicNavbar from "./DynamicNavbar";

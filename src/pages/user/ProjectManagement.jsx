@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Plus } from "lucide-react";
+import { Menu, Plus, Ellipsis } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarComponent from "../../components/sidebar/SidebarComponent";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
@@ -8,10 +8,12 @@ import TaskDetailComponent from "../../components/task/TaskDetailComponent"; // 
 
 export default function ProjectManagement() {
   const [lists, setLists] = useState([
-    { id: "list-1", title: "TaskFlow", cards: [] },
+    { id: "list-1", title: "TaskFlow", cards: [], showMenu: false, isEditing: false },
     {
       id: "list-2",
       title: "Project Resources",
+      showMenu: false,
+      isEditing: false,
       cards: [
         { id: "card-1", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
         { id: "card-2", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
@@ -20,6 +22,8 @@ export default function ProjectManagement() {
     {
       id: "list-3",
       title: "To Do",
+      showMenu: false,
+      isEditing: false,
       cards: [
         { id: "card-3", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
         { id: "card-4", text: 'Project "Teamwork Dream Work"\nLaunch Timeline' },
@@ -29,6 +33,8 @@ export default function ProjectManagement() {
     {
       id: "list-4",
       title: "Done",
+      showMenu: false,
+      isEditing: false,
       cards: [
         {
           id: "card-6",
@@ -85,7 +91,13 @@ export default function ProjectManagement() {
   /** ====== Create list ====== */
   const handleCreateList = () => {
     if (!newListName.trim()) return;
-    const newList = { id: `list-${Date.now()}`, title: newListName, cards: [] };
+    const newList = {
+      id: `list-${Date.now()}`,
+      title: newListName,
+      cards: [],
+      showMenu: false,
+      isEditing: false,
+    };
     setLists([...lists, newList]);
     setNewListName("");
     setShowAddList(false);
@@ -120,6 +132,7 @@ export default function ProjectManagement() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <SidebarComponent
@@ -161,29 +174,97 @@ export default function ProjectManagement() {
                 key={list.id}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => onDrop(e, list.id)}
-                className="bg-highlight dark:bg-gray-800 rounded-lg p-3 w-64"
+                className="bg-highlight dark:bg-gray-800 rounded-lg p-3 w-64 relative"
               >
-                {/* List header */}
-                <div className="flex items-center justify-between mb-2 text-black dark:text-gray-200">
-                  <h2 className="font-medium">{list.title}</h2>
+                {/* ===== List Header ===== */}
+                <div className="flex items-center justify-between mb-2 text-black">
+                  {list.isEditing ? (
+                    <input
+                      type="text"
+                      value={list.title}
+                      onChange={(e) =>
+                        setLists((prev) =>
+                          prev.map((l) =>
+                            l.id === list.id ? { ...l, title: e.target.value } : l
+                          )
+                        )
+                      }
+                      onBlur={() =>
+                        setLists((prev) =>
+                          prev.map((l) =>
+                            l.id === list.id ? { ...l, isEditing: false } : l
+                          )
+                        )
+                      }
+                      autoFocus
+                      className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm w-full"
+                    />
+                  ) : (
+                    <h2 className="font-medium truncate">{list.title}</h2>
+                  )}
+
+                  {/* ===== Ellipsis Menu ===== */}
+                  <div className="relative">
+                    <button
+                      onClick={() =>
+                        setLists((prev) =>
+                          prev.map((l) =>
+                            l.id === list.id
+                              ? { ...l, showMenu: !l.showMenu }
+                              : { ...l, showMenu: false }
+                          )
+                        )
+                      }
+                      className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                    >
+                      <Ellipsis className="w-5 h-5" />
+                    </button>
+
+                    {list.showMenu && (
+                      <div className="absolute right-0 mt-1 w-28 bg-white dark:bg-gray-700 rounded shadow-md z-10">
+                        <button
+                          onClick={() =>
+                            setLists((prev) =>
+                              prev.map((l) =>
+                                l.id === list.id
+                                  ? { ...l, isEditing: true, showMenu: false }
+                                  : l
+                              )
+                            )
+                          }
+                          className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() =>
+                            setLists((prev) => prev.filter((l) => l.id !== list.id))
+                          }
+                          className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Cards */}
+                {/* ===== Cards ===== */}
                 <div className="flex flex-col gap-2">
                   {list.cards.map((card) => (
                     <div
                       key={card.id}
                       draggable
                       onDragStart={(e) => onDragStart(e, list.id, card.id)}
-                      onClick={() => setSelectedCard(card)} // ✅ double click to open modal
-                      className="bg-white dark:bg-gray-700 rounded-md shadow px-3 py-2 text-sm whitespace-pre-line cursor-pointer hover:bg-gray-50 active:cursor-grabbing dark:text-gray-100"
+                      onClick={() => setSelectedCard(card)}
+                      className="bg-white dark:bg-gray-700 rounded-md shadow px-3 py-2 text-sm whitespace-pre-line cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 active:cursor-grabbing dark:text-gray-100"
                     >
                       {card.text}
                     </div>
                   ))}
                 </div>
 
-                {/* Add card */}
+                {/* ===== Add Card ===== */}
                 {activeListForCard === list.id ? (
                   <div className="mt-2">
                     <textarea
@@ -213,7 +294,7 @@ export default function ProjectManagement() {
                 ) : (
                   <button
                     onClick={() => setActiveListForCard(list.id)}
-                    className="text-xs text-white mt-2 hover:underline bg-primary p-2 rounded dark:bg-purple-600 dark:hover:bg-purple-700"
+                    className="text-xs text-white mt-2 bg-primary p-2 rounded dark:bg-purple-600 dark:hover:bg-purple-700"
                   >
                     + Add Card
                   </button>
@@ -221,11 +302,11 @@ export default function ProjectManagement() {
               </div>
             ))}
 
-            {/* Add List */}
+            {/* ===== Add List ===== */}
             <div className="w-64">
               {showAddList ? (
                 <div className="bg-highlight dark:bg-gray-800 p-3 rounded-lg shadow">
-                  <p className="text-center font-semibold pb-2">Create List</p>
+                  <p className="text-center text-black font-semibold pb-2">Create List</p>
                   <input
                     value={newListName}
                     onChange={(e) => setNewListName(e.target.value)}
@@ -250,7 +331,7 @@ export default function ProjectManagement() {
               ) : (
                 <button
                   onClick={() => setShowAddList(true)}
-                  className="bg-highlight text-black dark:text-gray-200 dark:bg-gray-800 px-4 py-3 w-full rounded-lg flex items-center justify-center hover:bg-teal-300 dark:hover:bg-gray-700"
+                  className="bg-highlight text-primary dark:bg-gray-800 px-4 py-3 w-full rounded-lg flex items-center justify-center hover:bg-teal-300 dark:hover:bg-gray-700"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   <span className="text-sm font-medium">Add List</span>
@@ -299,7 +380,7 @@ export default function ProjectManagement() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedCard(null)} // close when clicking outside
+            onClick={() => setSelectedCard(null)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -307,11 +388,20 @@ export default function ProjectManagement() {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="relative"
-              onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicked inside
+              onClick={(e) => e.stopPropagation()}
             >
               <TaskDetailComponent
                 card={selectedCard}
-                onClose={() => setSelectedCard(null)} // optional prop
+                onClose={() => setSelectedCard(null)}
+                onDeleteCard={(cardId) => {
+                  setLists((prevLists) =>
+                    prevLists.map((list) => ({
+                      ...list,
+                      cards: list.cards.filter((c) => c.id !== cardId),
+                    }))
+                  );
+                  setSelectedCard(null);
+                }}
               />
             </motion.div>
           </motion.div>
