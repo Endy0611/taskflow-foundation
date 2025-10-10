@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import NavbarComponent from "../navfooter/NavbarComponent";
+// import NavbarComponent from "../nav&footer/NavbarComponent";
 import DynamicNavbar from "./DynamicNavbar";
 import { Outlet, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
