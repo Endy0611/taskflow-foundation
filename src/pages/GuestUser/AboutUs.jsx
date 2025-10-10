@@ -97,46 +97,45 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="space-y-20 bg-white dark:bg-gray-900 transition-colors duration-300 lg:py-20">
+    <div className="space-y-20 bg-white dark:bg-gray-900 transition-colors duration-300 py-14 lg:py-20">
       {/* About Section */}
-      <section className="bg-white dark:bg-gray-900 py-16">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+      <section className="bg-white dark:bg-gray-900 py-10 sm:py-14 md:py-16">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 sm:mb-6">
               About <span className="text-primary">TaskFlow</span>
             </h1>
-            <p className="text-gray-600 font-bold dark:text-gray-300 text-lg leading-relaxed">
+            <p className="text-gray-600 font-bold dark:text-gray-300 text-base sm:text-lg leading-relaxed px-2 sm:px-0">
               TaskFlow{" "}
               <span className="font-normal">
-                {" "}
                 was founded with the belief that planning should never be
                 overwhelming. It started as a simple idea to help individuals or
                 teams track daily tasks more effectively.
               </span>
             </p>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 flex justify-center">
             <img
               src="/src/assets/home/about1.png"
               alt="Team collaboration"
-              className="bg-white dark:bg-gray-900 w-full"
+              className="w-3/4 sm:w-2/3 md:w-full"
             />
           </div>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
-          <div className="flex-1">
+      <section className="py-10 sm:py-14 md:py-16 bg-white dark:bg-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center gap-10 md:gap-8">
+          <div className="flex-1 flex justify-center">
             <img
               src="/src/assets/home/about2.png"
               alt="Mission illustration"
-              className="w-full max-w-md mx-auto "
+              className="w-3/4 sm:w-2/3 md:w-full max-w-md mx-auto"
             />
           </div>
-          <div className="flex-1">
-            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-bold">
+          <div className="flex-1 text-center md:text-left">
+            <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed font-bold px-2 sm:px-0">
               TaskFlow's{" "}
               <span className="font-normal">
                 vision is to make work organization simple, visual, and powerful
@@ -151,87 +150,87 @@ const AboutUs = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="relative bg-gray-50 dark:bg-gray-900 py-16 px-6 lg:px-12 border border-purple-800 dark:border-white lg:mx-24">
-        {/* Content Wrapper */}
+      <section className="relative bg-white dark:bg-gray-900 py-10 sm:py-12 md:py-20 px-3 sm:px-5 md:px-12 border border-purple-800 dark:border-white mx-3 sm:mx-6 md:mx-24 rounded-3xl">
         <div className="relative z-10 max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-primary mb-8 sm:mb-12">
             Contact Us
           </h2>
 
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
             {/* Get in Touch */}
-            <div className="flex-1 relative p-[2px] rounded-2xl bg-gradient-to-r from-blue-600 via-orange-600 to-red-500 shadow-xl hover:shadow-2xl transition">
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-8 h-full">
-                <h3 className="text-2xl font-bold text-secondary dark:text-white mb-6">
-                  Get in Touch
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Feel free to reach out if you have any questions or need
-                  assistance.
-                </p>
+            <div className="flex-1 relative p-[1.5px] rounded-2xl bg-gradient-to-r from-blue-600 via-orange-600 to-red-500 shadow-xl">
+              <div className="bg-white/85 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-5 sm:p-7 h-full flex flex-col justify-between">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-secondary dark:text-white mb-3 sm:mb-5 text-center lg:text-left">
+                    Get in Touch
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm sm:text-base text-center lg:text-left leading-relaxed">
+                    Feel free to reach out if you have any questions or need
+                    assistance.
+                  </p>
 
-                {/* Contact Details */}
-                <div className="space-y-6 mb-8">
-                  {/* Email */}
-                  <div className="flex items-center gap-4 group">
-                    <div className="bg-primary p-3 rounded-xl  group-hover:scale-110 transition">
-                      <FiMail className="w-6 h-6 text-white" />
+                  <div className="space-y-5 mb-6">
+                    {/* Email */}
+                    <div className="flex items-center gap-3 justify-center lg:justify-start">
+                      <div className="bg-primary p-2.5 rounded-xl">
+                        <FiMail className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
+                          Email Us
+                        </p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 break-all">
+                          taskflow@gmail.com
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">
-                        Email Us
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        taskflow@gmail.com
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Phone */}
-                  <div className="flex items-center gap-4 group">
-                    <div className="bg-primary p-3 rounded-xl group-hover:scale-110 transition">
-                      <FiPhone className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">
-                        Call Us
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        +855 12 345 78
-                      </p>
+                    {/* Phone */}
+                    <div className="flex items-center gap-3 justify-center lg:justify-start">
+                      <div className="bg-primary p-2.5 rounded-xl">
+                        <FiPhone className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
+                          Call Us
+                        </p>
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                          +855 12 345 78
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Social Media */}
-                <div>
-                  <p className="font-semibold mb-3 text-gray-800 dark:text-gray-200 mt-25">
+                <div className="text-center lg:text-left">
+                  <p className="font-semibold mb-3 text-gray-800 dark:text-gray-200 text-sm sm:text-base">
                     Follow our social media
                   </p>
-                  <div className="flex gap-4 mt-5">
-                    <FaFacebook className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaTwitter className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaLinkedin className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
-                    <FaInstagram className="text-primary w-6 h-6 cursor-pointer hover:scale-125 transition" />
+                  <div className="flex gap-4 justify-center lg:justify-start mt-3 flex-wrap">
+                    <FaFacebook className="text-primary w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaTwitter className="text-primary w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaLinkedin className="text-primary w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:scale-125 transition" />
+                    <FaInstagram className="text-primary w-5 h-5 sm:w-6 sm:h-6 cursor-pointer hover:scale-125 transition" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Send Message Form */}
-            <div className="flex-1 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold text-secondary mb-6">
+            <div className="flex-1 bg-white dark:bg-gray-800 p-5 sm:p-7 rounded-2xl shadow-lg">
+              <h3 className="text-lg sm:text-xl font-bold text-secondary mb-4 sm:mb-5 text-center lg:text-left">
                 Send us a message
               </h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex gap-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <input
                     type="text"
                     name="name"
                     placeholder="Name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="flex-1 p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-2.5 sm:p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="email"
@@ -239,7 +238,7 @@ const AboutUs = () => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="flex-1 p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-2.5 sm:p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <input
@@ -248,7 +247,7 @@ const AboutUs = () => {
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
                 />
                 <input
                   type="text"
@@ -256,7 +255,7 @@ const AboutUs = () => {
                   placeholder="Subject"
                   value={formData.subject}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
                 />
                 <textarea
                   name="message"
@@ -264,11 +263,11 @@ const AboutUs = () => {
                   rows={4}
                   value={formData.message}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full p-2.5 sm:p-3 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-blue-500 resize-none"
                 ></textarea>
                 <button
                   type="submit"
-                  className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition"
+                  className="w-full bg-primary text-white py-2.5 sm:py-3 rounded-lg hover:bg-blue-700 font-semibold text-sm sm:text-base transition"
                 >
                   Send
                 </button>
@@ -276,26 +275,19 @@ const AboutUs = () => {
             </div>
           </div>
         </div>
-
-        {/* Wave Background */}
-        <div className="absolute inset-0 -z-01">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 1440 320"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill="#cbd5f7"
-              d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,149.3C672,149,768,171,864,165.3C960,160,1056,128,1152,122.7C1248,117,1344,139,1392,149.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-            ></path>
-          </svg>
-        </div>
       </section>
 
       {/* Mentors Section */}
       <section className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-primary m-30">Our Mentors</h2>
+        <div className="flex items-center justify-center mb-14 md:mb-25 lg:mb-30">
+          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+          <h2 className="mx-6 text-3xl sm:text-4xl font-extrabold text-gray-800 dark:text-white tracking-wide flex items-center gap-2">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-orange-500 to-red-500">
+              ✦ Our Mentors ✦
+            </span>
+          </h2>
+          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+        </div>
 
         <div className="space-y-16 md:space-y-25 max-w-6xl mx-auto ">
           {/* Mentor 1 */}
@@ -406,48 +398,61 @@ const AboutUs = () => {
 
       {/* Team Members Section */}
       <section className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-primary m-30">Team Members</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-20 justify-items-center">
-          {members.map((member, i) => (
-            <div
-              key={i}
-              className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
-            >
-              {/* Top Badge */}
-              <div className="absolute -top-3 left-0 bg-primary text-white px-4 py-1 rounded-tr-xl rounded-bl-xl">
-                <h3 className="font-semibold text-sm">{member.name}</h3>
-                <p className="text-xs opacity-80">{member.role}</p>
-              </div>
-
-              {/* Quote */}
-              <p className="mt-10 italic text-gray-700 dark:text-gray-300">
-                “ {member.quote} ”
-              </p>
-
-              {/* Icons */}
-              <div className="flex gap-4 mt-8 text-2xl text-primary">
-                <a href={member.github} target="_blank" rel="noreferrer">
-                  <FaGithub className="hover:scale-110 transition-transform" />
-                </a>
-                <a href={member.email} target="_blank" rel="noreferrer">
-                  <FiMail className="hover:scale-110 transition-transform" />
-                </a>
-                <a href={member.linkedin} target="_blank" rel="noreferrer">
-                  <FaLinkedin className="hover:scale-110 transition-transform" />
-                </a>
-              </div>
-
-              {/* Profile Pic */}
-              <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
-                <img
-                  src={member.img}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center justify-center mb-20 md:mb-25 lg:mb-30">
+          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
+          <h2 className="mx-6 text-3xl sm:text-4xl font-extrabold text-gray-800 dark:text-white tracking-wide flex items-center gap-2">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-pink-500">
+              ⚡ Team Members ⚡
+            </span>
+          </h2>
+          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-20 justify-items-center">
+  {members.map((member, i) => (
+    <div
+      key={i}
+      className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
+    >
+      {/* Top Badge - increased z-index */}
+      <div className="absolute -top-13 -left-10 bg-primary z-20 text-white px-30 py-3 h-25 rounded-tr-xl rounded-tl-xl rounded-bl-xl overflow-hidden">
+        <div className="w-20 h-20 rounded-full bg-[#173187] absolute -left-5 bottom-0"></div>
+        <h3 className="font-semibold text-sm">{member.name}</h3>
+        <p className="text-xs opacity-80">{member.role}</p>
+      </div>
+
+      {/* Content - no z-index needed */}
+      <div>
+        {/* Quote */}
+        <p className="mt-10 italic text-gray-700 dark:text-gray-300">
+          “ {member.quote} ”
+        </p>
+
+        {/* Icons */}
+        <div className="flex gap-4 mt-8 text-2xl text-primary">
+          <a href={member.github} target="_blank" rel="noreferrer">
+            <FaGithub className="hover:scale-110 transition-transform" />
+          </a>
+          <a href={member.email} target="_blank" rel="noreferrer">
+            <FiMail className="hover:scale-110 transition-transform" />
+          </a>
+          <a href={member.linkedin} target="_blank" rel="noreferrer">
+            <FaLinkedin className="hover:scale-110 transition-transform" />
+          </a>
+        </div>
+
+        {/* Profile Pic */}
+        <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
+          <img
+            src={member.img}
+            alt={member.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
       </section>
     </div>
   );

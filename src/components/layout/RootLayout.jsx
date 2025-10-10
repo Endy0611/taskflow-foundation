@@ -1,10 +1,11 @@
 // src/components/layout/RootLayout.jsx
 import React, { useEffect, useState } from "react";
 import NavbarB4Login from "../nav&footer/NavbarB4Login";
-import FooterB4Login from "../nav&footer/FooterB4Login";
+
 import ScrollToTop from "./ScrollToTop";
 import DynamicNavbar from "./DynamicNavbar";
 import { Outlet } from "react-router-dom";
+import FooterB4Login from "../nav&footer/FooterB4Login";
 
 export default function RootLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("user"));

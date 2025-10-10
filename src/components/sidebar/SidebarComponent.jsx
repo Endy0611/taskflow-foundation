@@ -215,9 +215,9 @@ export default function SidebarComponent({
                     onClick={() => currentWsId && navigate(`/board/${currentWsId}`)}
                   >
                     <span className="flex items-center gap-2">
-                      <LayoutGrid size={16} /> Boards
+                       Boards
                     </span>
-                    <ChevronRight size={14} className="opacity-60" />
+                    
                   </button>
 
                   <NavLink

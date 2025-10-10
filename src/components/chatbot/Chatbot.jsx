@@ -204,26 +204,35 @@ const TaskFlowChatbot = ({ onClose }) => {
     return null;
   }
 
- return (
-    <div className="fixed bottom-4 right-4 w-full max-w-md h-[600px] 
+  return (
+    <div
+      className="
+      fixed bottom-3 right-3 z-50
+      w-[90%] max-w-[380px] sm:max-w-md
+      h-[60vh] sm:h-[600px]
       bg-white dark:bg-gray-900 rounded-xl shadow-2xl flex flex-col 
-      overflow-hidden z-50 transition-colors">
-      
+      overflow-hidden transition-colors
+    "
+    >
       {/* Header */}
-      <div className="flex items-center justify-between 
-        bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+      <div
+        className="flex items-center justify-between 
+      bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4"
+      >
         <div className="flex items-center space-x-3">
           <div className="relative">
             <img
               src={Chatbot}
               alt="TaskFlow Bot"
-              className="w-12 h-8 object-cover"
+              className="w-10 h-7 sm:w-12 sm:h-8 object-cover"
             />
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-gray-900"></div>
           </div>
           <div>
-            <span className="font-bold text-lg">TaskFlowBot</span>
-            <div className="text-xs text-blue-100">Always ready to help</div>
+            <span className="font-bold text-base sm:text-lg">TaskFlowBot</span>
+            <div className="text-[10px] sm:text-xs text-blue-100">
+              Always ready to help
+            </div>
           </div>
         </div>
         <button
@@ -235,8 +244,10 @@ const TaskFlowChatbot = ({ onClose }) => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-3 
-        bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-colors">
+      <div
+        className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 
+      bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-colors"
+      >
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -245,13 +256,13 @@ const TaskFlowChatbot = ({ onClose }) => {
             }`}
           >
             <div
-              className={`max-w-[85%] p-3 rounded-2xl shadow-sm ${
+              className={`max-w-[85%] p-2 sm:p-3 rounded-2xl shadow-sm ${
                 msg.type === "user"
                   ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-br-md"
                   : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-bl-md"
               }`}
             >
-              <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+              <div className="whitespace-pre-wrap break-words text-xs sm:text-sm leading-relaxed">
                 {msg.text}
               </div>
             </div>
@@ -260,11 +271,15 @@ const TaskFlowChatbot = ({ onClose }) => {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 
-              border border-gray-200 dark:border-gray-700 p-3 rounded-2xl 
-              rounded-bl-md flex items-center space-x-2 shadow-sm">
+            <div
+              className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 
+            border border-gray-200 dark:border-gray-700 p-2 sm:p-3 rounded-2xl 
+            rounded-bl-md flex items-center space-x-2 shadow-sm"
+            >
               <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              <span className="text-sm">TaskFlowBot is thinking...</span>
+              <span className="text-xs sm:text-sm">
+                TaskFlowBot is thinking...
+              </span>
             </div>
           </div>
         )}
@@ -272,17 +287,19 @@ const TaskFlowChatbot = ({ onClose }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 
-        border-t border-gray-200 dark:border-gray-700 transition-colors">
-        <div className="flex flex-wrap gap-2">
+      <div
+        className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-50 dark:bg-gray-800 
+      border-t border-gray-200 dark:border-gray-700 transition-colors"
+      >
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           {["Create Task", "Workspace Help", "Support"].map((action) => (
             <button
               key={action}
               onClick={() => setInput(action)}
-              className="text-xs bg-blue-100 dark:bg-blue-900 
-                text-blue-700 dark:text-blue-200 
-                px-2 py-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 
-                transition-colors"
+              className="text-[10px] sm:text-xs bg-blue-100 dark:bg-blue-900 
+              text-blue-700 dark:text-blue-200 
+              px-2 py-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 
+              transition-colors"
             >
               {action}
             </button>
@@ -291,17 +308,19 @@ const TaskFlowChatbot = ({ onClose }) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 bg-white dark:bg-gray-900 
-        border-t border-gray-200 dark:border-gray-700 transition-colors">
-        <div className="flex items-center space-x-3">
+      <div
+        className="p-3 sm:p-4 bg-white dark:bg-gray-900 
+      border-t border-gray-200 dark:border-gray-700 transition-colors"
+      >
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <input
             type="text"
             placeholder="Ask about TaskFlow or anything else..."
-            className="flex-1 p-3 border-2 border-gray-200 dark:border-gray-700 
-              rounded-xl bg-white dark:bg-gray-800 
-              text-gray-900 dark:text-gray-100 
-              focus:outline-none focus:ring-2 focus:ring-blue-500 
-              focus:border-transparent transition-all"
+            className="flex-1 p-2 sm:p-3 border-2 border-gray-200 dark:border-gray-700 
+            rounded-xl bg-white dark:bg-gray-800 
+            text-gray-900 dark:text-gray-100 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 
+            focus:border-transparent transition-all text-sm sm:text-base"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => {
@@ -315,16 +334,16 @@ const TaskFlowChatbot = ({ onClose }) => {
           <button
             onClick={sendMessage}
             disabled={isLoading}
-            className={`p-3 rounded-xl transition-all transform hover:scale-105 ${
+            className={`p-2 sm:p-3 rounded-xl transition-all transform hover:scale-105 ${
               isLoading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg"
             } text-white`}
           >
             {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
             ) : (
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </button>
         </div>

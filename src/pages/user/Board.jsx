@@ -199,6 +199,7 @@ export default function Board() {
               )}
             </div>
           </section>
+          
 
           {/* Recently Viewed Section */}
           <section className="mb-10">
@@ -270,6 +271,7 @@ export default function Board() {
                   ))}
                 </div>
               </div>
+              
 
               {/* Boards (placeholder) */}
               <div
@@ -371,6 +373,7 @@ export default function Board() {
                   Boost your productivity by making it easier for everyone to access boards in one
                   location.
                 </p>
+                
 
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Workspace name
@@ -404,7 +407,7 @@ export default function Board() {
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
                 >
-                  ✖
+                  ✖️
                 </button>
               </div>
             </motion.div>
@@ -438,3 +441,6 @@ export default function Board() {
     </div>
   );
 }
+
+
+

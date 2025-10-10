@@ -15,7 +15,7 @@ export function WorkspaceSection({
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
+            <div className="w-10 h-10 bg-primary text-white flex items-center justify-center rounded-md font-bold">
               {workspaceInitial}
             </div>
             <span className="font-semibold">{workspaceName}</span>
@@ -28,7 +28,7 @@ export function WorkspaceSection({
                 className={({ isActive }) =>
                   `px-3 py-1.5 border rounded text-sm ${
                     isActive
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
+                      ? "bg-blue-100 dark:bg-blue-900 text-primary dark:text-blue-300 font-medium"
                       : "hover:bg-gray-100 dark:hover:bg-gray-700"
                   }`
                 }

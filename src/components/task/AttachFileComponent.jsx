@@ -1,26 +1,87 @@
-export function AttachFileComponent() {
-  return (
-    <div className="w-full max-w-sm bg-white rounded-lg p-6 shadow-lg space-y-4">
-      <h3 className="text-xl font-semibold text-center">Attach</h3>
+import { useState } from "react";
+import { X } from "lucide-react";
 
-      <div className="space-y-1">
-        <label className="text-sm text-gray-600 font-semibold">Attach file from your computer</label>
-        <button className="border border-gray-300 w-full py-2 rounded-md hover:bg-gray-100 transition mt-2 font-semibold">Choose a file</button>
+export function AttachFileComponent({ onAttach, onClose }) {
+  const [link, setLink] = useState("");
+  const [file, setFile] = useState(null);
+
+  const handleChooseFile = () => document.getElementById("fileInput").click();
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setLink("");
+    }
+  };
+
+  const handleInsert = () => {
+    if (file) onAttach(file);
+    else if (link.trim()) onAttach(link.trim());
+  };
+
+  return (
+    <div className="w-full max-w-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg p-6 shadow-lg space-y-4 relative transition-all duration-200">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-3 p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+      >
+        <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+      </button>
+
+      <h3 className="text-xl font-semibold text-center mb-4">Attach</h3>
+
+      {/* File Upload */}
+      <div className="space-y-2">
+        <label className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
+          Attach file from your computer
+        </label>
+        <input
+          type="file"
+          id="fileInput"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        <button
+          onClick={handleChooseFile}
+          className="border border-gray-300 dark:border-gray-700 w-full py-2 rounded-md bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition font-semibold"
+        >
+          {file ? `Selected: ${file.name}` : "Choose a file"}
+        </button>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm text-gray-600 font-semibold">Paste a link</label>
+      {/* Link Input */}
+      <div className="space-y-2">
+        <label className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
+          Paste a link
+        </label>
         <input
           type="text"
           placeholder="Paste a link here"
-          className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none mt-2"
+          value={link}
+          onChange={(e) => {
+            setLink(e.target.value);
+            setFile(null);
+          }}
+          className="w-full border border-gray-300 dark:border-gray-700 px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
+      {/* Buttons */}
       <div className="flex justify-end gap-2 pt-2">
-        <button className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md transition">Cancel</button>
-        <button className="bg-primary text-white px-4 py-2 rounded-md transition">Insert</button>
+        <button
+          onClick={handleInsert}
+          disabled={!file && !link.trim()}
+          className={`px-4 py-2 rounded-md transition font-medium ${
+            file || link.trim()
+              ? "bg-primary text-white hover:bg-primary/90"
+              : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Insert
+        </button>
       </div>
     </div>
-  )
+  );
 }

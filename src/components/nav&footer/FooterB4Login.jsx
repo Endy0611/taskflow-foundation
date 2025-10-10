@@ -31,7 +31,7 @@ export default function FooterB4Login() {
           <ul className="space-y-2 text-gray-200 text-sm sm:text-base">
             <li>Workspace</li>
             <li>Dashboard</li>
-            <li>Task assignment</li>
+            <li>Task Assignment</li>
             <li>Chatbot</li>
           </ul>
         </div>

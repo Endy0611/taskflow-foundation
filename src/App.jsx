@@ -1,37 +1,38 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
-// Layouts
+/* Layouts */
 import RootLayout from "./components/layout/RootLayout";
 import UserLayout from "./components/layout/UserLayout";
 import WorkspaceLayout from "./components/layout/WorkspaceLayout";
 
-// Guest pages
+/* Guest pages */
 import GuestHomePage from "./pages/GuestUser/HomePage";
 import FeaturePage from "./pages/GuestUser/FeaturePage";
 import TemplatePage from "./pages/GuestUser/TemplatePage";
 import AboutUs from "./pages/GuestUser/AboutUs";
 
-// Auth pages
+/* Auth pages */
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 
-// User pages
+/* User pages */
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
 import BoardB4Create from "./pages/user/BoardB4Create";
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import Board from "./pages/user/Board";
 import WorkspaceMember from "./pages/user/WorkspaceMember";
+import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 
-// Profile & Switch Account
+/* Profile & Switch Account */
 import ProfilePage from "./pages/profile/ProfilePage";
 import SwitchAccountPage from "./pages/profile/SwitchAccountPage";
 
-// Settings / Project pages (make names consistent!)
-import SettingWorkspace from "./pages/user/SettingWorkspace";
+/* Settings / Project pages */
+import SettingWorkspace from "./pages/user/SettingWorkspace"; // dedicated settings page
 import ProjectManagement from "./pages/user/ProjectManagement";
 
-// 404 fallback
+/* 404 fallback */
 function NotFound() {
   const navigate = useNavigate();
   return (
@@ -66,24 +67,31 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* User routes */}
+        {/* User routes (general user dashboard area) */}
         <Route element={<UserLayout />}>
           <Route path="/homeuser" element={<HomeUser />} />
           <Route path="/templateuser" element={<TemplateUser />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/switch-account" element={<SwitchAccountPage />} />
-          {/* Keep a single, consistent settings route */}
-          <Route path="/settingworkspace" element={<SettingWorkspace />} />
+          {/* ❌ Removed duplicate /settingworkspace here to avoid conflicting layouts */}
         </Route>
 
-        {/* Workspace routes */}
+        {/* Workspace routes (boards, members, settings) */}
         <Route element={<WorkspaceLayout />}>
           <Route path="/boardb4create" element={<BoardB4Create />} />
           <Route path="/board/:workspaceId" element={<Board />} />
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
           <Route path="/workspacemember" element={<WorkspaceMember />} />
           <Route path="/projectmanagement" element={<ProjectManagement />} />
-          {/* Removed /workspacesetting to avoid the undefined <WorkspaceSetting /> */}
+
+          {/* Overview page for a workspace area */}
+          <Route path="/workspacesetting" element={<WorkspaceSetting />} />
+
+          {/* ✅ Dedicated settings page (canonical) */}
+          <Route path="/workspaces/:id/settings" element={<SettingWorkspace />} />
+
+          {/* (Optional) Fallback settings path without id */}
+          <Route path="/settingworkspace" element={<SettingWorkspace />} />
         </Route>
 
         {/* 404 */}
