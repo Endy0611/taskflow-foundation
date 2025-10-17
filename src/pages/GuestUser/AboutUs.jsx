@@ -38,7 +38,7 @@ const AboutUs = () => {
       name: "Ms. Dorn Dana",
       role: "Web Design",
       img: "src/assets/About/dana.png",
-      github: "#",
+      github: "https://github.com/danadorn",
       linkedin: "#",
       email: "#",
       quote:
@@ -48,7 +48,7 @@ const AboutUs = () => {
       name: "Mr. Rith Saranamith",
       role: "Java App",
       img: "src/assets/About/Manith.png",
-      github: "#",
+      github: "https://github.com/Manith991",
       linkedin: "#",
       email: "#",
       quote:
@@ -58,19 +58,19 @@ const AboutUs = () => {
       name: "Mr. Ong Endy",
       role: "Java App",
       img: "src/assets/About/endy.png",
-      github: "#",
+      github: "https://github.com/Endy0611",
       linkedin: "#",
-      email: "#",
+      email: "endyong18@gmail.com",
       quote:
-        "Coffee in one hand, confidence in the other, and a brilliant algorithm in my head. Error? No problem.",
+        "Coffee in one hand, confidence in the other, and a brilliant algorithm in my head.",
     },
     {
       name: "Ms. Mon Sreynet",
       role: "Web Design",
       img: "src/assets/About/sreynet.png",
-      github: "#",
+      github: "https://github.com/sreynetmon",
       linkedin: "#",
-      email: "#",
+      email: "sreynet1409@gmail.com",
       quote:
         "My greatest achievement isn't the code I've written, but the problems I've solved from my coding.",
     },
@@ -78,7 +78,7 @@ const AboutUs = () => {
       name: "Ms. Tith Cholna",
       role: "Web Design",
       img: "src/assets/About/cholna.png",
-      github: "#",
+      github: "https://github.com/Activity007",
       linkedin: "#",
       email: "#",
       quote:
@@ -88,7 +88,7 @@ const AboutUs = () => {
       name: "Lonh Raksmey",
       role: "Web Design",
       img: "/src/assets/About/Smey.png",
-      github: "#",
+      github: "https://github.com/stupiqqsmey",
       linkedin: "#",
       email: "#",
       quote:
@@ -99,7 +99,7 @@ const AboutUs = () => {
   return (
     <div className="space-y-20 bg-white dark:bg-gray-900 transition-colors duration-300 py-14 lg:py-20">
       {/* About Section */}
-      <section className="bg-white dark:bg-gray-900 py-10 sm:py-14 md:py-16">
+      <section className="bg-white dark:bg-gray-900 py-10 sm:py-14 md:py-16 ">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 sm:mb-6">
@@ -125,7 +125,7 @@ const AboutUs = () => {
       </section>
 
       {/* Mission Section */}
-      <section className="py-10 sm:py-14 md:py-16 bg-white dark:bg-gray-900">
+      <section className=" bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center gap-10 md:gap-8">
           <div className="flex-1 flex justify-center">
             <img
@@ -356,7 +356,7 @@ const AboutUs = () => {
             {/* Info Side */}
             <div className="md:w-1/2 bg-gray-50 dark:bg-gray-800 p-8 text-left flex flex-col justify-center rounded-bl-3xl">
               <h3 className="text-2xl font-semibold text-primary dark:text-blue-400">
-                Ms. Srong Sokcheat
+                Ms. Srorng Sokcheat
               </h3>
               <p className="text-sm mt-2 text-gray-600 dark:text-gray-400">
                 Offer support in Web Design
@@ -399,60 +399,66 @@ const AboutUs = () => {
       {/* Team Members Section */}
       <section className="container mx-auto px-4 text-center">
         <div className="flex items-center justify-center mb-20 md:mb-25 lg:mb-30">
-          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
-          <h2 className="mx-6 text-3xl sm:text-4xl font-extrabold text-gray-800 dark:text-white tracking-wide flex items-center gap-2">
+          <div className="hidden md:block flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
+          <h2 className="mx-2 sm:mx-4 md:mx-8 lg:mx-6 text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-white tracking-wide flex items-center gap-2 justify-center">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-pink-500">
-              ⚡ Team Members ⚡
+              <span className="inline-block">⚡️</span>
+              <span className="inline-block mx-1 sm:mx-2">Team Members</span>
+              <span className="inline-block">⚡️</span>
             </span>
           </h2>
-          <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
+          <div className="hidden md:block flex-grow h-[2px] bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-20 justify-items-center">
-  {members.map((member, i) => (
-    <div
-      key={i}
-      className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md"
-    >
-      {/* Top Badge - increased z-index */}
-      <div className="absolute -top-13 -left-10 bg-primary z-20 text-white px-30 py-3 h-25 rounded-tr-xl rounded-tl-xl rounded-bl-xl overflow-hidden">
-        <div className="w-20 h-20 rounded-full bg-[#173187] absolute -left-5 bottom-0"></div>
-        <h3 className="font-semibold text-sm">{member.name}</h3>
-        <p className="text-xs opacity-80">{member.role}</p>
-      </div>
+          {members.map((member, i) => (
+            <div
+              key={i}
+              className="relative bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md p-6 text-left w-full max-w-md transition hover:shadow-md mt-14 md:mt-16 lg:mt-0"
+            >
+              {/* Top Badge */}
+              <div className="absolute -top-10 md:-top-12 lg:-top-13 left-2 md:left-1/4 md:-translate-x-1/2 lg:-left-10 lg:translate-x-0 bg-primary z-20 text-white px-4 md:px-6 lg:px-30 py-2 md:py-2.5 lg:py-3 h-auto lg:h-25 rounded-tr-xl rounded-tl-xl rounded-bl-xl overflow-hidden min-w-[150px] md:min-w-[180px] lg:min-w-0">
+                <div className="w-16 h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-full bg-[#173187] absolute -left-4 md:-left-4.5 lg:-left-5 bottom-0"></div>
+                <h3 className="font-semibold text-sm md:text-base relative z-10">
+                  {member.name}
+                </h3>
+                <p className="text-xs md:text-sm opacity-80 relative z-10">
+                  {member.role}
+                </p>
+              </div>
 
-      {/* Content - no z-index needed */}
-      <div>
-        {/* Quote */}
-        <p className="mt-10 italic text-gray-700 dark:text-gray-300">
-          “ {member.quote} ”
-        </p>
+              {/* Content */}
+              <div>
+                {/* Quote */}
+                <p className="mt-8 md:mt-9 lg:mt-10 italic text-sm md:text-base text-gray-700 dark:text-gray-300">
+                  " {member.quote} "
+                </p>
 
-        {/* Icons */}
-        <div className="flex gap-4 mt-8 text-2xl text-primary">
-          <a href={member.github} target="_blank" rel="noreferrer">
-            <FaGithub className="hover:scale-110 transition-transform" />
-          </a>
-          <a href={member.email} target="_blank" rel="noreferrer">
-            <FiMail className="hover:scale-110 transition-transform" />
-          </a>
-          <a href={member.linkedin} target="_blank" rel="noreferrer">
-            <FaLinkedin className="hover:scale-110 transition-transform" />
-          </a>
+                {/* Icons */}
+                <div className="flex gap-4 mt-6 md:mt-7 lg:mt-8 text-xl md:text-2xl text-primary">
+                  <a href={member.github} target="_blank" rel="noreferrer">
+                    <FaGithub className="hover:scale-110 transition-transform" />
+                  </a>
+                  <a href={member.email} target="_blank" rel="noreferrer">
+                    <FiMail className="hover:scale-110 transition-transform" />
+                  </a>
+                  <a href={member.linkedin} target="_blank" rel="noreferrer">
+                    <FaLinkedin className="hover:scale-110 transition-transform" />
+                  </a>
+                </div>
+
+                {/* Profile Pic */}
+                <div className="absolute -top-8 md:-top-10 lg:-top-12 right-2 md:right-4 lg:-right-1 w-20 h-20 md:w-22 md:h-22 lg:w-24 lg:h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md z-20">
+                  <img
+                    src={member.img}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-
-        {/* Profile Pic */}
-        <div className="absolute -top-12 -right-1 w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 shadow-md">
-          <img
-            src={member.img}
-            alt={member.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
       </section>
     </div>
   );

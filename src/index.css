@@ -9,14 +9,9 @@
 @import "@syncfusion/ej2-react-kanban/styles/bootstrap5.css";
 
 /* Fonts */
-@font-face {
-  font-family: Roboto;
-  src: url("../assets/fonts/Roboto-Regular.ttf");
-}
 
-.font-roboto {
-  font-family: 'Roboto', sans-serif;
-}
+
+
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {

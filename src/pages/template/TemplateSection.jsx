@@ -2,7 +2,11 @@ import React from "react";
 import TemplateCard from "./TemplateCard";
 import { NavLink } from "react-router-dom";
 
-export default function TemplateSection({ title, templates, viewMode = "grid" }) {
+export default function TemplateSection({
+  title,
+  templates,
+  viewMode = "grid",
+}) {
   if (!templates || templates.length === 0) return null;
 
   return (
@@ -54,14 +58,18 @@ export default function TemplateSection({ title, templates, viewMode = "grid" })
               <div className="flex-1 min-w-0">
                 {/* Title + Featured */}
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white 
-                                 group-hover:text-primary transition-colors duration-300">
+                  <h3
+                    className="text-lg font-semibold text-gray-900 dark:text-white 
+                                 group-hover:text-primary transition-colors duration-300"
+                  >
                     {template.title}
                   </h3>
                   {template.featured && (
-                    <span className="px-3 py-1 text-xs font-medium rounded-full 
+                    <span
+                      className="px-3 py-1 text-xs font-medium rounded-full 
                                      bg-blue-100 text-primary border border-blue-200
-                                     dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800">
+                                     dark:bg-blue-900 dark:text-blue-200 dark:border-blue-800"
+                    >
                       ✨ Featured
                     </span>
                   )}
@@ -73,11 +81,15 @@ export default function TemplateSection({ title, templates, viewMode = "grid" })
                 </p>
 
                 {/* Action Button */}
-                <NavLink to="/projectmanagement"
+                <NavLink
+                  to="/projectmanagement"
+                  onClick={() => {
+                    localStorage.setItem("selectedBackground", template.image);
+                  }}
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-white 
-                             bg-primary rounded-lg shadow-md 
-                             hover:bg-primary/90 hover:shadow-lg hover:scale-105 
-                             transition-all duration-200"
+             bg-primary rounded-lg shadow-md 
+             hover:bg-primary/90 hover:shadow-lg hover:scale-105 
+             transition-all duration-200"
                 >
                   <span>Use Template</span>
                   <svg

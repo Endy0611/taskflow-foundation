@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, Plus, Ellipsis } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import Sidebar from "../../components/sidebar/Sidebar"; // ✅ Updated Sidebar import
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { ShareBoardComponent } from "../../components/task/ShareBoardComponent";
 import TaskDetailComponent from "../../components/task/TaskDetailComponent";
@@ -86,6 +86,7 @@ export default function ProjectManagement() {
   // Background image state
   const [backgroundImage, setBackgroundImage] = useState("");
 
+  /* ===== Background image: exactly like old version ===== */
   useEffect(() => {
     const selectedBg = localStorage.getItem("selectedBackground");
     if (selectedBg) {
@@ -147,6 +148,19 @@ export default function ProjectManagement() {
     setNewCardText("");
     setActiveListForCard(null);
   };
+useEffect(() => {
+  const selectedBg = localStorage.getItem("selectedBackground");
+  if (selectedBg) {
+    setBackgroundImage(selectedBg);
+    localStorage.setItem("boardBackground", selectedBg);
+    localStorage.removeItem("selectedBackground"); // clear after applying
+  } else {
+    const savedBg = localStorage.getItem("boardBackground");
+    if (savedBg) setBackgroundImage(savedBg);
+  }
+}, []);
+
+
 
   // Reset sidebar on resize
   useEffect(() => {
@@ -168,13 +182,10 @@ export default function ProjectManagement() {
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <SidebarComponent
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-        />
+        {/* ✅ Updated Sidebar integration */}
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        {/* Main Content */}
+        {/* ===== Main Content ===== */}
         <main
           className="flex-1 overflow-y-auto relative"
           style={{

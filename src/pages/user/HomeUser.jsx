@@ -113,7 +113,9 @@ const HomeUserPage = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <NavLink
-                      to="/boardb4create"
+                      to={`/board/${
+                        localStorage.getItem("current_workspace_id") || ""
+                      }`}
                       className="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-md transition duration-300"
                     >
                       Check Board{" "}

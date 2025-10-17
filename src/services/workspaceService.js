@@ -20,9 +20,16 @@ const defaultPaths = {
   // Invites
   INVITES_CREATE: (workspaceId) => `/workspaces/${workspaceId}/invites`,
 
-  // Workspaces
+  // Workspaces (read/update)
   WORKSPACES_FIND_BY_ID: (id) => `/workspaces/${id}`,
   WORKSPACES_UPDATE: (id) => `/workspaces/${id}`,
+
+  // Workspaces (create)
+  WORKSPACES_CREATE_NEW: "/workspaces/createNew", // preferred if your API has it
+  WORKSPACES_CREATE_FALLBACK: "/workspaces",      // fallback if not
+
+  // User → Workspaces
+  USER_WORKSPACES_BY_USERID: (userId) => `/user-workspaces/${userId}`,
 };
 
 export const PATHS = { ...(Api.PATHS || {}), ...defaultPaths };
@@ -36,9 +43,8 @@ const getIdFromUserRef = (val) => {
   return m ? (isNaN(m[1]) ? m[1] : Number(m[1])) : undefined;
 };
 
-const getIdFromWsHref = (href) => {
-  if (!href) return undefined;
-  const m = String(href).match(/\/workspaces\/([^/]+)/i);
+const idFromHref = (href, key) => {
+  const m = String(href || "").match(new RegExp(`/${key}/([^/]+)`, "i"));
   return m ? (isNaN(m[1]) ? m[1] : Number(m[1])) : undefined;
 };
 
@@ -49,20 +55,16 @@ const stripHal = (obj = {}) => {
   return clone;
 };
 
-/** Normalize → { id, name, visibility: "PRIVATE"|"PUBLIC" } */
+/** Normalize → { id, name, visibility: "PRIVATE"|"PUBLIC", theme? } */
 const normalizeWorkspace = (raw = {}, fallbackId) => {
   const id =
     raw.id ??
-    getIdFromWsHref(raw?._links?.self?.href) ??
+    idFromHref(raw?._links?.self?.href, "workspaces") ??
     fallbackId;
 
-  const name =
-    raw.name ??
-    raw.title ??
-    raw.displayName ??
-    "Workspace";
+  const name = raw.name ?? raw.title ?? raw.displayName ?? "Workspace";
 
-  // Accept a variety of shapes from the backend
+  // visibility can be string or a few boolean flavors
   let visibility = raw.visibility ?? raw.privacy;
   if (!visibility) {
     if (typeof raw.private === "boolean") visibility = raw.private ? "PRIVATE" : "PUBLIC";
@@ -70,9 +72,14 @@ const normalizeWorkspace = (raw = {}, fallbackId) => {
     else if (typeof raw.public === "boolean") visibility = raw.public ? "PUBLIC" : "PRIVATE";
     else visibility = "PRIVATE";
   }
-  visibility = String(visibility).toUpperCase();
 
-  return { id, name, visibility, _raw: raw };
+  return {
+    id,
+    name,
+    theme: raw.theme ?? null,
+    visibility: String(visibility).toUpperCase(),
+    _raw: raw,
+  };
 };
 
 /* -------------------------------------------------------------------------- */
@@ -123,9 +130,14 @@ function mapMember(member, user = {}) {
 
 export async function fetchWorkspaceMembers(workspaceId) {
   const res = await http.get(PATHS.WS_MEMBERS_FIND(workspaceId));
-  const members = res?._embedded?.workspaceMembers ?? [];
+  const rawMembers =
+    Array.isArray(res)
+      ? res
+      : res?._embedded?.workspaceMembers ??
+        res?.content ?? // some pageable responses
+        [];
   const enriched = await Promise.all(
-    members.map(async (m) => {
+    rawMembers.map(async (m) => {
       let userData = null;
       if (m.user && typeof m.user === "object") userData = m.user;
       else if (m.user && typeof m.user === "string") userData = await fetchUserDetail(m.user);
@@ -139,9 +151,9 @@ export async function searchUserByUsername(username) {
   if (!username) throw new Error("Username required");
   const res = await http.get(PATHS.USERS_SEARCH_BY_USERNAME(username));
   const user =
-    res._embedded?.users?.[0] ||
-    res._embedded?.user ||
-    (res.username ? res : null);
+    res?._embedded?.users?.[0] ||
+    res?._embedded?.user ||
+    (res && res.username ? res : null);
   if (!user) throw new Error("User not found");
   return user;
 }
@@ -150,8 +162,8 @@ export async function addMemberByUsername({ workspaceId, username, permission })
   if (!workspaceId || !username) throw new Error("Workspace ID and username required");
   const userRes = await searchUserByUsername(username);
   const userHref =
-    userRes._links?.self?.href ||
-    userRes._links?.user?.href ||
+    userRes?._links?.self?.href ||
+    userRes?._links?.user?.href ||
     `/users/${userRes.id}`;
   const payload = {
     user: userHref,
@@ -164,12 +176,7 @@ export async function addMemberByUsername({ workspaceId, username, permission })
 export async function updateMemberRole({ membershipId, permission }) {
   if (!membershipId) throw new Error("membershipId required");
   if (!permission) throw new Error("permission required");
-  try {
-    return await http.patch(PATHS.WS_MEMBERS_UPDATE(membershipId), { permission });
-  } catch (err) {
-    console.error("❌ updateMemberRole failed:", err);
-    throw err;
-  }
+  return await http.patch(PATHS.WS_MEMBERS_UPDATE(membershipId), { permission });
 }
 
 export async function removeMember({ membershipId }) {
@@ -183,6 +190,7 @@ export async function createInviteLink(workspaceId) {
     if (res?.link) return res.link;
     if (res?.token) return `${window.location.origin}/join/${workspaceId}?token=${res.token}`;
   } catch {
+    // Dev-only fallback link
     const uuid =
       crypto?.randomUUID?.() ??
       `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
@@ -196,7 +204,7 @@ export async function createInviteLink(workspaceId) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 🧩 WORKSPACE: fetch + update                                               */
+/* 🧩 WORKSPACE: fetch + update + create                                      */
 /* -------------------------------------------------------------------------- */
 export async function fetchWorkspaceById(id) {
   if (!id) throw new Error("Workspace id required");
@@ -204,85 +212,94 @@ export async function fetchWorkspaceById(id) {
   return normalizeWorkspace(raw, id);
 }
 
-/**
- * Update workspace name/visibility.
- * payload: { name?: string, visibility?: "PRIVATE"|"PUBLIC" }  (also accepts { private?: boolean })
- * - Tries PATCH (merge-patch) first.
- * - Fallback to PUT with full merged entity (strip HAL).
- */
 export async function updateWorkspace(id, payload = {}) {
   if (!id) throw new Error("Workspace id required");
 
-  // Build compact patch body
   const body = {};
   if ("name" in payload && payload.name != null) body.name = payload.name;
 
   if ("visibility" in payload && payload.visibility != null) {
-    const v = String(payload.visibility).toUpperCase(); // "PRIVATE" | "PUBLIC"
+    const v = String(payload.visibility).toUpperCase();
     body.visibility = v;
-    body.private = v === "PRIVATE"; // help servers that use boolean
+    body.private = v === "PRIVATE";
   } else if ("private" in payload && typeof payload.private === "boolean") {
     body.private = payload.private;
     body.visibility = payload.private ? "PRIVATE" : "PUBLIC";
   }
 
-  // 1) Try PATCH (merge-patch)
   try {
-    const res = await http.patch(PATHS.WORKSPACES_UPDATE(id), body, {
-      headers: {
-        "Content-Type": "application/merge-patch+json",
-        Accept: "application/hal+json, application/json",
-      },
-      withCredentials: true,
-    });
+    // Prefer merge-patch; your http.js sets the right header automatically for PATCH
+    const res = await http.patch(PATHS.WORKSPACES_UPDATE(id), body);
     return normalizeWorkspace(res, id);
-  } catch (e1) {
-    // 2) Fallback to PUT with full entity (merge current + patch)
-    try {
-      const current = await http.get(PATHS.WORKSPACES_FIND_BY_ID(id));
-      const merged = stripHal({ ...current, ...body });
-      // Avoid sending unknown props if backend is strict
-      if (!("name" in merged) && body.name != null) merged.name = body.name;
-      if (!("visibility" in merged) && body.visibility != null) merged.visibility = body.visibility;
-      if (!("private" in merged) && typeof body.private === "boolean") merged.private = body.private;
-
-      const res2 = await http.put(PATHS.WORKSPACES_UPDATE(id), merged, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/hal+json, application/json",
-        },
-        withCredentials: true,
-      });
-      return normalizeWorkspace(res2, id);
-    } catch (e2) {
-      // 3) Optional method-override escape hatch (some proxies block PATCH/PUT)
-      try {
-        const res3 = await http.post(PATHS.WORKSPACES_UPDATE(id), body, {
-          headers: {
-            "X-HTTP-Method-Override": "PATCH",
-            "Content-Type": "application/json",
-            Accept: "application/hal+json, application/json",
-          },
-          withCredentials: true,
-        });
-        return normalizeWorkspace(res3, id);
-      } catch (e3) {
-        const status =
-          e1?.response?.status ||
-          e2?.response?.status ||
-          e3?.response?.status ||
-          e1?.status ||
-          e2?.status ||
-          e3?.status;
-
-        if (status === 403) {
-          // Most common case with Spring: CSRF/permissions
-          throw new Error(
-            "Forbidden (403). Ensure your HTTP client sends cookies (withCredentials) and XSRF token, and that your account has permission to update this workspace."
-          );
-        }
-        throw e3 || e2 || e1;
-      }
-    }
+  } catch {
+    // Fallback to PUT with a merged entity (for servers that dislike PATCH)
+    const current = await http.get(PATHS.WORKSPACES_FIND_BY_ID(id));
+    const merged = stripHal({ ...current, ...body });
+    const res2 = await http.put(PATHS.WORKSPACES_UPDATE(id), merged);
+    return normalizeWorkspace(res2, id);
   }
+}
+
+/** Create a workspace (tries /createNew then falls back to /workspaces). */
+export async function createWorkspace({ name, theme = "ANGKOR", visibility = "PRIVATE" }) {
+  if (!name) throw new Error("name is required");
+  const payload = { name, theme, visibility };
+
+  try {
+    const created = await http.post(PATHS.WORKSPACES_CREATE_NEW, payload);
+    return normalizeWorkspace(created);
+  } catch {
+    const created = await http.post(PATHS.WORKSPACES_CREATE_FALLBACK, payload);
+    return normalizeWorkspace(created);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* ✅ USER → WORKSPACES + remember last used                                  */
+/* -------------------------------------------------------------------------- */
+export async function fetchUserWorkspacesByUserId(userId) {
+  if (!userId) throw new Error("userId required");
+  const res = await http.get(PATHS.USER_WORKSPACES_BY_USERID(userId));
+  const list = Array.isArray(res)
+    ? res
+    : res?._embedded?.workspaces ??
+      res?.content ?? // if pageable
+      [];
+  // Dedup by id (some backends return duplicates)
+  const map = new Map(
+    list.map((w) => {
+      const id = w.id ?? idFromHref(w?._links?.self?.href, "workspaces");
+      return [id, w];
+    })
+  );
+  return Array.from(map.values()).map((w) => normalizeWorkspace(w));
+}
+
+/* Keep old import name working */
+export const fetchUserWorkspaces = fetchUserWorkspacesByUserId;
+
+/** LocalStorage helpers for “last opened workspace”. */
+export const getCurrentWorkspaceId = () =>
+  localStorage.getItem("current_workspace_id");
+
+export const setCurrentWorkspaceId = (id) => {
+  if (id == null) return;
+  localStorage.setItem("current_workspace_id", String(id));
+};
+
+/**
+ * Ensure we have a valid current workspace for this user.
+ * - If none stored, pick the first one and store it.
+ * - If stored but missing from server list, replace with first one.
+ * Returns { list, current }.
+ */
+export async function ensureCurrentWorkspaceForUser(userId) {
+  const list = await fetchUserWorkspacesByUserId(userId);
+  if (!list.length) return { list, current: null };
+
+  const stored = getCurrentWorkspaceId();
+  const keep = list.find((w) => String(w.id) === String(stored));
+  const current = keep || list[0];
+  setCurrentWorkspaceId(current.id);
+  return { list, current };
 }

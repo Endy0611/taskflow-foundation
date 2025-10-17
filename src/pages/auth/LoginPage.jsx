@@ -92,6 +92,8 @@ export default function LoginPage() {
         credentials: "omit",
       });
 
+      console.log(res);
+
       const data = await safeParseJSON(res);
 
       if (!res.ok) {

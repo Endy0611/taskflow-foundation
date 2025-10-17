@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import SidebarComponent from "../../components/sidebar/SidebarComponent";
+import Sidebar from "../../components/sidebar/Sidebar";  // Use Sidebar.jsx
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
 import { NavLink } from "react-router-dom";
@@ -12,9 +12,7 @@ export default function WorkspaceBoard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
-  const [isTabletOrBelow, setIsTabletOrBelow] = useState(
-    window.innerWidth < 1024
-  );
+  const [isTabletOrBelow, setIsTabletOrBelow] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
     const preferDark =
@@ -48,17 +46,16 @@ export default function WorkspaceBoard() {
           />
         )}
 
-        <SidebarComponent
+        {/* Use Sidebar.jsx only */}
+        <Sidebar
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
-          setShowModal={setShowModal} // ✅ ADD THIS
+          setShowModal={setShowModal} // ✅ Keep this
         />
 
         <main
           className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10 bg-gray-100 dark:bg-gray-900 transition-all duration-300 ${
-            sidebarOpen && isTabletOrBelow
-              ? "opacity-40 pointer-events-none"
-              : ""
+            sidebarOpen && isTabletOrBelow ? "opacity-40 pointer-events-none" : ""
           }`}
           onClick={() => {
             if (isTabletOrBelow && sidebarOpen) setSidebarOpen(false);
@@ -130,7 +127,7 @@ export default function WorkspaceBoard() {
               All Boards in this Workspace
             </h2>
             <div className="grid gap-4 sm:gap-6 xl:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
-              {/* Project Management */}
+              {/* Example Boards (replace with dynamic rendering) */}
               <NavLink
                 to="/projectmanagement"
                 onClick={() =>
@@ -221,74 +218,8 @@ export default function WorkspaceBoard() {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-            />
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 px-4"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
-                <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let’s build a Workspace
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
-                  Boost your productivity by making it easier for everyone to
-                  access boards in one location.
-                </p>
 
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace name
-                </label>
-                <input
-                  type="text"
-                  placeholder="name"
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  This is the name of your company, team or organization.
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace description
-                </label>
-                <textarea
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-6 bg-white dark:bg-gray-700 dark:text-white"
-                  placeholder="Our team organizes everything here."
-                  rows="3"
-                />
-
-                <NavLink
-                  to="/board"
-                  className="block w-full text-center bg-primary text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                >
-                  Continue
-                </NavLink>
-
-                <button
-                  className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
-                  onClick={() => setShowModal(false)}
-                >
-                  ✖️
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ===== Chatbot Modal ===== */}
+      {/* Chatbot Modal */}
       <AnimatePresence>
         {showChatbot && (
           <motion.div
@@ -302,28 +233,6 @@ export default function WorkspaceBoard() {
               <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {showCreateBoard && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowCreateBoard(false)}
-            />
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 px-4"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
-            </motion.div>
-          </>
         )}
       </AnimatePresence>
     </div>

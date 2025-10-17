@@ -32,16 +32,20 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[65px]">
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center">
+          {/* <div className="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center">
             <div className="w-3 h-3 bg-white rounded-full" />
-          </div>
+          </div> */}
           <NavLink
             to="/"
             className={`text-xl sm:text-2xl font-bold ${
               darkMode ? "text-gray-100" : "text-gray-800"
             } tracking-tight`}
           >
-            TaskFlow
+            <img
+              src="/src/assets/logo/logofinal1.png"
+            alt="TaskFLow Logo"
+            className="h-10 sm:h-9 object-contain"
+          />
           </NavLink>
         </div>
 

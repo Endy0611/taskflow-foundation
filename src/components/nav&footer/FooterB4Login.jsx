@@ -17,8 +17,11 @@ export default function FooterB4Login() {
         {/* Logo + About */}
         <div className="md:col-span-1 lg:col-span-2 flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full"></div>
-            <h1 className="text-2xl font-bold">TaskFlow</h1>
+            <img
+              src="/src/assets/logo/logopng.png"
+            alt="TaskFLow Logo"
+            className="h-10 sm:h-12 object-contain"
+          />
           </div>
           <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
             Streamline tasks, track progress, and get things done.
@@ -87,7 +90,7 @@ export default function FooterB4Login() {
             <a href="#" className="border rounded-full p-2 hover:bg-white/10">
               <Instagram size={18} />
             </a>
-            <a href="#" className="border rounded-full p-2 hover:bg-white/10">
+            <a href="https://www.facebook.com/share/p/19qVgAV2Vm/" className="border rounded-full p-2 hover:bg-white/10">
               <Facebook size={18} />
             </a>
             <a href="#" className="border rounded-full p-2 hover:bg-white/10">

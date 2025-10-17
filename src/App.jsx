@@ -18,9 +18,9 @@ import RegisterPage from "./pages/auth/RegisterPage";
 /* User pages */
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
-import BoardB4Create from "./pages/user/BoardB4Create";
+/* Change BoardB4Create to Board */
+import Board from "./pages/user/Board";  // Single dynamic Board file
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
-import Board from "./pages/user/Board";
 import WorkspaceMember from "./pages/user/WorkspaceMember";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
 
@@ -31,6 +31,7 @@ import SwitchAccountPage from "./pages/profile/SwitchAccountPage";
 /* Settings / Project pages */
 import SettingWorkspace from "./pages/user/SettingWorkspace"; // dedicated settings page
 import ProjectManagement from "./pages/user/ProjectManagement";
+import OfflineMode from "./utils/OfflineMode";
 
 /* 404 fallback */
 function NotFound() {
@@ -73,13 +74,13 @@ function App() {
           <Route path="/templateuser" element={<TemplateUser />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/switch-account" element={<SwitchAccountPage />} />
-          {/* ❌ Removed duplicate /settingworkspace here to avoid conflicting layouts */}
         </Route>
 
         {/* Workspace routes (boards, members, settings) */}
         <Route element={<WorkspaceLayout />}>
-          <Route path="/boardb4create" element={<BoardB4Create />} />
-          <Route path="/board/:workspaceId" element={<Board />} />
+          {/* Use a single 'Board' component for all board routes */}
+          <Route path="/board" element={<Board />} /> 
+          <Route path="/board/:workspaceId" element={<Board />} />  {/* Dynamic route */}
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
           <Route path="/workspacemember" element={<WorkspaceMember />} />
           <Route path="/projectmanagement" element={<ProjectManagement />} />
@@ -96,6 +97,7 @@ function App() {
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
+        <Route path="/offline" element={<OfflineMode />} />
       </Routes>
     </BrowserRouter>
   );

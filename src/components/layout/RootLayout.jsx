@@ -1,17 +1,35 @@
-// src/components/layout/RootLayout.jsx
 import React, { useEffect, useState } from "react";
 import NavbarB4Login from "../nav&footer/NavbarB4Login";
-
 import ScrollToTop from "./ScrollToTop";
 import DynamicNavbar from "./DynamicNavbar";
 import { Outlet } from "react-router-dom";
 import FooterB4Login from "../nav&footer/FooterB4Login";
+import OfflineMode from "../../utils/OfflineMode";
 
 export default function RootLayout() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("user"));
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    typeof window !== "undefined" ? !!localStorage.getItem("user") : false
+  );
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // online/offline state
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true
+  );
+
+  useEffect(() => {
+    const onOnline = () => setIsOnline(true);
+    const onOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
 
   // Initialize theme from localStorage (fallback to OS preference if not set)
   useEffect(() => {
@@ -48,6 +66,11 @@ export default function RootLayout() {
     localStorage.theme = next ? "dark" : "light";
   };
 
+  // If offline, render only the offline page (no navbar/footer/background)
+  if (!isOnline) {
+    return <OfflineMode />;
+  }
+
   return (
     <div>
       {isLoggedIn ? (
@@ -59,7 +82,6 @@ export default function RootLayout() {
           setShowModal={setShowModal}
         />
       ) : (
-        // If NavbarB4Login supports theme toggling, it can use these props.
         <NavbarB4Login darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       )}
 
