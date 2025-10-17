@@ -1,437 +1,565 @@
-import { useState, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Home,
-  LayoutGrid,
-  FileText,
-  Search,
-  Bell,
-  PencilRulerIcon,
-  SunIcon,
-  MoonIcon,
-  Menu,
-  X,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Sidebar, { notifyWorkspacesChanged } from "../../components/sidebar/Sidebar";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
+import { Menu } from "lucide-react";
+import { http } from "../../services/http"; // your API helper
+
+const THEME_OPTIONS = ["ANGKOR", "BAYON", "BOKOR", "KIRIROM", "KOH_KONG"];
+
+/* ---------------- Helpers (HAL-safe IDs) ---------------- */
+const getIdFromHref = (href) => {
+  if (!href) return null;
+  try {
+    const u = new URL(href, window.location.origin);
+    const segs = u.pathname.split("/").filter(Boolean);
+    return segs.pop();
+  } catch {
+    const segs = String(href).split("/").filter(Boolean);
+    return segs.pop();
+  }
+};
+
+const getBoardId = (b) => {
+  if (b?.id != null) return String(b.id);
+  const href = b?._links?.self?.href || b?.links?.self?.href;
+  return href ? String(getIdFromHref(href)) : null; // never fall back to title
+};
+
+const getWorkspaceIdFromBoard = (b, fallbackWsId, fallbackWsObj) => {
+  // Prefer current route workspaceId, then board.workspaceId, then saved workspace.id
+  return (
+    String(
+      fallbackWsId ??
+        b?.workspaceId ??
+        fallbackWsObj?.id ??
+        localStorage.getItem("current_workspace_id") ??
+        ""
+    ) || null
+  );
+};
+/* -------------------------------------------------------- */
 
 export default function Board() {
-  const [openDropdown, setOpenDropdown] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const params = useParams();
+  const navigate = useNavigate();
 
-  // Initialize dark mode with system preference / saved choice
-  useEffect(() => {
-    const preferDark =
-      localStorage.theme === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    if (preferDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
+  // Support both /board/:workspaceId and /board/:id
+  const workspaceId = params.workspaceId ?? params.id ?? null;
+
+  // UI state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showWorkspaceModal, setShowModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
+
+  // Current workspace (detail for header)
+  const [workspace, setWorkspace] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("last_workspace") || "{}");
+    } catch {
+      return {};
     }
+  });
+  const [loadingWs, setLoadingWs] = useState(false);
+  const [wsError, setWsError] = useState(null);
+
+  // Initial letter avatar from workspace name
+  const wsInitial = useMemo(() => {
+    const n = (workspace?.name || "Workspace").trim();
+    return n ? n.charAt(0).toUpperCase() : "W";
+  }, [workspace?.name]);
+
+  // ---- Workspace list (for "Your Workspaces" grid) ----
+  const [workspaces, setWorkspaces] = useState([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [listError, setListError] = useState(null);
+
+  // Fetch boards from API
+  const fetchBoardsForWorkspace = async (workspaceId) => {
+    try {
+      const data = await http(`/workspaces/${workspaceId}/boards`, {
+        method: "GET",
+      });
+      return data?._embedded?.boards || [];
+    } catch (e) {
+      console.error("Failed to fetch boards:", e);
+      return [];
+    }
+  };
+
+  const [boards, setBoards] = useState([]);
+  const [loadingBoards, setLoadingBoards] = useState(true);
+  const [boardsError, setBoardsError] = useState(null);
+
+  // ✅ Auto restore workspace + boards immediately after login or refresh
+  useEffect(() => {
+    const cachedWs = JSON.parse(localStorage.getItem("last_workspace") || "{}");
+    const cachedBoards = JSON.parse(
+      localStorage.getItem(`boards-${cachedWs?.id}`) || "[]"
+    );
+
+    if (cachedWs?.id) setWorkspace(cachedWs);
+    if (cachedBoards.length > 0) setBoards(cachedBoards);
+
+    // If user opened /board without an ID, redirect to last workspace
+    if (!workspaceId && cachedWs?.id) {
+      navigate(`/board/${cachedWs.id}`, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Close mobile sidebar whenever we cross into desktop (>= md)
+  // Load boards when workspaceId changes
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => {
-      // ensure no mobile overlay state leaks into desktop
-      setSidebarOpen(false);
+    if (!workspaceId) return;
+
+    const loadBoards = async () => {
+      setLoadingBoards(true);
+      setBoardsError(null);
+      const boardsData = await fetchBoardsForWorkspace(workspaceId);
+      setBoards(boardsData);
+      setLoadingBoards(false);
     };
-    // run once to normalize when mounting
-    handleChange();
+
+    loadBoards();
+  }, [workspaceId]);
+
+  // Fetch workspace detail + boards and persist
+  useEffect(() => {
+    if (!workspaceId) return;
+
+    const loadWorkspaceAndBoards = async () => {
+      try {
+        const [workspaceData, boardsData] = await Promise.all([
+          http(`/workspaces/${workspaceId}`),
+          http(`/workspaces/${workspaceId}/boards`),
+        ]);
+
+        setWorkspace(workspaceData);
+        setBoards(boardsData?._embedded?.boards || []);
+
+        // Persist
+        localStorage.setItem("workspace", JSON.stringify(workspaceData));
+        localStorage.setItem("last_workspace", JSON.stringify(workspaceData));
+        localStorage.setItem(
+          "current_workspace_id",
+          String(workspaceData?.id || workspaceId)
+        );
+        localStorage.setItem(
+          `boards-${workspaceData?.id || workspaceId}`,
+          JSON.stringify(boardsData?._embedded?.boards || [])
+        );
+      } catch (error) {
+        setWsError(error.message || "Failed to load workspace or boards");
+      }
+    };
+
+    loadWorkspaceAndBoards();
+  }, [workspaceId]);
+
+  // Close sidebar automatically below lg
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (e) => {
+      if (!e.matches) setSidebarOpen(false);
+    };
+    handleChange(mq);
     mq.addEventListener("change", handleChange);
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
+  // Create Workspace (modal)
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceTheme, setWorkspaceTheme] = useState("ANGKOR");
+  const [loadingCreate, setLoadingCreate] = useState(false);
+  const [createMsg, setCreateMsg] = useState(null);
+  const [createErr, setCreateErr] = useState(null);
+
+  const handleCreateWorkspace = async (e) => {
+    e?.preventDefault?.();
+    setCreateErr(null);
+    setCreateMsg(null);
+
+    const name = workspaceName.trim();
+    if (!name) {
+      setCreateErr("Workspace name is required.");
+      return;
+    }
+    const theme = (workspaceTheme || "").trim() || "ANGKOR";
+
+    setLoadingCreate(true);
+    try {
+      // Try the canonical route (matches your Postman)
+      let data;
+      try {
+        data = await http.post("/workspaces", { name, theme });
+      } catch (err) {
+        const status =
+          err?.response?.status ??
+          err?.status ??
+          (typeof err?.code === "number" ? err.code : undefined);
+
+        if (status !== 404) throw err;
+        data = await http.post("/workspaces/createNew", { name, theme });
+      }
+
+      const selfHref = data?._links?.self?.href || data?.links?.self?.href || "";
+      let newId =
+        data?.id ||
+        data?.workspaceId ||
+        (selfHref ? getIdFromHref(selfHref) : null);
+
+      const normalized = {
+        id: newId ?? Math.random().toString(36).slice(2),
+        name: data?.name || name,
+        theme: data?.theme || theme,
+        ...data,
+      };
+
+      setWorkspaces((prev) => [normalized, ...prev]);
+
+      // Persist for other pages / sidebar
+      localStorage.setItem("last_workspace", JSON.stringify(normalized));
+      localStorage.setItem("current_workspace_id", String(normalized.id));
+      localStorage.setItem("current_workspace_name", normalized.name);
+      localStorage.setItem("current_workspace_theme", normalized.theme);
+
+      try {
+        notifyWorkspacesChanged();
+      } catch {
+        localStorage.setItem("refresh_workspaces", String(Date.now()));
+      }
+
+      setCreateMsg("Workspace created successfully!");
+      setWorkspaceName("");
+      setWorkspaceTheme("ANGKOR");
+      setShowModal(false);
+
+      // Go to the new workspace
+      navigate(`/board/${normalized.id}`);
+    } catch (err) {
+      const status = err?.response?.status ?? err?.status;
+      const message = status
+        ? `Error ${status}: ${
+            err?.response?.data?.message || err?.statusText || "Request failed"
+          }`
+        : err?.message || "Network error";
+      console.error("Create workspace error:", err);
+      setCreateErr(message);
+    } finally {
+      setLoadingCreate(false);
+    }
+  };
+
+  /* -------- When a board is created, navigate to its ProjectManagement page -------- */
+  const handleBoardCreated = (created) => {
+    const id =
+      created?.id ??
+      created?.boardId ??
+      getIdFromHref(created?._links?.self?.href) ??
+      getIdFromHref(created?.links?.self?.href);
+
+    const wsId = getWorkspaceIdFromBoard(created, workspaceId, workspace);
+
+    // Add to UI list
+    setBoards((prev) => [created, ...prev]);
+
+    if (id && wsId) {
+      navigate(`/board/${wsId}/${id}`);
     } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
+      console.warn("Missing workspaceId or boardId after create:", { created });
     }
   };
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
-        {/* Left */}
-        <div className="flex items-center gap-2">
-          {/* Hamburger visible only on mobile */}
-          <button
-            className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-            aria-label="Toggle sidebar"
-            aria-expanded={sidebarOpen}
-            onClick={() => setSidebarOpen((v) => !v)}
-          >
-            {sidebarOpen ? <Menu /> : <Menu />}
-          </button>
-
-          <div className="w-4 h-4 rounded-full bg-green-400" />
-          <span className="font-bold text-xl md:text-3xl">TaskFlow</span>
-        </div>
-
-        {/* Middle (hidden on mobile) */}
-        <div className="hidden md:flex max-w-lg flex-1">
-          <div className="flex-1 md:px-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200/80 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full pl-9 pr-3 py-1.5 rounded bg-white dark:bg-gray-700 dark:text-white text-sm text-black"
-              />
-            </div>
-          </div>
-          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white">
-            Create
-          </button>
-        </div>
-
-        {/* Right */}
-        <div className="flex items-center gap-4 relative">
-          <button className="relative hidden sm:block">
-            <Bell className="w-6 h-6 text-white hover:text-gray-200" />
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-              9
-            </span>
-          </button>
-
-          {/* Profile dropdown */}
-          <div className="relative">
-            <button
-              className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold"
-              onClick={() => setOpen((v) => !v)}
-            >
-              OE
-            </button>
-
-            <AnimatePresence>
-              {open && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-72 text-black bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
-                >
-                  {/* User Info */}
-                  <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
-                    <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white">
-                      OE
-                    </div>
-                    <div>
-                      <p className="font-semibold">Ong Endy</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        endyong@gmail.com
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Menu items */}
-                  <ul className="py-2 text-sm">
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      👥 Switch accounts
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      🙍 Profile & Visibility
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      🕓 Activity
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      ⚙️ Settings
-                    </li>
-                    {/* Dark mode toggle */}
-                    <li
-                      onClick={toggleDarkMode}
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
-                      </span>
-                      <span className="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center">
-                        <span
-                          className={`w-4 h-4 bg-white rounded-full shadow transform transition ${
-                            darkMode ? "translate-x-5" : "translate-x-1"
-                          }`}
-                        />
-                      </span>
-                    </li>
-                  </ul>
-
-                  {/* Bottom actions */}
-                  <div className="py-2 border-t border-gray-200 dark:border-gray-700">
-                    <div
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-blue-600"
-                      onClick={() => setShowModal(true)}
-                    >
-                      ➕ Create Workspace
-                    </div>
-                    <div className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600">
-                      🚪 Log out
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Top-right dark mode toggle */}
-          <button onClick={toggleDarkMode} className="cursor-pointer">
-            {darkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            ) : (
-              <MoonIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            )}
-          </button>
-        </div>
-      </nav>
-
-      {/* Main */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Overlay for mobile when sidebar is open */}
+        {/* Overlay for mobile */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Sidebar: always rendered; slide with transforms on mobile; always visible on md+ */}
-        <aside
-          className={[
-            "transform transition-transform duration-300 will-change-transform",
-            "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
-            "border-r border-gray-300 dark:border-gray-700",
-            sidebarOpen ? "translate-x-0" : "-translate-x-full",
-            "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
-            "top-[56px] md:top-0",
-          ].join(" ")}
+        {/* Sidebar */}
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          setShowModal={setShowModal}
+        />
+
+        {/* Main Content */}
+        <main
+          className="relative flex-1 overflow-y-auto 
+            px-3 sm:px-6 lg:px-10 
+            pt-5 sm:pt-8 lg:pt-10 
+            bg-gray-100 dark:bg-gray-950 
+            transition-all duration-300 ease-in-out"
         >
-          <div className="p-4 text-sm">
-            {/* Close (mobile only) */}
-            <div className="flex items-center justify-between md:hidden mb-2">
-              <span className="font-semibold">Menu</span>
-              <button
-                aria-label="Close sidebar"
-                className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X />
-              </button>
-            </div>
+          {/* Hamburger (Mobile) */}
+          <button
+            className="lg:hidden p-2 mb-4 rounded-md bg-blue-600 text-white"
+            aria-label="Toggle sidebar"
+            onClick={() => setSidebarOpen((v) => !v)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
-            {/* Static links */}
-            <div className="space-y-1">
-              <NavItem icon={<Home size={16} />} text="Home" />
-              <NavItem icon={<LayoutGrid size={16} />} text="Boards" />
-              <NavItem icon={<FileText size={16} />} text="Templates" />
-            </div>
-            <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
-
-            {/* Workspace */}
-            <div className="mt-6">
-              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
-                Workspace
-              </h3>
-              <div
-                className={`flex items-center justify-between cursor-pointer p-2 rounded ${
-                  openDropdown
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-800 dark:text-gray-200"
-                } hover:bg-blue-600 hover:text-white`}
-                onClick={() => setOpenDropdown((v) => !v)}
-              >
-                <span className="flex items-center gap-2 font-medium">
-                  🌍 TaskFlow
-                </span>
-                {openDropdown ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
+          {/* Workspace Header */}
+          <section className="mb-6">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center text-xl font-bold rounded">
+                {wsInitial}
               </div>
-
-              <AnimatePresence>
-                {openDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="overflow-hidden text-gray-600 dark:text-gray-300 rounded-b-lg shadow-lg border border-gray-100 dark:border-gray-700"
-                  >
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Boards
-                    </div>
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Members
-                    </div>
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Settings
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <button
-                className="mt-3 text-blue-600 dark:text-blue-400 text-sm hover:bg-blue-600 hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
-                onClick={() => setShowModal(true)}
-              >
-                + Create a Workspace
-              </button>
+              <div>
+                <h1 className="text-lg md:text-xl font-semibold">
+                  {workspace?.name || "Workspace"}
+                  {workspace?.theme ? (
+                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                      · {workspace.theme}
+                    </span>
+                  ) : null}
+                </h1>
+                {loadingWs ? (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Loading workspace…
+                  </p>
+                ) : wsError ? (
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {wsError}
+                  </p>
+                ) : null}
+              </div>
             </div>
-          </div>
-        </aside>
+          </section>
 
-        {/* Main content */}
-
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-950">
-          {/* Templates */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">
-              Start with a template and let TaskFlow handle the rest with
-              customizable workflows
+          {/* Recently Viewed & Templates Section */}
+          <section className="mb-10">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
+              Start with a template and let TaskFlow handle the rest
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div
+              className="grid 
+              grid-cols-1 
+              sm:grid-cols-2 
+              md:grid-cols-2 
+              lg:grid-cols-3 
+              gap-4 md:gap-6"
+            >
               {["Kanban Templates", "Kanban Templates", "Kanban Templates"].map(
                 (title, idx) => (
-                  <div
+                  <NavLink
                     key={idx}
+                    to="/projectmanagement"
                     className="relative rounded-xl overflow-hidden shadow-md group cursor-pointer"
                   >
                     <img
                       src={`https://picsum.photos/600/400?random=${idx + 1}`}
                       alt={title}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform"
+                      className="w-full h-40 md:h-44 lg:h-48 object-cover group-hover:scale-105 transition-transform"
                     />
+
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-2">
                       {title}
                     </div>
+                  </NavLink>
+                )
+              )}
+            </div>
+          </section>
+
+          {/* Recently Viewed Section */}
+          <section className="mb-10">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
+              Recently viewed
+            </h2>
+            <div
+              className="grid 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-3 
+                lg:grid-cols-4 
+                gap-4 md:gap-6"
+            >
+              {["Boardup", "Boardup", "Create new board"].map((title, idx) =>
+                title !== "Create new board" ? (
+                  <NavLink
+                    key={idx}
+                    to="/projectmanagement"
+                    className="relative rounded-xl overflow-hidden shadow-md border cursor-pointer"
+                  >
+                    <img
+                      src={`https://picsum.photos/600/400?random=${idx + 10}`}
+                      alt={title}
+                      className="w-full h-36 md:h-44 lg:h-48 object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
+                      {title}
+                    </div>
+                  </NavLink>
+                ) : (
+                  <div
+                    key={idx}
+                    onClick={() => setShowCreateBoard(true)}
+                    className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 font-medium text-sm md:text-base">
+                      + {title}
+                    </span>
                   </div>
                 )
               )}
             </div>
           </section>
 
-          {/* Recently Viewed */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Recently viewed</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              {["Boardup", "Boardup", "Create new board"].map((title, idx) => (
-                <div
-                  key={idx}
-                  className={`relative rounded-xl overflow-hidden shadow-md border ${
-                    title === "Create new board"
-                      ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                      : "cursor-pointer"
-                  }`}
-                >
-                  {title !== "Create new board" ? (
-                    <>
-                      <img
-                        src={`https://picsum.photos/600/400?random=${idx + 10}`}
-                        alt={title}
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                        {title}
-                      </div>
-                    </>
-                  ) : (
-                    <span className="text-gray-600 dark:text-gray-300 font-medium">
-                      + {title}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Your Workspaces */}
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Your Workspaces</h2>
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 mb-6 border border-gray-200 dark:border-gray-700">
-              {/* Workspace header */}
-
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                {/* Left: Workspace name */}
+          {/* Your Workspaces (dynamic) */}
+          <section className="mb-20">
+            <h2 className="text-lg md:text-xl font-semibold mb-4">
+              Your Workspaces
+            </h2>
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-sky-500 text-white flex items-center justify-center rounded-md font-bold">
-                    S
+                  <div className="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-md font-bold">
+                    {wsInitial}
                   </div>
-                  <span className="font-semibold">TaskFlow Workspaces</span>
+                  <span className="font-semibold text-base sm:text-lg">
+                    {workspace?.name || "TaskFlow Workspace"}
+                  </span>
+                  <span className="font-semibold">Workspaces</span>
                 </div>
-
-                {/* Right: Actions */}
-                <div className="flex flex-wrap gap-2">
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Boards
-                  </button>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Member
-                  </button>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Setting
-                  </button>
-                  <button className="px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Upgrade
-                  </button>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-nowrap">
+                  {["Boards", "Member", "Setting", "Update"].map((item, i) => (
+                    <NavLink
+                      key={i}
+                      to={`/workspace${item.toLowerCase()}`}
+                      className="flex-shrink-0 px-3 py-1.5 border rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap"
+                    >
+                      {item}
+                    </NavLink>
+                  ))}
                 </div>
               </div>
 
-              {/* Workspace boards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {["Boardup", "Create new board"].map((title, idx) => (
-                  <div
-                    key={idx}
-                    className={`relative rounded-xl overflow-hidden shadow-md border ${
-                      title === "Create new board"
-                        ? "bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
-                        : "cursor-pointer"
-                    }`}
-                  >
-                    {title !== "Create new board" ? (
-                      <>
-                        <img
-                          src={`https://picsum.photos/600/400?random=${
-                            idx + 20
-                          }`}
-                          alt={title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1">
-                          {title}
+              {/* List of Boards */}
+              {loadingBoards ? (
+                <div className="text-sm text-gray-500">Loading boards...</div>
+              ) : boardsError ? (
+                <div className="text-sm text-red-600 dark:text-red-400">
+                  {boardsError}
+                </div>
+              ) : boards.length === 0 ? (
+                <div className="text-sm text-gray-500">
+                  No boards yet. Create one!
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {boards.map((board) => {
+                    const id = getBoardId(board);
+                    const wsId = getWorkspaceIdFromBoard(board, workspaceId, workspace);
+
+                    // No id yet → render disabled card to avoid bad routes
+                    if (!id || !wsId) {
+                      return (
+                        <div
+                          key={Math.random()}
+                          className="relative rounded-xl overflow-hidden shadow-md border bg-white/70 dark:bg-gray-900/70 opacity-60"
+                          title="Waiting for ID…"
+                        >
+                          <img
+                            src={`https://picsum.photos/seed/pending-${Math.random()}/600/400`}
+                            alt={board?.title || "Pending board"}
+                            className="w-full h-36 md:h-44 lg:h-48 object-cover"
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1 flex justify-between">
+                            <span className="truncate">
+                              {board?.title || "Board"}
+                            </span>
+                          </div>
                         </div>
-                      </>
-                    ) : (
-                      <span className="text-gray-600 dark:text-gray-300 font-medium">
-                        + {title}
-                      </span>
-                    )}
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={`${wsId}-${id}`}
+                        className="relative rounded-xl overflow-hidden shadow-md border bg-white dark:bg-gray-900"
+                      >
+                        <img
+                          src={`https://picsum.photos/seed/${id}/600/400`}
+                          alt={board.title}
+                          className="w-full h-36 md:h-44 lg:h-48 object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-sm px-3 py-1 flex justify-between">
+                          <span className="truncate">
+                            {board.title || `Board #${id}`}
+                          </span>
+                        </div>
+                        <button
+                          className="absolute inset-0"
+                          onClick={() => navigate(`/board/${wsId}/${id}`)} // ✅ correct route
+                          aria-label={`Open ${board.title || id}`}
+                        />
+                      </div>
+                    );
+                  })}
+
+                  {/* Create new board */}
+                  <div
+                    onClick={() => setShowCreateBoard(true)}
+                    className="relative rounded-xl overflow-hidden shadow-md border bg-gray-200 dark:bg-gray-800 flex items-center justify-center cursor-pointer"
+                  >
+                    <span className="text-gray-600 dark:text-gray-300 font-medium text-sm md:text-base">
+                      + Create a Board
+                    </span>
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           </section>
+
+          {/* Floating Chatbot Button */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Chatbot"
+            className="fixed bottom-4 right-4 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 z-40 rounded-full shadow-lg cursor-pointer bg-white dark:bg-gray-700"
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
 
-      {/* Modal popup */}
+      {/* Chatbot and Modals */}
       <AnimatePresence>
-        {showModal && (
+        {showChatbot && (
           <>
-            {/* Overlay */}
+            <motion.div
+              className="fixed inset-0 bg-black/50 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowChatbot(false)}
+            />
+            <motion.div
+              className="fixed bottom-24 right-8 z-50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Create Workspace Modal (ONLY this one) */}
+      <AnimatePresence>
+        {showWorkspaceModal && (
+          <>
             <motion.div
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
               initial={{ opacity: 0 }}
@@ -439,7 +567,6 @@ export default function Board() {
               exit={{ opacity: 0 }}
               onClick={() => setShowModal(false)}
             />
-            {/* Center modal */}
             <motion.div
               className="fixed inset-0 flex items-center justify-center z-50 px-4"
               initial={{ scale: 0.8, opacity: 0 }}
@@ -452,36 +579,57 @@ export default function Board() {
                   Let’s build a Workspace
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
-                  Boost your productivity by making it easier for everyone to
-                  access boards in one location.
+                  Boost your productivity by grouping boards in one place.
                 </p>
 
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace name
-                </label>
-                <input
-                  type="text"
-                  placeholder="name"
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  This is the name of your company, team or organization.
-                </p>
+                <form onSubmit={handleCreateWorkspace}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Workspace name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Marketing Team"
+                    value={workspaceName}
+                    onChange={(e) => setWorkspaceName(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-4 bg-white dark:bg-gray-700 dark:text-white"
+                    required
+                  />
 
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace description
-                </label>
-                <textarea
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-6 bg-white dark:bg-gray-700 dark:text-white"
-                  placeholder="Our team organizes everything here."
-                  rows="3"
-                />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Theme
+                  </label>
+                  <select
+                    value={workspaceTheme}
+                    onChange={(e) => setWorkspaceTheme(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  >
+                    {THEME_OPTIONS.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                  Continue
-                </button>
+                  {createErr && (
+                    <div className="text-sm text-red-600 dark:text-red-400 mt-3">
+                      {createErr}
+                    </div>
+                  )}
+                  {createMsg && (
+                    <div className="text-sm text-green-600 dark:text-green-400 mt-3">
+                      {createMsg}
+                    </div>
+                  )}
 
-                {/* Close button */}
+                  <button
+                    type="submit"
+                    disabled={loadingCreate}
+                    className="mt-4 block w-full text-center bg-blue-600 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  >
+                    {loadingCreate ? "Creating..." : "Continue"}
+                  </button>
+                </form>
+
                 <button
                   className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
                   onClick={() => setShowModal(false)}
@@ -493,72 +641,34 @@ export default function Board() {
           </>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
 
-/* Reusable NavItem */
-function NavItem({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
-      {icon} {text}
-    </div>
-  );
-}
-
-/* Reusable user card */
-function UserCard({ name, tag, color, role }) {
-  return (
-    <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-400 dark:border-gray-600">
-      <div
-        className={`w-10 h-10 ${color} text-white flex items-center justify-center rounded-full font-medium`}
-      >
-        {tag}
-      </div>
-      <div className="flex-1">
-        <p className="font-medium text-sm md:text-base">{name}</p>
-      </div>
-      <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-        {role}
-      </span>
-    </div>
-  );
-}
-
-function BoardCard({ title, subtitle, color, image, isCreate }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -4 }}
-      transition={{ type: "spring", stiffness: 300 }}
-      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
-    >
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-36 object-cover group-hover:opacity-90 transition"
-        />
-      ) : (
-        <div
-          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
-        >
-          {isCreate ? "+" : title}
-        </div>
-      )}
-
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {subtitle}
-          </p>
+      {/* Create Board Modal */}
+      <AnimatePresence>
+        {showCreateBoard && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCreateBoard(false)}
+            />
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center z-50 px-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CreateBoardComponent
+                workspaceId={workspaceId || workspace?.id}
+                onSuccess={handleBoardCreated}
+                onClose={() => setShowCreateBoard(false)}
+              />
+            </motion.div>
+          </>
         )}
-      </div>
-
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
-    </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }

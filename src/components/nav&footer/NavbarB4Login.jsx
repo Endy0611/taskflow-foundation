@@ -1,121 +1,152 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
-export default function NavbarB4Login() {
-  const [isDarkMode, setIsDarkMode] = useState(true); 
+export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHoveringNav, setIsHoveringNav] = useState(false);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Features", path: "/features" },
+    { name: "Templates", path: "/templates" },
+    { name: "About Us", path: "/about" },
+  ];
+
+  // Effect to apply dark mode when darkMode prop changes
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [darkMode]);
 
   return (
-    <nav className="font-roboto" style={{ backgroundColor: 'white', padding: '1rem 0', borderBottom: '1px solid #e5e7eb' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '55px' }}>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ 
-            width: '24px', 
-            height: '24px', 
-            backgroundColor: '#10B981', 
-            borderRadius: '50%', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center' 
-          }}>
-            <div style={{ 
-              width: '10px', 
-              height: '10px', 
-              backgroundColor: 'white', 
-              borderRadius: '50%' 
-            }}></div>
-          </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: '600', color: '#333333' }}>TaskFlow</span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <a href="#home" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
-            Home
-          </a>
-          <a href="#features" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
-            Features
-          </a>
-          <a href="#templates" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
-            Templates
-          </a>
-          <a href="#templates" className="text-default" style={{ textDecoration: 'none', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '6px', transition: 'all 0.2s ease' }}>
-            About Us
-          </a>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="text-default" style={{ 
-            background: 'none', 
-            border: 'none', 
-            fontWeight: '500', 
-            padding: '0.5rem 1rem', 
-            cursor: 'pointer', 
-            borderRadius: '6px', 
-            transition: 'all 0.2s ease',
-            fontFamily: 'inherit'
-          }}>
-            Log in
-          </button>
-          <button style={{ 
-            backgroundColor: 'var(--color-primary)', 
-            color: 'white', 
-            border: 'none', 
-            padding: '0.75rem 1.5rem', 
-            borderRadius: '8px', 
-            fontWeight: '500', 
-            cursor: 'pointer', 
-            transition: 'all 0.2s ease',
-            fontFamily: 'inherit'
-          }}>
-            Sign up - It's free!
-          </button>
-          <div 
-            onClick={toggleDarkMode}
-            style={{
-              width: '60px',
-              height: '30px',
-              backgroundColor: '#2D3748',
-              borderRadius: '15px',
-              position: 'relative',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0 8px'
-            }}
+    <nav
+      className={`font-roboto fixed top-0 w-full z-50 ${
+        darkMode ? "bg-gray-900/70 dark:bg-gray-900/70" : "bg-white/70"
+      } backdrop-blur-md border-b border-gray-200 dark:border-gray-700`}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[65px]">
+        {/* Left: Logo */}
+        <div className="flex items-center gap-2">
+          {/* <div className="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center">
+            <div className="w-3 h-3 bg-white rounded-full" />
+          </div> */}
+          <NavLink
+            to="/"
+            className={`text-xl sm:text-2xl font-bold ${
+              darkMode ? "text-gray-100" : "text-gray-800"
+            } tracking-tight`}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ zIndex: 2, position: 'relative' }}>
-              <circle cx="12" cy="12" r="4" stroke={!isDarkMode ? "#ffffff" : "#9CA3AF"} strokeWidth="2"/>
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" 
-                stroke={!isDarkMode ? "#ffffff" : "#9CA3AF"} 
-                strokeWidth="2" 
-                strokeLinecap="round"/>
-            </svg>
-  
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ zIndex: 2, position: 'relative' }}>
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" 
-                stroke={isDarkMode ? "#ffffff" : "#9CA3AF"} 
-                strokeWidth="2" 
-                fill="none"/>
-            </svg>
-            <div style={{
-              width: '26px',
-              height: '26px',
-              backgroundColor: isDarkMode ? '#3B82F6' : '#FF8C42',
-              borderRadius: '50%',
-              position: 'absolute',
-              right: isDarkMode ? '2px' : '32px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-            }}>
-            </div>
-          </div>
+            <img
+              src="/src/assets/logo/logofinal1.png"
+            alt="TaskFLow Logo"
+            className="h-10 sm:h-9 object-contain"
+          />
+          </NavLink>
+        </div>
+
+        {/* Center Links */}
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.name}
+              to={link.path}
+              className={({ isActive }) =>
+                `font-medium px-3 py-2 rounded-lg transition ${
+                  isActive
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-gray-700 dark:text-gray-200"
+                }`
+              }
+            >
+              {link.name}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Right Buttons + Theme */}
+        <div className="flex items-center gap-3">
+          <NavLink
+            to="/login"
+            className={`hidden lg:block ${
+              darkMode ? "text-gray-200" : "text-gray-700"
+            } font-medium px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition`}
+          >
+            Log in
+          </NavLink>
+          <NavLink
+            to="/register"
+            className="hidden lg:block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition"
+          >
+            Sign up - It's free!
+          </NavLink>
+
+          {/* Dark Mode Toggle */}
+          {darkMode ? (
+            <Sun
+              size={22}
+              className="cursor-pointer text-yellow-400 hover:scale-110 transition"
+              onClick={toggleDarkMode}
+            />
+          ) : (
+            <Moon
+              size={22}
+              className="cursor-pointer text-gray-700 hover:text-gray-900 dark:text-gray-200 hover:scale-110 transition"
+              onClick={toggleDarkMode}
+            />
+          )}
+
+          {/* Mobile Menu Button */}
+          <button
+            className={`lg:hidden ${darkMode ? "text-gray-200" : "text-gray-800"}`}
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown */}
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div
+          className={`${
+            darkMode ? "bg-gray-900 dark:bg-gray-900" : "bg-white"
+          } border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3`}
+        >
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.name}
+              to={link.path}
+              onClick={() => setIsOpen(false)}
+              className="block font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-3 py-2"
+            >
+              {link.name}
+            </NavLink>
+          ))}
+          <NavLink
+            to="/login"
+            className={`block ${
+              darkMode ? "text-gray-200" : "text-gray-700"
+            } px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+          >
+            Log in
+          </NavLink>
+          <NavLink
+            to="/register"
+            className="block bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm"
+          >
+            Sign up - It's free!
+          </NavLink>
         </div>
       </div>
     </nav>
-  )
+  );
 }

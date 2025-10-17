@@ -1,28 +1,19 @@
-import { useState, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Home,
-  LayoutGrid,
-  FileText,
-  Search,
-  Bell,
-  PencilRulerIcon,
-  SunIcon,
-  MoonIcon,
-  Menu,
-  X,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Sidebar from "../../components/sidebar/Sidebar";  // Use Sidebar.jsx
+import TaskFlowChatbot from "../../components/chatbot/Chatbot";
+import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
+import { NavLink } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function WorkspaceBoard() {
-  const [openDropdown, setOpenDropdown] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
+  const [isTabletOrBelow, setIsTabletOrBelow] = useState(window.innerWidth < 1024);
 
-  // Initialize dark mode with system preference / saved choice
   useEffect(() => {
     const preferDark =
       localStorage.theme === "dark" ||
@@ -34,467 +25,264 @@ export default function WorkspaceBoard() {
     }
   }, []);
 
-  // Close mobile sidebar whenever we cross into desktop (>= md)
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => {
-      // ensure no mobile overlay state leaks into desktop
-      setSidebarOpen(false);
+    const handleResize = () => {
+      const isTablet = window.innerWidth < 1024;
+      setIsTabletOrBelow(isTablet);
+      if (!isTablet) setSidebarOpen(true);
     };
-    // run once to normalize when mounting
-    handleChange();
-    mq.addEventListener("change", handleChange);
-    return () => mq.removeEventListener("change", handleChange);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.theme = "dark";
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.theme = "light";
-    }
-  };
-
   return (
-    <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Navbar */}
-      <nav className="sticky top-0 bg-blue-700 text-white px-4 md:px-10 py-3 flex items-center justify-between z-50 shadow">
-        {/* Left */}
-        <div className="flex items-center gap-2">
-          {/* Hamburger visible only on mobile */}
-          <button
-            className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-            aria-label="Toggle sidebar"
-            aria-expanded={sidebarOpen}
-            onClick={() => setSidebarOpen((v) => !v)}
-          >
-            {sidebarOpen ? <Menu /> : <Menu />}
-          </button>
-
-          <div className="w-4 h-4 rounded-full bg-green-400" />
-          <span className="font-bold text-xl md:text-3xl">TaskFlow</span>
-        </div>
-
-        {/* Middle (hidden on mobile) */}
-        <div className="hidden md:flex max-w-lg flex-1">
-          <div className="flex-1 md:px-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200/80 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full pl-9 pr-3 py-1.5 rounded bg-white dark:bg-gray-700 dark:text-white text-sm text-black"
-              />
-            </div>
-          </div>
-          <button className="bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-sm text-white">
-            Create
-          </button>
-        </div>
-
-        {/* Right */}
-        <div className="flex items-center gap-4 relative">
-          <button className="relative hidden sm:block">
-            <Bell className="w-6 h-6 text-white hover:text-gray-200" />
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-              9
-            </span>
-          </button>
-
-          {/* Profile dropdown */}
-          <div className="relative">
-            <button
-              className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center font-semibold"
-              onClick={() => setOpen((v) => !v)}
-            >
-              OE
-            </button>
-
-            <AnimatePresence>
-              {open && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-72 text-black bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
-                >
-                  {/* User Info */}
-                  <div className="px-4 py-3 flex items-center gap-3 border-b border-gray-200 dark:border-gray-700">
-                    <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-semibold text-white">
-                      OE
-                    </div>
-                    <div>
-                      <p className="font-semibold">Ong Endy</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        endyong@gmail.com
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Menu items */}
-                  <ul className="py-2 text-sm">
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      👥 Switch accounts
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      🙍 Profile & Visibility
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      🕓 Activity
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center gap-2">
-                      ⚙️ Settings
-                    </li>
-                    {/* Dark mode toggle */}
-                    <li
-                      onClick={toggleDarkMode}
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center justify-between"
-                    >
-                      <span className="flex items-center gap-2">
-                        {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
-                      </span>
-                      <span className="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center">
-                        <span
-                          className={`w-4 h-4 bg-white rounded-full shadow transform transition ${
-                            darkMode ? "translate-x-5" : "translate-x-1"
-                          }`}
-                        />
-                      </span>
-                    </li>
-                  </ul>
-
-                  {/* Bottom actions */}
-                  <div className="py-2 border-t border-gray-200 dark:border-gray-700">
-                    <div
-                      className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-blue-600"
-                      onClick={() => setShowModal(true)}
-                    >
-                      ➕ Create Workspace
-                    </div>
-                    <div className="px-4 py-2 hover:bg-red-100 dark:hover:bg-red-700 cursor-pointer text-sm text-red-600">
-                      🚪 Log out
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Top-right dark mode toggle */}
-          <button onClick={toggleDarkMode} className="cursor-pointer">
-            {darkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            ) : (
-              <MoonIcon className="w-6 h-6 text-yellow-300 hover:text-yellow-200" />
-            )}
-          </button>
-        </div>
-      </nav>
-
-      {/* Main */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
-        {/* Overlay for mobile when sidebar is open */}
-        {sidebarOpen && (
+        {sidebarOpen && isTabletOrBelow && (
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Sidebar: always rendered; slide with transforms on mobile; always visible on md+ */}
-        <aside
-          className={[
-            "transform transition-transform duration-300 will-change-transform",
-            "fixed inset-y-0 left-0 w-64 z-40 bg-gray-50 dark:bg-gray-900",
-            "border-r border-gray-300 dark:border-gray-700",
-            sidebarOpen ? "translate-x-0" : "-translate-x-full",
-            "md:static md:translate-x-0 md:inset-auto md:h-auto md:z-0",
-            "top-[56px] md:top-0",
-          ].join(" ")}
+        {/* Use Sidebar.jsx only */}
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          setShowModal={setShowModal} // ✅ Keep this
+        />
+
+        <main
+          className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10 bg-gray-100 dark:bg-gray-900 transition-all duration-300 ${
+            sidebarOpen && isTabletOrBelow ? "opacity-40 pointer-events-none" : ""
+          }`}
+          onClick={() => {
+            if (isTabletOrBelow && sidebarOpen) setSidebarOpen(false);
+          }}
         >
-          <div className="p-4 text-sm">
-            {/* Close (mobile only) */}
-            <div className="flex items-center justify-between md:hidden mb-2">
-              <span className="font-semibold">Menu</span>
-              <button
-                aria-label="Close sidebar"
-                className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X />
-              </button>
-            </div>
+          {/* ===== Header ===== */}
+          <div className="mb-8 sm:mb-10">
+            <button
+              className="lg:hidden p-2 rounded-md bg-primary text-white shadow-md"
+              aria-label="Toggle sidebar"
+              onClick={() => setSidebarOpen((v) => !v)}
+            >
+              <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-            {/* Static links */}
-            <div className="space-y-1">
-              <NavItem icon={<Home size={16} />} text="Home" />
-              <NavItem icon={<LayoutGrid size={16} />} text="Boards" />
-              <NavItem icon={<FileText size={16} />} text="Templates" />
-            </div>
-            <div className="border-b my-4 border-gray-400 dark:border-gray-700" />
-
-            {/* Workspace */}
-            <div className="mt-6">
-              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
-                Workspace
-              </h3>
-              <div
-                className={`flex items-center justify-between cursor-pointer p-2 rounded ${
-                  openDropdown
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-800 dark:text-gray-200"
-                } hover:bg-blue-600 hover:text-white`}
-                onClick={() => setOpenDropdown((v) => !v)}
-              >
-                <span className="flex items-center gap-2 font-medium">
-                  🌍 TaskFlow
-                </span>
-                {openDropdown ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </div>
-
-              <AnimatePresence>
-                {openDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="overflow-hidden text-gray-600 dark:text-gray-300 rounded-b-lg shadow-lg border border-gray-100 dark:border-gray-700"
-                  >
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Boards
-                    </div>
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Members
-                    </div>
-                    <div className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 p-2">
-                      Settings
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <button
-                className="mt-3 text-blue-600 dark:text-blue-400 text-sm hover:bg-blue-600 hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
-                onClick={() => setShowModal(true)}
-              >
-                + Create a Workspace
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 dark:bg-gray-900">
-          {/* Workspace header */}
-          <div className="mb-10">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-2xl font-bold shadow-lg">
+            <div className="flex items-center gap-3 sm:gap-4 mt-4 sm:mt-6 min-w-0">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-pink-500 text-white text-lg sm:text-2xl font-bold shadow-md sm:shadow-lg">
                 TF
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <div className="flex flex-col justify-center min-w-0">
+                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white truncate">
                   TaskFlow Workspace
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
                   🔒 Private workspace
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Your Boards */}
-          <section className="mb-12">
-            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          {/* ===== Your Boards Section ===== */}
+          <section className="mb-10 sm:mb-12">
+            <h2 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 sm:mb-4">
               Your Boards
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <BoardCard
-                title="Project Management"
-                color="from-blue-600 to-indigo-500"
-              />
+            <div className="grid gap-4 sm:gap-6 xl:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
+                <BoardCard
+                  title="Project Management"
+                  image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                  color="from-blue-600 to-indigo-500"
+                />
+              </NavLink>
+
               <BoardCard
                 title="Create new board"
                 color="from-purple-500 to-pink-500"
                 subtitle="9 remaining"
                 isCreate
+                onClick={() => setShowCreateBoard(true)}
               />
             </div>
           </section>
 
-          {/* Divider */}
-          <div className="border-t border-gray-300 dark:border-gray-700 my-10" />
+          <div className="border-t border-gray-300 dark:border-gray-700 my-8 sm:my-10" />
 
-          {/* All Boards in this Workspace */}
+          {/* ===== All Boards ===== */}
           <section>
-            <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            <h2 className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 sm:mb-4">
               All Boards in this Workspace
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              <BoardCard
-                title="Project Management"
-                image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
-              />
-              <BoardCard
-                title="Java - Expense Tracker"
-                image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
-              />
-              <BoardCard
-                title="Document"
-                image="https://images.unsplash.com/photo-1587614295999-6f0de2c48f9f?q=80&w=800&auto=format&fit=crop"
-              />
+            <div className="grid gap-4 sm:gap-6 xl:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
+              {/* Example Boards (replace with dynamic rendering) */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
+                <BoardCard
+                  title="Project Management"
+                  image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop"
+                />
+              </NavLink>
+
+              {/* Java - Expense Tracker */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
+                <BoardCard
+                  title="Java - Expense Tracker"
+                  image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                />
+              </NavLink>
+
+              {/* Document */}
+              <NavLink
+                to="/projectmanagement"
+                onClick={() =>
+                  localStorage.setItem(
+                    "boardBackground",
+                    "https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                  )
+                }
+                className="block"
+              >
+                <BoardCard
+                  title="Document"
+                  image="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=800&auto=format&fit=crop"
+                />
+              </NavLink>
+
               <BoardCard
                 title="Create new board"
                 color="from-blue-500 to-teal-400"
                 subtitle="7 remaining"
                 isCreate
+                onClick={() => setShowCreateBoard(true)}
               />
             </div>
           </section>
+
+          {/* ===== Chatbot Icon ===== */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Chatbot"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-lg cursor-pointer bg-white z-40 hover:scale-105 transition-transform duration-200"
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
 
-      {/* Modal popup */}
+      {/* ===== Create Board Modal ===== */}
       <AnimatePresence>
-        {showModal && (
-          <>
-            {/* Overlay */}
+        {showCreateBoard && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-            />
-            {/* Center modal */}
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 px-4"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
-                <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let’s build a Workspace
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
-                  Boost your productivity by making it easier for everyone to
-                  access boards in one location.
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace name
-                </label>
-                <input
-                  type="text"
-                  placeholder="name"
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  This is the name of your company, team or organization.
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace description
-                </label>
-                <textarea
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-6 bg-white dark:bg-gray-700 dark:text-white"
-                  placeholder="Our team organizes everything here."
-                  rows="3"
-                />
-
-                <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                  Continue
-                </button>
-
-                {/* Close button */}
-                <button
-                  className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
-                  onClick={() => setShowModal(false)}
-                >
-                  ✖
-                </button>
-              </div>
+              <CreateBoardComponent onClose={() => setShowCreateBoard(false)} />
             </motion.div>
-          </>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chatbot Modal */}
+      <AnimatePresence>
+        {showChatbot && (
+          <motion.div
+            className="fixed bottom-20 right-3 sm:bottom-24 sm:right-8 z-50 w-[90%] max-w-[380px] sm:max-w-[420px] md:max-w-[480px]"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-h-[80vh] sm:max-h-[85vh] flex flex-col">
+              <TaskFlowChatbot onClose={() => setShowChatbot(false)} />
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-/* Reusable NavItem */
-function NavItem({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 cursor-pointer hover:text-white hover:bg-blue-600 rounded px-2 py-3">
-      {icon} {text}
-    </div>
-  );
-}
-
-/* Reusable user card */
-function UserCard({ name, tag, color, role }) {
-  return (
-    <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-400 dark:border-gray-600">
-      <div
-        className={`w-10 h-10 ${color} text-white flex items-center justify-center rounded-full font-medium`}
-      >
-        {tag}
-      </div>
-      <div className="flex-1">
-        <p className="font-medium text-sm md:text-base">{name}</p>
-      </div>
-      <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-        {role}
-      </span>
-    </div>
-  );
-}
-
-function BoardCard({ title, subtitle, color, image, isCreate }) {
-  return (
+/* ===== BoardCard Component ===== */
+function BoardCard({ title, subtitle, color, image, isCreate, onClick }) {
+  const content = (
     <motion.div
-      whileHover={{ scale: 1.05, y: -4 }}
+      whileHover={{ scale: 1.04, y: -3 }}
       transition={{ type: "spring", stiffness: 300 }}
-      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white/70 dark:bg-gray-700/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50"
+      className="group relative rounded-2xl shadow-lg overflow-hidden cursor-pointer bg-white dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50 h-52 sm:h-56 md:h-64 lg:h-72 flex flex-col"
+      onClick={onClick}
     >
-      {image ? (
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-36 object-cover group-hover:opacity-90 transition"
-        />
-      ) : (
-        <div
-          className={`w-full h-36 flex items-center justify-center bg-gradient-to-br ${color} text-white text-lg font-semibold`}
-        >
-          {isCreate ? "+" : title}
-        </div>
-      )}
+      <div className="w-full h-36 sm:h-40 md:h-44 lg:h-52">
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        ) : (
+          <div
+            className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${color} text-white font-semibold`}
+          >
+            {isCreate ? (
+              <span className="text-3xl sm:text-4xl">+</span>
+            ) : (
+              <span className="text-base sm:text-lg md:text-xl text-center px-2">
+                {title}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+      <div className="h-16 sm:h-16 md:h-20 lg:h-20 px-4 flex flex-col justify-center bg-white dark:bg-gray-800">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-base sm:text-lg truncate">
           {title}
         </h3>
         {subtitle && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
             {subtitle}
           </p>
         )}
       </div>
-
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition" />
     </motion.div>
   );
+
+  return isCreate ? content : content;
 }
