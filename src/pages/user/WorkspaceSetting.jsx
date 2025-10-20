@@ -1,68 +1,138 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, PencilRuler } from "lucide-react"; // ✅ correct Lucide icon
+import { Menu, PencilRuler, Plus } from "lucide-react";
+import { NavLink, useParams } from "react-router-dom";
+import Sidebar from "../../components/sidebar/Sidebar";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
-import Sidebar from "../../components/sidebar/Sidebar";  // Use Sidebar.jsx
-import { NavLink } from "react-router-dom";
+import toast from "react-hot-toast";
 
+import {
+  fetchWorkspaceMembers,
+  removeMember,
+  addMemberByUsername,
+} from "../../services/workspaceService";
 import InviteMemberModal from "../../components/workspace/InviteMemberModal";
-import RoleDropdown from "../../components/workspace/RoleDropdown";
-import ConfirmDialog from "../../components/workspace/ConfirmDialog";
+import { http } from "../../services/http";
 
-import { fetchWorkspaceMembers, removeMember, createInviteLink } from "../../services/workspaceService";
-import { getCurrentUser } from "../../Implement/api";
+/* ---------------- Helper Component ---------------- */
+function UserCard({ name, initials, color, role, onRemove }) {
+  return (
+    <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-300 dark:border-gray-600 relative">
+      <div className="flex items-center gap-3">
+        <div
+          className={`w-10 h-10 ${color} text-white flex items-center justify-center rounded-full font-medium`}
+        >
+          {initials}
+        </div>
+        <div>
+          <p className="font-medium text-sm md:text-base">{name}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-300">{role}</p>
+        </div>
+      </div>
 
-// 👉 Use real workspace id (route/store). For now fallback to 1.
-const WORKSPACE_ID = Number(localStorage.getItem("current_workspace_id") || 1);
+      <button
+        onClick={onRemove}
+        className="absolute top-2 right-3 text-xs text-gray-500 hover:text-red-600"
+      >
+        ✖
+      </button>
+    </div>
+  );
+}
 
+/* ---------------- Main Component ---------------- */
 export default function WorkspaceSetting() {
+  const { id } = useParams();
+  const workspaceId = Number(
+    id || localStorage.getItem("current_workspace_id") || 1
+  );
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [workspace, setWorkspace] = useState({});
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // figure out the best next URL for "Continue"
-  const workspaceId = useMemo(() => localStorage.getItem("current_workspace_id"), []);
-  const continueHref = workspaceId ? `/board/${workspaceId}` : "/workspaceboard";
-
-  // Reset sidebar when resizing
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    const handleChange = () => setSidebarOpen(false);
-    handleChange();
-    mq.addEventListener("change", handleChange);
-    return () => mq.removeEventListener("change", handleChange);
-  }, []);
-
-  // Fetch members for workspace
-  async function loadMembers() {
-    setLoading(true);
+  /* ---------------- Fetch Workspace Info ---------------- */
+  async function fetchWorkspaceInfo() {
     try {
-      const fetchedMembers = await fetchWorkspaceMembers(WORKSPACE_ID);
-      setMembers(fetchedMembers);
+      const res = await http.get(`/workspaces/${workspaceId}`);
+      setWorkspace(res);
+      localStorage.setItem("current_workspace_name", res.name);
+      localStorage.setItem("current_workspace_theme", res.theme);
+      // console.log("✅ Workspace info:", res);
     } catch (error) {
-      console.error("Error fetching workspace members:", error);
+      console.error("❌ Error fetching workspace:", error);
+      toast.error("Failed to load workspace");
+    }
+  }
+
+  /* ---------------- Fetch Members ---------------- */
+  async function loadMembers() {
+    try {
+      setLoading(true);
+      const list = await fetchWorkspaceMembers(workspaceId);
+      setMembers(list);
+    } catch (error) {
+      console.error("❌ Error fetching members:", error);
+      toast.error("Failed to load workspace members");
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    loadMembers();
-  }, []);
+  /* ---------------- Invite New Member ---------------- */
+  async function handleInvite(username, permission) {
+    try {
+      const newMember = await addMemberByUsername({
+        username,
+        workspaceId,
+        permission,
+      });
 
-  // Copy Invite link function
-  async function onCopyInviteLink() {
-    const link = await createInviteLink(WORKSPACE_ID);
-    await navigator.clipboard.writeText(link).catch(() => {});
+      if (newMember) {
+        toast.success(`Invited ${username} as ${permission}!`);
+
+        // ✅ Instantly show new member (optimistic update)
+        const newUser = {
+          username,
+          initials: username.slice(0, 2).toUpperCase(),
+          color: "bg-yellow-500",
+          permission,
+          membershipId: newMember.id || Math.random(),
+        };
+        setMembers((prev) => [...prev, newUser]);
+      }
+    } catch (error) {
+      console.error("❌ Invite failed:", error);
+      toast.error("Failed to invite member");
+    }
   }
 
+  /* ---------------- Remove Member ---------------- */
+  async function handleRemove(membershipId) {
+    try {
+      await removeMember({ membershipId });
+      toast.success("Member removed!");
+      setMembers((prev) => prev.filter((m) => m.membershipId !== membershipId));
+    } catch (error) {
+      console.error("❌ Failed to remove member:", error);
+      toast.error("Failed to remove member");
+    }
+  }
+
+  /* ---------------- Initial Load ---------------- */
+  useEffect(() => {
+    fetchWorkspaceInfo();
+    loadMembers();
+  }, [workspaceId]);
+
+  /* ---------------- UI ---------------- */
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
-      {/* Main */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Overlay for mobile */}
+        {/* Sidebar overlay (mobile) */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 md:hidden"
@@ -71,109 +141,107 @@ export default function WorkspaceSetting() {
         )}
 
         {/* Sidebar */}
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-          setShowModal={setShowModal}
-        />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        {/* Main content */}
-        <main className="flex-1 md:pl-32 p-4 md:p-8 overflow-y-auto bg-white dark:bg-gray-800 dark:text-white">
-          <div className="max-w-3xl space-y-8">
-            {/* Hamburger visible only on mobile */}
-            <button
-              className="md:hidden p-2 -ml-2 rounded hover:bg-blue-600"
-              aria-label="Toggle sidebar"
-              aria-expanded={sidebarOpen}
-              onClick={() => setSidebarOpen((v) => !v)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+        {/* Main Content */}
+        <main className="flex-1 p-5 sm:p-8 md:p-10 bg-white dark:bg-gray-800 overflow-y-auto">
+          <button
+            className="md:hidden p-2 mb-4 rounded hover:bg-blue-600"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
 
-            {/* Workspace header */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-3xl font-bold rounded">
-                S
-              </div>
-              <div>
-                <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2">
-                  Schedula Workspace <PencilRuler />
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1">
-                  🔒 Private
-                </p>
-              </div>
+          {/* Header */}
+          <div className="flex items-center gap-3 flex-wrap mb-8">
+            <div className="w-12 h-12 bg-orange-500 text-white flex items-center justify-center text-2xl font-bold rounded">
+              {(workspace?.name || "W").charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold flex items-center gap-2">
+                {workspace?.name || "Workspace"} <PencilRuler />
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                🔒 Private Workspace
+              </p>
+            </div>
+          </div>
+
+          {/* Visibility */}
+          <section className="mb-6">
+            <h2 className="font-semibold text-base md:text-lg mb-1">
+              Workspace visibility
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              🔒 Private – visible only to its members.
+            </p>
+          </section>
+
+          {/* Members */}
+          <section className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="font-semibold text-base md:text-lg">
+                Workspace Members
+              </h2>
+              <button
+                onClick={() => setShowInviteModal(true)}
+                className="flex items-center gap-1 bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700 transition"
+              >
+                <Plus size={14} /> Invite
+              </button>
             </div>
 
-            {/* Workspace visibility */}
-            <section>
-              <h2 className="font-semibold mb-1 text-base md:text-lg">
-                Workspace visibility
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                🔒 Private – This Workspace is private. It's not indexed or visible to those outside the Workspace.
-              </p>
-            </section>
+            {loading ? (
+              <p className="text-sm text-gray-500">Loading members…</p>
+            ) : members.length === 0 ? (
+              <p className="text-sm text-gray-500">No members found</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {members.map((m, index) => {
+                  const keyParts = [
+                    m.membershipId,
+                    m.id,
+                    m.userId,
+                    m.username,
+                    index,
+                  ].filter(Boolean);
 
-            {/* Owners */}
-            <section>
-              <h2 className="font-semibold mb-3 flex justify-between items-center text-base md:text-lg">
-                Workspace owner{" "}
-                <button className="bg-gray-100 dark:bg-gray-700 rounded-sm font-normal text-xs md:text-sm px-3 md:px-4 py-1 hover:bg-gray-300 dark:hover:bg-gray-600">
-                  Invite Member
-                </button>
-              </h2>
-              <div className="space-y-3">
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-blue-600"
-                  role="Owner"
-                />
-                <UserCard
-                  name="Tith Cholna"
-                  tag="TC"
-                  color="bg-purple-500"
-                  role="Admin"
-                />
+                  const key = keyParts.join("-"); // guaranteed unique combo like "12-userA-0"
+
+                  return (
+                    <UserCard
+                      key={key}
+                      name={m.username || "Unknown"}
+                      initials={m.initials || "U"}
+                      color={m.color || "bg-indigo-600"}
+                      role={m.permission || "VIEWER"}
+                      onRemove={() => handleRemove(m.membershipId ?? m.id)}
+                    />
+                  );
+                })}
               </div>
-            </section>
+            )}
+          </section>
 
-            {/* Members */}
-            <section>
-              <h2 className="font-semibold mb-3 text-base md:text-lg">
-                Members
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {loading ? (
-                  <div className="text-sm text-gray-500">Loading members…</div>
-                ) : (
-                  members.map((m) => (
-                    <UserCard key={m.membershipId} name={m.name} tag={m.tag} color={m.color} role={m.role} />
-                  ))
-                )}
-              </div>
-            </section>
+          {/* Continue */}
+          <NavLink
+            to={`/board/${workspaceId}`}
+            className="inline-block mt-6 bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow hover:bg-blue-700"
+          >
+            Continue
+          </NavLink>
 
-            {/* Continue button */}
-            <NavLink
-              to={continueHref}
-              className="inline-block bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            >
-              Continue
-            </NavLink>
-
-            {/* Floating chatbot button */}
-            <img
-              src="/src/assets/general/chatbot.png"
-              alt="Our Chatbot"
-              className="fixed bottom-6 right-6 w-16 h-16 sm:w-20 sm:h-20 z-40 rounded-full shadow-lg cursor-pointer bg-white"
-              onClick={() => setShowChatbot(true)}
-            />
-          </div>
+          {/* Chatbot */}
+          <img
+            src="/src/assets/general/chatbot.png"
+            alt="Chatbot"
+            className="fixed bottom-6 right-6 w-14 h-14 z-40 rounded-full shadow-lg cursor-pointer bg-white dark:bg-gray-700"
+            onClick={() => setShowChatbot(true)}
+          />
         </main>
       </div>
 
+      {/* Chatbot Modal */}
       <AnimatePresence>
         {showChatbot && (
           <>
@@ -197,90 +265,16 @@ export default function WorkspaceSetting() {
         )}
       </AnimatePresence>
 
-      {/* Modal */}
+      {/* Invite Modal */}
       <AnimatePresence>
-        {showModal && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-            />
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 px-4"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-lg max-w-lg w-full p-6 md:p-8 relative">
-                <h2 className="text-xl md:text-2xl font-bold mb-2">
-                  Let's build a Workspace
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm md:text-base">
-                  Boost your productivity by making it easier for everyone to access boards in one location.
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace name
-                </label>
-                <input
-                  type="text"
-                  placeholder="name"
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                  This is the name of your company, team or organization.
-                </p>
-
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Workspace description
-                </label>
-                <textarea
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-6 bg-white dark:bg-gray-700 dark:text-white"
-                  placeholder="Our team organizes everything here."
-                  rows="3"
-                />
-
-                <NavLink
-                  to={continueHref}
-                  className="block w-full text-center bg-blue-600 text-white font-medium py-2.5 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                >
-                  Continue
-                </NavLink>
-
-                <button
-                  className="absolute top-3 right-3 text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white"
-                  onClick={() => setShowModal(false)}
-                >
-                  ✖
-                </button>
-              </div>
-            </motion.div>
-          </>
+        {showInviteModal && (
+          <InviteMemberModal
+            workspaceId={workspaceId}
+            onClose={() => setShowInviteModal(false)}
+            onInvite={handleInvite}
+          />
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-/* Reusable user card */
-function UserCard({ name, tag, color, role }) {
-  return (
-    <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 p-3 rounded border border-gray-400 dark:border-gray-600">
-      <div
-        className={`w-10 h-10 ${color} text-white flex items-center justify-center rounded-full font-medium`}
-      >
-        {tag}
-      </div>
-      <div className="flex-1">
-        <p className="font-medium text-sm md:text-base">{name}</p>
-      </div>
-      <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-        {role}
-      </span>
     </div>
   );
 }

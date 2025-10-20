@@ -38,6 +38,17 @@ export async function loginWithFacebook({ remember }) {
   return user;
 }
 
+// src/services/authService.js
+
+export const getCurrentUserToken = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.token) {
+    return user.token; // Assuming user object contains the token
+  }
+  return null;  // If no user or token is found
+};
+
+
 export function observeAuth(callback) {
   // callback(user or null)
   return onAuthStateChanged(auth, callback);

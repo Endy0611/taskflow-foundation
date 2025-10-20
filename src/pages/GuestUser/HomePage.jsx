@@ -61,81 +61,52 @@ const GuestHomePage = () => {
     <>
       <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         {/* Hero Section */}
-        <section className="relative h-screen bg-orange-50 dark:bg-gray-800 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20 py-16 lg:py-48">
-              {/* Left: Text */}
+        <section className="relative min-h-[90vh] bg-orange-50 dark:bg-gray-800 overflow-hidden flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-10">
+              {/* Text */}
               <motion.div
-                className="w-full lg:w-1/2 text-center lg:text-left space-y-6"
+                className="w-full lg:w-1/2 text-center lg:text-left space-y-5"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 viewport={{ once: true }}
               >
-                <motion.h1
-                  className="text-3xl sm:text-4xl lg:text-6xl font-extrabold leading-snug text-gray-900 dark:text-gray-100"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
+                <motion.h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-snug text-gray-900 dark:text-gray-100">
                   Stay on top of your{" "}
-                  <motion.span
-                    className="text-primary"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
-                  >
-                    to-dos Capture, organize, and get{" "}
+                  <motion.span className={"text-primary "}>
+                    to-dos. Capture, organize, and get{" "}
                   </motion.span>
                   them done from anywhere.
                 </motion.h1>
 
-                <motion.p
-                  className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                >
+                <motion.p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-xl mx-auto lg:mx-0">
                   Escape the clutter and chaos — unleash your productivity with
                   <span className="font-semibold text-primary"> TaskFlow</span>.
                 </motion.p>
 
-                {/* CTA buttons */}
-                <motion.div
-                  className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:px-[25px] md:px-0">
+                  <NavLink
+                    to="/login"
+                    className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-md text-sm sm:text-base transition"
                   >
-                    <NavLink
-                      to="/login"
-                      className="inline-block bg-primary hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-md transition"
-                    >
-                      Get Started · Free
-                    </NavLink>
-                  </motion.div>
-                </motion.div>
+                    Get Started · Free
+                  </NavLink>
+                </div>
               </motion.div>
 
-              {/* Right: Image */}
+              {/* Image */}
               <motion.div
-                className="w-full lg:w-1/2 flex justify-center"
+                className="w-3/4 sm:w-2/3 lg:w-1/2 mx-auto flex justify-center"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                 viewport={{ once: true }}
-                {...floatingAnimation}
               >
-                <motion.img
+                <img
                   src="/src/assets/home/image1.png"
                   alt="TaskFlow productivity app"
-                  className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-xl"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg drop-shadow-xl"
                 />
               </motion.div>
             </div>
@@ -440,22 +411,33 @@ const GuestHomePage = () => {
         </motion.div>
 
         {/* Testimonials Section */}
+        {/* Testimonials Section */}
         <motion.section
-          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-400 mx-20"
+          className="py-30 px-6 lg:px-8 border-t border-b border-gray-300 dark:border-gray-400 mx-4 sm:mx-10 lg:mx-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl lg:text-4xl text-primary font-bold text-center mb-16"
+              className="text-3xl lg:text-4xl text-primary font-bold text-center mb-12"
               variants={fadeInUp}
             >
-              Hear From Our <span className="text-secondary">Happy Users</span>
+              Hear From Our <span className="text-orange-500">Happy Users</span>
             </motion.h2>
 
+            {/* Scrollable container on mobile/tablet */}
             <motion.div
-              className="grid md:grid-cols-3 gap-10"
+              className="
+        flex lg:grid 
+        lg:grid-cols-3 
+        gap-6 sm:gap-8 
+        overflow-x-auto lg:overflow-visible 
+        snap-x snap-mandatory 
+        scroll-smooth 
+        pb-6
+        scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600
+      "
               variants={staggerContainer}
             >
               {[
@@ -480,7 +462,13 @@ const GuestHomePage = () => {
               ].map((user, idx) => (
                 <motion.div
                   key={idx}
-                  className="relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-md text-center"
+                  className="
+            relative bg-white dark:bg-gray-900 rounded-xl p-8 shadow-md text-center 
+            flex-shrink-0 
+            w-72 sm:w-80 md:w-96 
+            snap-center 
+            lg:w-auto
+          "
                   variants={fadeInScale}
                   whileHover={{
                     y: -10,
@@ -508,6 +496,7 @@ const GuestHomePage = () => {
                       className="w-full h-full object-cover"
                     />
                   </motion.div>
+
                   <h4 className="font-semibold text-primary">{user.name}</h4>
                   <p className="text-gray-500 dark:text-gray-200 text-sm mb-5">
                     {user.role}
@@ -521,7 +510,7 @@ const GuestHomePage = () => {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
                   >
-                    ⭐⭐⭐⭐⭐
+                    ⭐️⭐️⭐️⭐️⭐️
                   </motion.div>
                 </motion.div>
               ))}

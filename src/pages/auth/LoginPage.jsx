@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub } from "react-icons/fa";
+import { http } from "../../services/http";
 
 import loginImage from "../../assets/general/Login-pic.png";
 
@@ -34,7 +35,9 @@ const API_BASE = (
 
 const loginSchema = z.object({
   username: z.string().min(3, { message: "Username is required" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 const safeParseJSON = async (res) => {
@@ -66,22 +69,20 @@ export default function LoginPage() {
   };
 
   async function applyPersistence(rememberMe) {
-    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    await setPersistence(
+      auth,
+      rememberMe ? browserLocalPersistence : browserSessionPersistence
+    );
   }
 
   /* ---------------- USERNAME + PASSWORD ---------------- */
   async function handleSubmit(e) {
     e.preventDefault();
     setMessage("");
-
-    const result = loginSchema.safeParse(form);
-    if (!result.success) {
-      setMessage(result.error.errors[0].message);
-      return;
-    }
-
     setLoading(true);
+
     try {
+      // Step 1️⃣: Login to get token
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,48 +93,77 @@ export default function LoginPage() {
         credentials: "omit",
       });
 
-      console.log(res);
-
       const data = await safeParseJSON(res);
+      // console.log("✅ Login response:", data);
 
-      if (!res.ok) {
-        setMessage((data && (data.message || data.error)) || "Login failed");
+      if (!res.ok || !data?.accessToken) {
+        setMessage(data?.message || "Login failed. Check your credentials.");
         return;
       }
 
-      // 🔐 Save backend tokens so future API calls include Authorization header
-      const token =
-        data?.accessToken || data?.token || data?.jwt || data?.id_token || data?.idToken;
-      if (token) {
-        localStorage.setItem("auth_token", token);   // used by services/http.js
-        localStorage.setItem("accessToken", token);  // alias some code reads
-      }
-      if (data?.refreshToken) {
+      // Step 2️⃣: Save tokens
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("auth_token", data.accessToken);
+      if (data.refreshToken) {
         localStorage.setItem("refresh_token", data.refreshToken);
       }
-      if (data?.user) {
-        localStorage.setItem("auth_user", JSON.stringify(data.user));
+
+      // Step 3️⃣: Fetch user info using username to get user_id
+      const userRes = await http.get(
+        `/users/search/findByUsername?username=${form.username}`
+      );
+      // console.log("👤 User info:", userRes);
+
+      // Extract userId from direct field or from _links.self.href
+      let userId = userRes?.id || userRes?._embedded?.users?.[0]?.id;
+
+      // If no direct id, try to parse from _links.self.href
+      if (!userId && userRes?._links?.self?.href) {
+        const href = userRes._links.self.href;
+        const match = href.match(/\/users\/(\d+)/);
+        if (match) userId = match[1];
       }
 
-      // Keep your existing user fallback (optional UI data)
-      if (data?.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (!userId) {
+        console.error("⚠️ User object does not contain id:", userRes);
+        throw new Error("Cannot detect user_id from response");
+      }
+
+      localStorage.setItem("user_id", String(userId));
+      localStorage.setItem("username", form.username);
+
+      window.dispatchEvent(new Event("userLoggedIn"));
+
+      // Step 4️⃣: Get all workspaces for that user
+      const wsRes = await http.get(`/user-workspaces/${userId}`);
+      // console.log("🏢 User workspaces:", wsRes);
+
+      const workspaces = Array.isArray(wsRes)
+        ? wsRes
+        : wsRes?.content ||
+          wsRes?._embedded?.workspaces ||
+          Object.values(wsRes || {}).filter((x) => x?.id);
+
+      // Step 5️⃣: Redirect based on workspace availability
+      // Step 5️⃣: Redirect based on workspace availability
+      if (Array.isArray(workspaces) && workspaces.length > 0) {
+        const first = workspaces[0];
+        localStorage.setItem("current_workspace_id", String(first.id));
+        localStorage.setItem("current_workspace_name", first.name || "");
+        localStorage.setItem("current_workspace_theme", first.theme || "");
+        localStorage.setItem("last_workspace", JSON.stringify(first));
+        navigate(`/board/${first.id}`);
       } else {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            name: form.username,
-            email: `${form.username}@local.login`,
-            photoURL: null,
-          })
-        );
+        localStorage.setItem("open_create_workspace", "true");
+        navigate("/board");
       }
 
       setMessage("Login successful! Redirecting...");
-      setTimeout(() => navigate("/homeuser"), 800);
     } catch (err) {
-      console.error(err);
-      setMessage("Something went wrong. Please try again.");
+      console.error("❌ Login error:", err);
+      setMessage(
+        err?.message || "Login failed. Please check your credentials."
+      );
     } finally {
       setLoading(false);
     }
@@ -216,7 +246,8 @@ export default function LoginPage() {
           const existingProviderId = methods[0];
           let existingProvider;
           if (existingProviderId === "google.com") existingProvider = google;
-          if (existingProviderId === "facebook.com") existingProvider = facebook;
+          if (existingProviderId === "facebook.com")
+            existingProvider = facebook;
           if (existingProviderId === "github.com") existingProvider = github;
 
           const linkedResult = await signInWithPopup(auth, existingProvider);
@@ -250,7 +281,8 @@ export default function LoginPage() {
       const apiData = await r.json().catch(() => null);
 
       const token =
-        (r.ok && (apiData?.accessToken || apiData?.token || apiData?.jwt)) || idToken;
+        (r.ok && (apiData?.accessToken || apiData?.token || apiData?.jwt)) ||
+        idToken;
 
       localStorage.setItem("auth_token", token);
       localStorage.setItem("accessToken", token);
@@ -272,7 +304,6 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen w-screen overflow-hidden bg-[#1E40AF] flex justify-center items-center">
       <div className="relative z-10 flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl px-4 sm:px-6 md:px-8">
-        
         {/* Illustration */}
         <img
           src={loginImage}
@@ -349,7 +380,11 @@ export default function LoginPage() {
                   onClick={() => setShowPassword((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </label>
@@ -365,7 +400,10 @@ export default function LoginPage() {
                 />
                 Remember me
               </label>
-              <a href="#" className="text-white/80 underline-offset-4 hover:underline">
+              <a
+                href="#"
+                className="text-white/80 underline-offset-4 hover:underline"
+              >
                 Forgot password?
               </a>
             </div>
@@ -432,7 +470,8 @@ export default function LoginPage() {
               Create one
             </Link>
           </p>
-        </motion.div>{/*  */}
+        </motion.div>
+        {/*  */}
       </div>
     </div>
   );

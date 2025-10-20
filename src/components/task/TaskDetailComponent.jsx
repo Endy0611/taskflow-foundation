@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Tag,
   CheckSquare,
@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { http } from "../../services/http";
 
 import { DeleteChecklistComponent } from "./DeleteChecklistComponent";
 import { ShareBoardComponent } from "./ShareBoardComponent";
@@ -18,101 +19,218 @@ import ChecklistComponent from "./ChecklistComponent";
 import SearchMemberComponent from "./SearchMemberComponent";
 import { AttachFileComponent } from "./AttachFileComponent";
 
-export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
-  const [checklist, setChecklist] = useState([
-    { id: 1, text: "Analyze features", checked: true },
-    { id: 2, text: "Analyze ERD", checked: true },
-    { id: 3, text: "Analyze UI Design", checked: false },
-    { id: 4, text: "Prepare documentation", checked: false },
-  ]);
+export default function TaskDetailComponent({ card, onClose }) {
+  const taskId = card?.id; // <- must be provided when opening the modal
+
+  // -------- Local UI state (members, labels, attachments) -----------
   const [attachments, setAttachments] = useState([]);
   const [labels, setLabels] = useState([
     { title: "Priority", color: "#22c55e" },
   ]);
-
   const [members, setMembers] = useState([
     { initials: "MS", color: "bg-orange-500" },
   ]);
 
-  const [activePopup, setActivePopup] = useState(null);
+  // -------- Checklist state -----------------------------------------
+  const [checklist, setChecklist] = useState([]); // [{id, text, checked, position}]
   const [hideChecked, setHideChecked] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
 
-  const toggleCheck = (id) => {
-    setChecklist((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
+  // small flags
+  const [loadingList, setLoadingList] = useState(false);
+  const [busyIds, setBusyIds] = useState({}); // { [checklistId]: true }
+
+  // Helpers
+  const pickChecklistId = (it) =>
+    String(
+      it?.id ||
+        (it?._links?.self?.href || "")
+          .split("/checklists/")[1]
+          ?.split(/[/?#]/)[0] ||
+        ""
     );
-  };
 
-  const progress =
-    (checklist.filter((item) => item.checked).length / checklist.length) * 100;
+  // ---------------------- API: Load ----------------------
+  const loadChecklists = async () => {
+    if (!taskId) return;
+    try {
+      setLoadingList(true);
+      const res = await http.get(`/tasks/${taskId}/checklists`);
+      const apiItems =
+        res?._embedded?.checklists ||
+        res?.data?._embedded?.checklists ||
+        res?.checklists ||
+        res?.data?.checklists ||
+        [];
 
-  // ✅ Delete checklist
-  const handleDeleteChecklist = () => {
-    if (onDeleteCard && card?.id) {
-      onDeleteCard(card.id);
+      const mapped = apiItems.map((it) => ({
+        id: pickChecklistId(it),
+        text: it.title || it.name || "",
+        checked: !!it.isChecked,
+        position: it.position ?? 1,
+      }));
+      setChecklist(mapped);
+    } catch (e) {
+      console.error("[Checklist] load error:", e?.response || e);
+    } finally {
+      setLoadingList(false);
     }
-    setActivePopup(null);
   };
 
-  // ✅  toggle labels
+  useEffect(() => {
+    loadChecklists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId]);
+
+  // ---------------------- API: Add -----------------------
+  const handleAddChecklist = async (text) => {
+    if (!text.trim() || !taskId) return;
+
+    try {
+      const nextPos =
+        (checklist.length
+          ? Math.max(...checklist.map((c) => Number(c.position || 0)))
+          : 0) + 1;
+
+      const payload = {
+        title: text.trim(),
+        position: nextPos,
+        isChecked: false,
+        task: `/tasks/${taskId}`,
+      };
+
+      const res = await http.post("/checklists", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const created = res?.data || res || {};
+      const newId = pickChecklistId(created);
+
+      setChecklist((prev) => [
+        ...prev,
+        {
+          id: newId || Math.random().toString(36).slice(2, 9),
+          text: payload.title,
+          checked: false,
+          position: payload.position,
+        },
+      ]);
+    } catch (e) {
+      console.error("[Checklist] create error:", e?.response || e);
+      alert("Failed to add checklist. See console for details.");
+    } finally {
+      setActivePopup(null);
+    }
+  };
+
+  // ---------------------- API: Toggle --------------------
+  const toggleCheck = async (item) => {
+    const id = item.id;
+    try {
+      setBusyIds((m) => ({ ...m, [id]: true }));
+      // optimistic
+      setChecklist((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, checked: !c.checked } : c))
+      );
+      await http.patch(`/checklists/${id}`, { isChecked: !item.checked });
+    } catch (e) {
+      console.error("[Checklist] toggle error:", e?.response || e);
+      // rollback
+      setChecklist((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, checked: item.checked } : c))
+      );
+    } finally {
+      setBusyIds((m) => {
+        const { [id]: _, ...rest } = m;
+        return rest;
+      });
+    }
+  };
+
+  // ---------------------- API: Delete single -------------
+  const deleteOne = async (id) => {
+    try {
+      setBusyIds((m) => ({ ...m, [id]: true }));
+      await http.delete(`/checklists/${id}`);
+      setChecklist((prev) => prev.filter((c) => c.id !== id));
+    } catch (e) {
+      console.error("[Checklist] delete error:", e?.response || e);
+      alert("Failed to delete. See console for details.");
+    } finally {
+      setBusyIds((m) => {
+        const { [id]: _, ...rest } = m;
+        return rest;
+      });
+    }
+  };
+
+  // ---------------------- Delete checked (bulk) ----------
+  const handleDeleteChecked = async () => {
+    const toDelete = checklist.filter((c) => c.checked).map((c) => c.id);
+    if (toDelete.length === 0) {
+      setActivePopup(null);
+      return;
+    }
+    try {
+      // fire deletes in parallel
+      await Promise.allSettled(
+        toDelete.map((id) => http.delete(`/checklists/${id}`))
+      );
+      setChecklist((prev) => prev.filter((c) => !toDelete.includes(c.id)));
+    } catch (e) {
+      console.error("[Checklist] bulk delete error:", e?.response || e);
+    } finally {
+      setActivePopup(null);
+    }
+  };
+
+  // ---------------------- Attachments / Labels / Members -
   const handleToggleLabel = (label) => {
     setLabels((prev) => {
       const exists = prev.some((l) => l.title === label.title);
-      if (exists) {
-        // remove
-        return prev.filter((l) => l.title !== label.title);
-      } else {
-        // add
-        return [...prev, { title: label.title, color: label.color }];
-      }
+      return exists
+        ? prev.filter((l) => l.title !== label.title)
+        : [...prev, { title: label.title, color: label.color }];
     });
   };
-
-  // ✅ Add attachment
-  const handleAddAttachment = (fileOrLink) => {
-    if (fileOrLink instanceof File) {
-      const fileUrl = URL.createObjectURL(fileOrLink);
-      setAttachments((prev) => [
-        ...prev,
-        { name: fileOrLink.name, url: fileUrl, type: "file" },
-      ]);
-    } else if (typeof fileOrLink === "string") {
-      setAttachments((prev) => [
-        ...prev,
-        { name: fileOrLink, url: fileOrLink, type: "link" },
-      ]);
+  const handleAddAttachment = (attached) => {
+    // attached comes from AttachFileComponent → { name, url, type }
+    if (!attached?.url) {
+      console.warn("⚠️ No URL received from attachment:", attached);
+      return;
     }
-    setActivePopup(null);
+
+    setAttachments((prev) => [
+      ...prev,
+      {
+        name: attached.name || "Unnamed file",
+        url: attached.url,
+        type: attached.type || "file",
+      },
+    ]);
+
+    console.log("📎 Added attachment to list:", attached);
   };
 
-  // ✅ Add label
-  const handleAddLabel = (label) => {
-    setLabels((prev) => [...prev, label]);
-    setActivePopup(null);
-  };
-
-  // ✅ Add member
   const handleAddMember = (member) => {
     setMembers((prev) => [...prev, member]);
     setActivePopup(null);
   };
 
-  // ✅ Add checklist item
-  const handleAddChecklist = (text) => {
-    if (!text.trim()) return;
-    setChecklist((prev) => [...prev, { id: Date.now(), text, checked: false }]);
-    setActivePopup(null);
-  };
+  // ---------------------- Progress -----------------------
+  const progress = useMemo(() => {
+    if (!checklist.length) return 0;
+    const done = checklist.filter((i) => i.checked).length;
+    return (done / checklist.length) * 100;
+  }, [checklist]);
 
-  // ✅ Popup rendering
+  // ---------------------- Popups -------------------------
   const renderPopup = () => {
     switch (activePopup) {
       case "delete":
         return (
           <DeleteChecklistComponent
-            onConfirm={handleDeleteChecklist}
+            onConfirm={handleDeleteChecked}
             onCancel={() => setActivePopup(null)}
           />
         );
@@ -126,7 +244,6 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
             onClose={() => setActivePopup(null)}
           />
         );
-
       case "checklist":
         return (
           <ChecklistComponent
@@ -144,10 +261,15 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
       case "attachment":
         return (
           <AttachFileComponent
-            onAttach={handleAddAttachment}
+            onAttach={(data) => {
+              console.log("📥 File returned from AttachFileComponent:", data);
+              handleAddAttachment(data);
+              setActivePopup(null); // close modal after attach
+            }}
             onClose={() => setActivePopup(null)}
           />
         );
+
       default:
         return null;
     }
@@ -165,7 +287,7 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold flex items-center">
-            <Circle className="mr-2 text-gray-700 dark:text-gray-300" />{" "}
+            <Circle className="mr-2 text-gray-700 dark:text-gray-300" />
             {card?.text || "Feature Details"}
           </h2>
           <button
@@ -205,7 +327,7 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
 
         {/* Members & Labels */}
         <div className="flex items-start gap-6 mb-6 flex-wrap">
-          {/* ✅ Members Section */}
+          {/* Members */}
           <div>
             <p className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Members
@@ -229,7 +351,7 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
             </div>
           </div>
 
-          {/* ✅ Labels Section */}
+          {/* Labels */}
           <div>
             <p className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
               Labels
@@ -263,61 +385,62 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
             placeholder="Add a more detailed description..."
             className="w-full border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             rows="3"
-          ></textarea>
+          />
         </div>
 
         {/* Checklist */}
-        {checklist.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-medium flex items-center text-gray-700 dark:text-gray-300">
-                <ChartBarDecreasingIcon className="mr-2" />
-                Checklist
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setHideChecked((prev) => !prev)}
-                  className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
-                >
-                  {hideChecked ? "Show checked" : "Hide checked"}
-                </button>
-                <button
-                  onClick={() => setActivePopup("delete")}
-                  className="text-xs px-3 py-1 rounded-lg bg-red-600 text-white flex items-center gap-1 hover:bg-red-700"
-                >
-                  <Trash size={12} /> Delete
-                </button>
-              </div>
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium flex items-center text-gray-700 dark:text-gray-300">
+              <ChartBarDecreasingIcon className="mr-2" />
+              Checklist
+              {loadingList ? (
+                <span className="ml-2 text-xs opacity-70">loading…</span>
+              ) : null}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setHideChecked((prev) => !prev)}
+                className="text-xs px-3 py-1 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+              >
+                {hideChecked ? "Show checked" : "Hide checked"}
+              </button>
+              <button
+                onClick={() => setActivePopup("delete")}
+                className="text-xs px-3 py-1 rounded-lg bg-red-600 text-white flex items-center gap-1 hover:bg-red-700"
+              >
+                <Trash size={12} /> Delete checked
+              </button>
             </div>
+          </div>
 
-            {/* Progress */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400 w-8">
-                {progress.toFixed(0)}%
-              </span>
-              <div className="flex-1 bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
-                <motion.div
-                  className="bg-blue-600 h-2"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
+          {/* Progress */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400 w-8">
+              {progress.toFixed(0)}%
+            </span>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+              <motion.div
+                className="bg-blue-600 h-2"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.5 }}
+              />
             </div>
+          </div>
 
-            {/* Checklist items */}
-            <div className="space-y-2">
-              {checklist
-                .filter((item) => (hideChecked ? !item.checked : true))
-                .map((item) => (
-                  <label
-                    key={item.id}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
+          {/* Items */}
+          <div className="space-y-2">
+            {checklist
+              .filter((item) => (hideChecked ? !item.checked : true))
+              .map((item) => (
+                <div key={item.id} className="flex items-center gap-3">
+                  <label className="flex items-center gap-3 flex-1 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={item.checked}
-                      onChange={() => toggleCheck(item.id)}
+                      checked={!!item.checked}
+                      onChange={() => toggleCheck(item)}
+                      disabled={!!busyIds[item.id]}
                       className="w-4 h-4 rounded border-gray-400 text-blue-600 dark:bg-gray-700 dark:border-gray-500"
                     />
                     <span
@@ -330,31 +453,105 @@ export default function TaskDetailComponent({ card, onClose, onDeleteCard }) {
                       {item.text}
                     </span>
                   </label>
-                ))}
-            </div>
-          </div>
-        )}
 
-        {/* Attachments */}
-        {attachments.length > 0 && (
-          <div className="mt-6">
-            <p className="text-sm font-medium mb-2 flex items-center text-gray-700 dark:text-gray-300">
-              <Paperclip className="mr-2" /> Attachments
-            </p>
-            <ul className="space-y-1 text-sm">
-              {attachments.map((a, i) => (
-                <li key={i}>
-                  <a
-                    href={a.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300"
+                  <button
+                    onClick={() => deleteOne(item.id)}
+                    disabled={!!busyIds[item.id]}
+                    className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
+                    title="Delete item"
                   >
-                    {a.name}
-                  </a>
-                </li>
+                    <Trash size={14} />
+                  </button>
+                </div>
               ))}
-            </ul>
+          </div>
+
+          {/* Add new item button */}
+          <div className="mt-3">
+            <button
+              onClick={() => setActivePopup("checklist")}
+              className="text-xs px-3 py-1.5 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600"
+            >
+              + Add checklist item
+            </button>
+          </div>
+        </div>
+
+        {/* 📎 Attachments Section */}
+        {attachments?.length > 0 && (
+          <div className="mt-4 space-y-2 border-t pt-3">
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200">
+              Attachments
+            </h4>
+            <div className="flex flex-col gap-2">
+              {attachments.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                >
+                  <div className="flex items-center gap-3">
+                    {item.type === "image" ? (
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="w-12 h-12 object-cover rounded border border-gray-300"
+                      />
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    )}
+                    <div className="flex flex-col">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline truncate max-w-[200px]"
+                      >
+                        {item.name}
+                      </a>
+                      <span className="text-xs text-gray-500">
+                        {item.type === "image" ? "Image" : "File"}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() =>
+                      setAttachments((prev) =>
+                        prev.filter((_, i) => i !== index)
+                      )
+                    }
+                    className="p-1 hover:bg-red-100 dark:hover:bg-red-800 rounded-md transition"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5 text-red-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </motion.div>

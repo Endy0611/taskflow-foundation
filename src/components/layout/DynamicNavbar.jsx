@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../Implement/firebase/firebase-config";
-import NavbarB4Login from "../nav&footer/NavbarB4Login";
 import NavbarComponent from "../nav&footer/NavbarComponent";
 
 export default function DynamicNavbar({
@@ -13,7 +12,7 @@ export default function DynamicNavbar({
 }) {
   const [user, setUser] = useState(null);
 
-  // ✅ Detect both Firebase and localStorage logins
+  /* ---------------- Detect Firebase & Manual Login ---------------- */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
@@ -27,77 +26,101 @@ export default function DynamicNavbar({
               ? firebaseUser.email
               : `${firebaseUser.displayName || "user"}@gmail.com`,
           photoURL: firebaseUser.photoURL || null,
-          provider: firebaseUser.providerData?.[0]?.providerId || "local",
+          provider:
+            firebaseUser.providerData?.[0]?.providerId || "firebase",
         };
 
-        // ✅ Save as "active user"
         localStorage.setItem("user", JSON.stringify(userData));
-
-        // ✅ Also store in accounts list (for switch account feature)
-        const accounts = JSON.parse(localStorage.getItem("accounts") || "[]");
-        const exists = accounts.some((a) => a.email === userData.email);
-        if (!exists) {
-          accounts.push(userData);
-          localStorage.setItem("accounts", JSON.stringify(accounts));
-        }
-
+        window.dispatchEvent(new Event("userLoggedIn"));
         setUser(userData);
       } else {
-        const storedUser = localStorage.getItem("user");
-        setUser(storedUser ? JSON.parse(storedUser) : null);
+        // manual/API login fallback
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            const fixed = {
+              name:
+                parsed.name ||
+                parsed.username ||
+                parsed.displayName ||
+                parsed.email?.split("@")[0] ||
+                "User",
+              email: parsed.email || parsed.username || "unknown@user.com",
+              photoURL: parsed.photoURL || null,
+            };
+            setUser(fixed);
+            window.dispatchEvent(new Event("userLoggedIn"));
+          } catch {
+            setUser(null);
+            window.dispatchEvent(new Event("userLoggedOut"));
+          }
+        } else {
+          setUser(null);
+          window.dispatchEvent(new Event("userLoggedOut"));
+        }
       }
     });
 
-    // ✅ Listen for profile updates or manual logout (from other tabs)
-    const handleStorage = () => {
+    const handleStorageChange = () => {
       const updated = localStorage.getItem("user");
-      setUser(updated ? JSON.parse(updated) : null);
+      if (updated) {
+        setUser(JSON.parse(updated));
+        window.dispatchEvent(new Event("userLoggedIn"));
+      } else {
+        setUser(null);
+        window.dispatchEvent(new Event("userLoggedOut"));
+      }
     };
 
-    window.addEventListener("storage", handleStorage);
+    window.addEventListener("storage", handleStorageChange);
     return () => {
       unsub();
-      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
-  // ✅ Handle logout (also clear active user)
+  /* ---------------- Logout Handling ---------------- */
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut(auth); // harmless for API users
     } catch (err) {
-      console.error("Firebase logout error:", err);
+      console.warn("Firebase logout ignored:", err);
     }
 
-    // Keep other saved accounts, just clear active user
-    localStorage.removeItem("user");
-    setUser(null);
-    window.dispatchEvent(new Event("storage"));
+    [
+      "user",
+      "username",
+      "accessToken",
+      "auth_token",
+      "refresh_token",
+      "user_id",
+      "current_workspace_id",
+      "current_workspace_name",
+      "current_workspace_theme",
+      "last_workspace",
+    ].forEach((key) => localStorage.removeItem(key));
+
+    window.dispatchEvent(new Event("userLoggedOut"));
+    window.location.href = "/"; // redirect to home/login
   };
 
-  // ✅ Sync live updates from Profile page (photo/name changes)
+  /* ---------------- Profile Update Sync ---------------- */
   useEffect(() => {
     const syncProfile = () => {
-      const updated = JSON.parse(localStorage.getItem("user") || "null");
-      if (updated) setUser(updated);
+      const updated = localStorage.getItem("user");
+      if (updated) setUser(JSON.parse(updated));
     };
     window.addEventListener("profile-updated", syncProfile);
     return () => window.removeEventListener("profile-updated", syncProfile);
   }, []);
 
-  // ✅ Render based on login state
-  if (!user) {
-    return (
-      <NavbarB4Login darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-    );
-  }
-
+  /* ---------------- Render ---------------- */
   return (
     <NavbarComponent
       user={user}
       darkMode={darkMode}
       toggleDarkMode={toggleDarkMode}
-      sidebarOpen={sidebarOpen}
       setSidebarOpen={setSidebarOpen}
       setShowModal={setShowModal}
       onLogout={handleLogout}

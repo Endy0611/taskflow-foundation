@@ -1,20 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Home, LayoutGrid, FileText, ChevronUp, ChevronDown, X } from "lucide-react";
+import {
+  Home,
+  LayoutGrid,
+  FileText,
+  ChevronUp,
+  ChevronDown,
+  ChevronRight,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { http } from "../../services/http"; // your API helper
 
-/** Helper you can call anywhere after creating/renaming/deleting a workspace */
-export function notifyWorkspacesChanged() {
-  try {
-    // Triggers other tabs
-    localStorage.setItem("refresh_workspaces", String(Date.now()));
-  } catch {}
-  // Triggers this tab
-  window.dispatchEvent(new CustomEvent("workspace:changed"));
-}
-
-/* Small colored initial avatar */
+/** Helper function to display workspace name and avatar */
 function NameAvatar({ name }) {
   const ch = (name || "W").trim().charAt(0).toUpperCase();
   return (
@@ -22,6 +20,21 @@ function NameAvatar({ name }) {
       {ch || "W"}
     </div>
   );
+}
+// ✅ Notify other components when boards are created or updated
+export function notifyBoardsChanged() {
+  try {
+    localStorage.setItem("refresh_boards", String(Date.now()));
+  } catch {}
+  window.dispatchEvent(new CustomEvent("board:changed"));
+}
+
+// Exporting the function in the same file
+export function notifyWorkspacesChanged() {
+  try {
+    localStorage.setItem("refresh_workspaces", String(Date.now()));
+  } catch {}
+  window.dispatchEvent(new CustomEvent("workspace:changed"));
 }
 
 function NavItem({ icon, text, to }) {
@@ -40,27 +53,14 @@ function NavItem({ icon, text, to }) {
   );
 }
 
-/**
- * Unified Sidebar (merges SidebarB4CreateBoard + SidebarComponent)
- *
- * Props:
- * - sidebarOpen: boolean
- * - setSidebarOpen: fn
- * - setShowModal: fn  -> call to open "Create Workspace" modal
- */
-export default function Sidebar({
-  sidebarOpen,
-  setSidebarOpen,
-  setShowModal,
-}) {
+export default function Sidebar({ sidebarOpen, setSidebarOpen, setShowModal }) {
   const navigate = useNavigate();
 
-  const [openDropdown, setOpenDropdown] = useState(true);
+  const [openDropdowns, setOpenDropdowns] = useState({});
   const [loading, setLoading] = useState(true);
   const [workspaces, setWorkspaces] = useState([]);
   const [error, setError] = useState("");
 
-  // Persisted selection for use across pages
   const [currentWsId, setCurrentWsId] = useState(
     () => localStorage.getItem("current_workspace_id") || ""
   );
@@ -71,91 +71,75 @@ export default function Sidebar({
     () => localStorage.getItem("current_workspace_theme") || ""
   );
 
-  // ---- Load workspaces from API ----
+  // Function to load workspaces
   async function loadWorkspaces() {
     setLoading(true);
     setError("");
+
     try {
-      // Primary paged endpoint
-      let data = await http(
-        "/workspaces?page=0&size=20&sort=name,asc",
-        { method: "GET" }
-      );
-      const list = Array.isArray(data?.content)
-        ? data.content
-        : Array.isArray(data)
+      const userId = localStorage.getItem("user_id");
+      if (!userId) throw new Error("Missing user_id — please log in again");
+
+      const data = await http.get(`/user-workspaces/${userId}`);
+
+      // Normalize data structure
+      let list = Array.isArray(data)
         ? data
-        : [];
-      setWorkspaces(list);
-    } catch {
-      try {
-        // Fallback simple endpoint
-        const alt = await http("/workspaces", { method: "GET" });
-        const list = Array.isArray(alt?.content)
-          ? alt.content
-          : Array.isArray(alt)
-          ? alt
-          : [];
-        setWorkspaces(list);
-      } catch (e) {
-        setError(e?.message || "Failed to load workspaces");
-      }
+        : data?.content ||
+          data?._embedded?.workspaces ||
+          Object.values(data || {}).filter((x) => x?.id);
+
+      // 🧩 Clean duplicates by ID
+      const unique = new Map();
+      list.forEach((w) => {
+        const id = w.id ?? w.workspaceId;
+        if (!unique.has(id)) {
+          unique.set(id, {
+            id,
+            name: w.name ?? w.title ?? "Workspace",
+            theme: w.theme ?? "ANGKOR",
+          });
+        }
+      });
+
+      // Final unique workspace list
+      setWorkspaces(Array.from(unique.values()));
+    } catch (err) {
+      setError(err?.message || "Failed to load workspaces");
     } finally {
       setLoading(false);
     }
   }
 
+  // Load workspaces on component mount
   useEffect(() => {
     loadWorkspaces();
-
-    // Listen for changes from other tabs and in-tab custom events
-    const onStorage = (e) => {
-      if (e.key === "current_workspace_id") setCurrentWsId(e.newValue || "");
-      if (e.key === "current_workspace_name")
-        setCurrentWsName(e.newValue || "");
-      if (e.key === "current_workspace_theme")
-        setCurrentWsTheme(e.newValue || "");
-      if (e.key === "refresh_workspaces") {
-        loadWorkspaces();
-      }
-    };
-    const onLocalChange = () => loadWorkspaces();
-
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("workspace:changed", onLocalChange);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("workspace:changed", onLocalChange);
-    };
   }, []);
+// ✅ Auto refresh workspaces when workspace is created or updated
+useEffect(() => {
+  const refresh = () => loadWorkspaces();
 
-  // If nothing selected yet (or selection disappeared), pick the first
-  useEffect(() => {
-    if (workspaces.length === 0) return;
+  // Listen to global event and localStorage sync
+  window.addEventListener("workspace:changed", refresh);
+  window.addEventListener("storage", (e) => {
+    if (e.key === "refresh_workspaces") loadWorkspaces();
+  });
 
-    const exists = workspaces.some(
-      (w) => String(w.id ?? w.workspaceId) === String(currentWsId)
-    );
-    if (!currentWsId || !exists) {
-      const w = workspaces[0];
-      const id = String(w.id ?? w.workspaceId);
-      localStorage.setItem("current_workspace_id", id);
-      localStorage.setItem("current_workspace_name", w.name || "");
-      localStorage.setItem("current_workspace_theme", w.theme || "");
-      setCurrentWsId(id);
-      setCurrentWsName(w.name || "");
-      setCurrentWsTheme(w.theme || "");
-    }
-  }, [workspaces, currentWsId]);
+  return () => {
+    window.removeEventListener("workspace:changed", refresh);
+    window.removeEventListener("storage", refresh);
+  };
+}, []);
 
-  const current = useMemo(
-    () =>
-      workspaces.find(
-        (w) => String(w.id ?? w.workspaceId) === String(currentWsId)
-      ),
-    [workspaces, currentWsId]
-  );
+  // Toggle dropdown for each workspace
+  const toggleDropdown = (id) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
+  // Select workspace
   function selectWorkspace(w) {
     const id = String(w.id ?? w.workspaceId);
     localStorage.setItem("current_workspace_id", id);
@@ -165,11 +149,22 @@ export default function Sidebar({
     setCurrentWsName(w.name || "");
     setCurrentWsTheme(w.theme || "");
     navigate(`/board/${id}`);
-    setSidebarOpen?.(false); // close on mobile
+    setSidebarOpen?.(false);
   }
 
-  const headerName = current?.name || currentWsName || "Select a workspace";
-  const headerTheme = current?.theme || currentWsTheme || "";
+  // Function to handle navigation to the correct page (Board, Member, or Setting)
+  function navigateToWorkspacePage(workspaceId, type) {
+  if (type === "boards") {
+    navigate(`/board/${workspaceId}`);
+  } else if (type === "members") {
+    navigate(`/workspacemember/${workspaceId}`);
+  } else if (type === "settings") {
+    navigate(`/workspacesetting/${workspaceId}`);
+  }
+
+
+}
+
 
   return (
     <aside
@@ -183,7 +178,7 @@ export default function Sidebar({
       ].join(" ")}
     >
       <div className="p-4 text-sm">
-        {/* Close (mobile) */}
+        {/* Sidebar Header */}
         <div className="flex items-center justify-between lg:hidden mb-2">
           <span className="font-semibold">Menu</span>
           <button
@@ -195,7 +190,7 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Static links */}
+        {/* Navigation items */}
         <div className="space-y-1">
           <NavItem icon={<Home size={16} />} text="Home" to="/homeuser" />
           <NavItem
@@ -212,144 +207,78 @@ export default function Sidebar({
 
         <div className="border-b my-4 border-gray-300 dark:border-gray-700" />
 
-        {/* WORKSPACE SECTION */}
+        {/* Workspace Dropdowns */}
         <div className="mt-4">
           <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
             Workspace
           </h3>
 
-          {/* Header / current selection */}
-          <div
-            className={`flex items-center justify-between cursor-pointer p-2 rounded
-              ${openDropdown
-                ? "bg-[#1E40AF] text-white"
-                : "text-gray-800 dark:text-gray-200"
-              }
-              hover:bg-[#2563EB] hover:text-white`}
-            onClick={() => setOpenDropdown((v) => !v)}
-          >
-            <span className="flex items-center gap-2 font-medium">
-              <NameAvatar name={headerName} />
-              <span className="truncate">
-                {headerName}
-                {headerTheme ? (
-                  <span className="opacity-80"> · {headerTheme}</span>
-                ) : null}
-              </span>
-            </span>
-            {openDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </div>
+          {/* Loop through workspaces */}
+          {workspaces.map((w) => {
+            const id = String(w.id ?? w.workspaceId);
+            const isOpen = openDropdowns[id];
 
-          {/* Dropdown content: full dynamic list of workspaces */}
-          <AnimatePresence initial={false}>
-            {openDropdown && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="overflow-hidden rounded-b-lg border border-gray-200 dark:border-gray-700"
-              >
-                <div className="max-h-72 overflow-auto">
-                  {loading && (
-                    <div className="px-3 py-2 text-gray-500">Loading…</div>
-                  )}
-                  {error && (
-                    <div className="px-3 py-2 text-red-600">{error}</div>
-                  )}
-                  {/* {!loading && !error && workspaces.length === 0 && (
-                    <div className="px-3 py-2 text-gray-500">
-                      No workspaces yet. Create one!
-                    </div>
-                  )} */}
-
-                  {!loading &&
-                    !error &&
-                    workspaces.map((w) => {
-                      const id = String(w.id ?? w.workspaceId);
-                      const isActive =
-                        String(currentWsId) === String(id) ||
-                        (!currentWsId &&
-                          workspaces[0] &&
-                          String(workspaces[0].id ?? workspaces[0].workspaceId) ===
-                            id);
-
-                      return (
-                        <div
-                          key={id}
-                          className={`px-2 py-2 flex items-center justify-between cursor-pointer
-                                      hover:bg-gray-100 dark:hover:bg-gray-800 ${isActive
-                              ? "bg-gray-100 dark:bg-gray-800"
-                              : ""
-                            }`}
-                          onClick={() => selectWorkspace(w)}
-                          title={w.name || "Workspace"}
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <NameAvatar name={w.name} />
-                            <span className="truncate">
-                              {w.name || "Untitled"}
-                              {w.theme ? (
-                                <span className="text-xs opacity-70">
-                                  {" "}
-                                  · {w.theme}
-                                </span>
-                              ) : null}
-                            </span>
-                          </span>
-
-                          <button
-                            className="shrink-0 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/board/${id}`);
-                              setSidebarOpen?.(false);
-                            }}
-                            aria-label="Open boards"
-                            title="Open boards"
-                          >
-                            <ChevronRight size={16} />
-                          </button>
-                        </div>
-                      );
-                    })}
+            return (
+              <div key={`${id}-${w.name}-${Math.random()}`}>
+                {/* Workspace name and toggle button */}
+                <div
+                  className={`flex items-center justify-between cursor-pointer p-2 rounded ${
+                    isOpen
+                      ? "bg-[#1E40AF] text-white"
+                      : "text-gray-800 dark:text-gray-200"
+                  } hover:bg-[#2563EB] hover:text-white`}
+                  onClick={() => toggleDropdown(id)}
+                >
+                  <span className="flex items-center gap-2 font-medium">
+                    <NameAvatar name={w.name} />
+                    <span className="truncate">{w.name || "Untitled"}</span>
+                  </span>
+                  {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </div>
 
-                {/* Quick links for the currently selected workspace */}
-                {currentWsId && (
-                  <div className="px-2 py-2 border-t border-gray-200 dark:border-gray-700">
-                    <NavLink
-                      to={`/workspaceboard`}
-                      className="block rounded px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                <AnimatePresence initial={false}>
+                  {/* Dropdown menu for workspace */}
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.22, ease: "easeInOut" }}
+                      className="overflow-hidden rounded-b-lg border border-gray-200 dark:border-gray-700"
                     >
-                      Boards
-                    </NavLink>
-                    <NavLink
-                      to="/workspacemember"
-                      className="block rounded px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      Members
-                    </NavLink>
-                    <NavLink
-                      to="/workspacesetting"
-                      className="block rounded px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      Settings
-                    </NavLink>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Create workspace */}
-          <button
-            className="mt-3 text-[#1E40AF] dark:text-white text-sm hover:bg-[#2563EB] hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
-            onClick={() => setShowModal?.(true)}
-          >
-            + Create a Workspace
-          </button>
+                      <div
+                        className="px-2 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => navigateToWorkspacePage(id, "boards")}
+                      >
+                        Boards
+                      </div>
+                      <div
+                        className="px-2 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => navigateToWorkspacePage(id, "members")}
+                      >
+                        Members
+                      </div>
+                      <div
+                        className="px-2 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => navigateToWorkspacePage(id, "settings")}
+                      >
+                        Settings
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
+
+        {/* Create Workspace Button */}
+        <button
+          className="mt-3 text-[#1E40AF] dark:text-white text-sm hover:bg-[#2563EB] hover:text-white rounded py-2 px-3 w-full justify-start flex items-center gap-2 border border-blue-600 dark:border-blue-400"
+          onClick={() => setShowModal?.(true)}
+        >
+          + Create a Workspace
+        </button>
       </div>
     </aside>
   );

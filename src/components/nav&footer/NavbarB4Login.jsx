@@ -41,11 +41,15 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
               darkMode ? "text-gray-100" : "text-gray-800"
             } tracking-tight`}
           >
-            <img
-              src="/src/assets/logo/logofinal1.png"
-            alt="TaskFLow Logo"
-            className="h-10 sm:h-9 object-contain"
-          />
+              <img
+          src={
+            darkMode
+              ? "/src/assets/logo/logopng.png" // bright logo for dark mode
+              : "/src/assets/logo/logofinal1.png" // default logo
+          }
+          alt="TaskFlow Logo"
+          className="h-10 sm:h-12 object-contain transition-all duration-300"
+        />
           </NavLink>
         </div>
 

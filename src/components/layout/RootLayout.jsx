@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import NavbarB4Login from "../nav&footer/NavbarB4Login";
 import ScrollToTop from "./ScrollToTop";
 import DynamicNavbar from "./DynamicNavbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import FooterB4Login from "../nav&footer/FooterB4Login";
 import OfflineMode from "../../utils/OfflineMode";
 
 export default function RootLayout() {
+  const navigate = useNavigate();
+
   const [isLoggedIn, setIsLoggedIn] = useState(
     typeof window !== "undefined" ? !!localStorage.getItem("user") : false
   );
@@ -14,7 +16,7 @@ export default function RootLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // online/offline state
+  // ✅ Track online/offline
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== "undefined" ? navigator.onLine : true
   );
@@ -22,7 +24,6 @@ export default function RootLayout() {
   useEffect(() => {
     const onOnline = () => setIsOnline(true);
     const onOffline = () => setIsOnline(false);
-
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
     return () => {
@@ -31,34 +32,38 @@ export default function RootLayout() {
     };
   }, []);
 
-  // Initialize theme from localStorage (fallback to OS preference if not set)
+  // ✅ Initialize dark theme
   useEffect(() => {
     const preferDark =
       localStorage.theme === "dark" ||
       (!("theme" in localStorage) &&
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches);
-
     setDarkMode(Boolean(preferDark));
     document.documentElement.classList.toggle("dark", Boolean(preferDark));
   }, []);
 
-  // Keep state in sync if user or theme changes in another tab/window
+  // ✅ Listen for login/logout/localStorage changes
   useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === "user") {
-        setIsLoggedIn(!!e.newValue);
-      }
-      if (e.key === "theme") {
-        const isDark = e.newValue === "dark";
-        setDarkMode(isDark);
-        document.documentElement.classList.toggle("dark", isDark);
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  const handleUserChange = () => {
+    setIsLoggedIn(!!localStorage.getItem("user") || !!localStorage.getItem("username"));
+  };
 
+  window.addEventListener("storage", handleUserChange);
+  window.addEventListener("userLoggedIn", handleUserChange);
+  window.addEventListener("userLoggedOut", handleUserChange);
+
+  handleUserChange(); // run immediately
+
+  return () => {
+    window.removeEventListener("storage", handleUserChange);
+    window.removeEventListener("userLoggedIn", handleUserChange);
+    window.removeEventListener("userLoggedOut", handleUserChange);
+  };
+}, []);
+
+
+  // ✅ Toggle dark/light mode
   const toggleDarkMode = () => {
     const next = !darkMode;
     setDarkMode(next);
@@ -66,10 +71,23 @@ export default function RootLayout() {
     localStorage.theme = next ? "dark" : "light";
   };
 
-  // If offline, render only the offline page (no navbar/footer/background)
-  if (!isOnline) {
-    return <OfflineMode />;
-  }
+  // ✅ Global logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
+
+    // ✅ Trigger re-render
+    window.dispatchEvent(new Event("userLoggedOut"));
+
+    // ✅ Optional redirect to homepage or login
+    navigate("/");
+  };
+
+  if (!isOnline) return <OfflineMode />;
 
   return (
     <div>
@@ -80,14 +98,20 @@ export default function RootLayout() {
           sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           setShowModal={setShowModal}
+          onLogout={handleLogout}
         />
       ) : (
-        <NavbarB4Login darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <NavbarB4Login
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
       )}
 
       <ScrollToTop />
       <Outlet />
-      <FooterB4Login />
+
+      {/* ✅ Only show footer when not logged in */}
+      {!isLoggedIn && <FooterB4Login />}
     </div>
   );
 }

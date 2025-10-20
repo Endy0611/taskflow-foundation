@@ -18,19 +18,21 @@ import RegisterPage from "./pages/auth/RegisterPage";
 /* User pages */
 import HomeUser from "./pages/user/HomeUser";
 import TemplateUser from "./pages/user/TemplateUser";
-/* Change BoardB4Create to Board */
-import Board from "./pages/user/Board";  // Single dynamic Board file
+import Board from "./pages/user/Board"; // Single dynamic Board file
 import WorkspaceBoard from "./pages/user/WorkspaceBoard";
 import WorkspaceMember from "./pages/user/WorkspaceMember";
 import WorkspaceSetting from "./pages/user/WorkspaceSetting";
+import Invitations from "./pages/user/Invitations";
 
 /* Profile & Switch Account */
 import ProfilePage from "./pages/profile/ProfilePage";
 import SwitchAccountPage from "./pages/profile/SwitchAccountPage";
 
 /* Settings / Project pages */
-import SettingWorkspace from "./pages/user/SettingWorkspace"; // dedicated settings page
+import SettingWorkspace from "./pages/user/SettingWorkspace";
 import ProjectManagement from "./pages/user/ProjectManagement";
+
+/* Offline / Error */
 import OfflineMode from "./utils/OfflineMode";
 
 /* 404 fallback */
@@ -52,11 +54,12 @@ function NotFound() {
   );
 }
 
+/* ------------------------------------ APP ------------------------------------ */
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Guest routes */}
+        {/* ------------------------- Guest Routes ------------------------- */}
         <Route element={<RootLayout />}>
           <Route path="/" element={<GuestHomePage />} />
           <Route path="/features" element={<FeaturePage />} />
@@ -64,40 +67,51 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
         </Route>
 
-        {/* Auth routes */}
+        {/* -------------------------- Auth Routes ------------------------- */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* User routes (general user dashboard area) */}
+        {/* -------------------------- User Routes ------------------------- */}
         <Route element={<UserLayout />}>
           <Route path="/homeuser" element={<HomeUser />} />
           <Route path="/templateuser" element={<TemplateUser />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/switch-account" element={<SwitchAccountPage />} />
+          <Route path="/invitations" element={<Invitations />} />
         </Route>
 
-        {/* Workspace routes (boards, members, settings) */}
+        {/* ----------------------- Workspace Routes ----------------------- */}
         <Route element={<WorkspaceLayout />}>
-          {/* Use a single 'Board' component for all board routes */}
-          <Route path="/board" element={<Board />} /> 
-          <Route path="/board/:workspaceId" element={<Board />} />  {/* Dynamic route */}
+          {/* ✅ Unified Board route */}
+          <Route path="/board" element={<Board />} />
+          <Route path="/board/:workspaceId" element={<Board />} />
+
+          {/* ✅ Workspace-level pages */}
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
-          <Route path="/workspacemember" element={<WorkspaceMember />} />
-          <Route path="/projectmanagement" element={<ProjectManagement />} />
 
-          {/* Overview page for a workspace area */}
-          <Route path="/workspacesetting" element={<WorkspaceSetting />} />
+          {/* ✅ Correct param for WorkspaceMember */}
+          {/* (Your WorkspaceMember.jsx uses useParams().workspaceId) */}
+          <Route
+            path="/workspacemember/:workspaceId"
+            element={<WorkspaceMember />}
+          />
 
-          {/* ✅ Dedicated settings page (canonical) */}
-          <Route path="/workspaces/:id/settings" element={<SettingWorkspace />} />
+          {/* ✅ Project management inside board */}
+          <Route
+            path="/projectmanagement/:boardId"
+            element={<ProjectManagement />}
+          />
 
-          {/* (Optional) Fallback settings path without id */}
+          {/* ✅ Settings (two paths for compatibility) */}
+          <Route path="/workspacesetting/:id" element={<WorkspaceSetting />} />
+
           <Route path="/settingworkspace" element={<SettingWorkspace />} />
+          <Route path="/workspaces/:id/settings" element={<SettingWorkspace />} />
         </Route>
 
-        {/* 404 */}
-        <Route path="*" element={<NotFound />} />
+        {/* ---------------------- Offline & NotFound ---------------------- */}
         <Route path="/offline" element={<OfflineMode />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

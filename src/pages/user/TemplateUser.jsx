@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { Search, Grid, List } from "lucide-react";
+import { Search, Grid, List, SidebarOpen as SidebarIcon, Menu } from "lucide-react";
 import TemplateSection from "../template/TemplateSection";
 import { templates, categories } from "../../features/template/templatesData";
 import { NavLink } from "react-router-dom";
+import Sidebar from "../../components/sidebar/Sidebar";
 
 export default function TemplateUser() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [darkMode] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false); // optional if Sidebar needs it
 
   // Sync dark mode with <html> tag
   useEffect(() => {
@@ -18,6 +21,17 @@ export default function TemplateUser() {
       document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
+
+  // Close sidebar automatically below lg
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handleChange = (e) => {
+      if (!e.matches) setSidebarOpen(false);
+    };
+    handleChange(mq);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
 
   const categoryData = [
     { id: "All", name: "All", count: templates.length, color: "bg-blue-500" },
@@ -63,8 +77,31 @@ export default function TemplateUser() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-[1px] z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        setShowModal={setShowModal}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:pt-16">
-        
+        {/* Hamburger (Mobile) */}
+        <button
+            className="lg:hidden p-2 mb-4 rounded-md bg-primary text-white "
+            aria-label="Toggle sidebar"
+            onClick={() => setSidebarOpen((v) => !v)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
         {/* ===== Header ===== */}
         <div className="text-center mb-12 flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-primary bg-clip-text text-transparent">
@@ -93,7 +130,7 @@ export default function TemplateUser() {
             />
           </div>
 
-          {/* ===== Category Pills (Scrollable) ===== */}
+          {/* ===== Category Pills ===== */}
           <div className="flex overflow-x-auto scrollbar-hide gap-3 mb-6 pb-2">
             {categoryData.map((category) => (
               <button
@@ -128,12 +165,10 @@ export default function TemplateUser() {
 
           {/* ===== Controls Row ===== */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            {/* Results Count */}
             <span className="text-sm text-gray-500 dark:text-gray-400 px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
               {filteredTemplates.length} templates
             </span>
 
-            {/* View Mode Toggle */}
             <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setViewMode("grid")}
@@ -199,7 +234,7 @@ export default function TemplateUser() {
         )}
       </div>
 
-      {/* ✅ Back to Board button (responsive safe) */}
+      {/* ✅ Back to Board button
       <div className="fixed bottom-6 left-6 z-10">
         <NavLink
           to="/board"
@@ -207,7 +242,7 @@ export default function TemplateUser() {
         >
           ← Back to Board
         </NavLink>
-      </div>
+      </div> */}
     </div>
   );
 }

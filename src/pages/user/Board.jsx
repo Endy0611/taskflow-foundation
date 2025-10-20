@@ -1,11 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Sidebar, { notifyWorkspacesChanged } from "../../components/sidebar/Sidebar";
+import toast, { Toaster } from "react-hot-toast";
+
+import Sidebar, {
+  notifyWorkspacesChanged,
+  notifyBoardsChanged,  // ✅ add this line
+} from "../../components/sidebar/Sidebar";
+
 import { NavLink, useParams, useNavigate } from "react-router-dom";
 import TaskFlowChatbot from "../../components/chatbot/Chatbot";
 import { CreateBoardComponent } from "../../components/task/CreateBoardComponent";
 import { Menu } from "lucide-react";
-import { http } from "../../services/http"; // your API helper
+import { http } from "../../services/http"; // ✅ unified API helper
 
 const THEME_OPTIONS = ["ANGKOR", "BAYON", "BOKOR", "KIRIROM", "KOH_KONG"];
 
@@ -13,23 +19,20 @@ const THEME_OPTIONS = ["ANGKOR", "BAYON", "BOKOR", "KIRIROM", "KOH_KONG"];
 const getIdFromHref = (href) => {
   if (!href) return null;
   try {
-    const u = new URL(href, window.location.origin);
-    const segs = u.pathname.split("/").filter(Boolean);
-    return segs.pop();
+    const match = String(href).match(/\/(?:workspaces|boards)\/(\d+)/);
+    return match ? Number(match[1]) : null;
   } catch {
-    const segs = String(href).split("/").filter(Boolean);
-    return segs.pop();
+    return null;
   }
 };
 
 const getBoardId = (b) => {
   if (b?.id != null) return String(b.id);
   const href = b?._links?.self?.href || b?.links?.self?.href;
-  return href ? String(getIdFromHref(href)) : null; // never fall back to title
+  return href ? String(getIdFromHref(href)) : null;
 };
 
 const getWorkspaceIdFromBoard = (b, fallbackWsId, fallbackWsObj) => {
-  // Prefer current route workspaceId, then board.workspaceId, then saved workspace.id
   return (
     String(
       fallbackWsId ??
@@ -46,16 +49,20 @@ export default function Board() {
   const params = useParams();
   const navigate = useNavigate();
 
-  // Support both /board/:workspaceId and /board/:id
-  const workspaceId = params.workspaceId ?? params.id ?? null;
+  // ✅ Always store numeric workspace ID
+  const workspaceIdRaw =
+    params.workspaceId ??
+    params.id ??
+    localStorage.getItem("current_workspace_id");
+  const workspaceId = workspaceIdRaw ? Number(workspaceIdRaw) : null;
 
-  // UI state
+  /* ---------------- UI State ---------------- */
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showWorkspaceModal, setShowModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
 
-  // Current workspace (detail for header)
+  /* ---------------- Workspace Detail ---------------- */
   const [workspace, setWorkspace] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("last_workspace") || "{}");
@@ -72,29 +79,29 @@ export default function Board() {
     return n ? n.charAt(0).toUpperCase() : "W";
   }, [workspace?.name]);
 
-  // ---- Workspace list (for "Your Workspaces" grid) ----
+  /* ---------------- Workspace List ---------------- */
   const [workspaces, setWorkspaces] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
   const [listError, setListError] = useState(null);
 
-  // Fetch boards from API
-  const fetchBoardsForWorkspace = async (workspaceId) => {
-    try {
-      const data = await http(`/workspaces/${workspaceId}/boards`, {
-        method: "GET",
-      });
-      return data?._embedded?.boards || [];
-    } catch (e) {
-      console.error("Failed to fetch boards:", e);
-      return [];
-    }
-  };
-
+  /* ---------------- Boards ---------------- */
   const [boards, setBoards] = useState([]);
   const [loadingBoards, setLoadingBoards] = useState(true);
   const [boardsError, setBoardsError] = useState(null);
 
-  // ✅ Auto restore workspace + boards immediately after login or refresh
+  /* ---------------- Fetch boards for a workspace ---------------- */
+  const fetchBoardsForWorkspace = async (wsId) => {
+    if (!wsId || Number.isNaN(wsId)) return [];
+    try {
+      const data = await http(`/workspaces/${wsId}/boards`, { method: "GET" });
+      return data?._embedded?.boards || [];
+    } catch (e) {
+      console.error("❌ Failed to fetch boards:", e);
+      return [];
+    }
+  };
+
+  /* ---------------- Restore cache ---------------- */
   useEffect(() => {
     const cachedWs = JSON.parse(localStorage.getItem("last_workspace") || "{}");
     const cachedBoards = JSON.parse(
@@ -104,21 +111,30 @@ export default function Board() {
     if (cachedWs?.id) setWorkspace(cachedWs);
     if (cachedBoards.length > 0) setBoards(cachedBoards);
 
-    // If user opened /board without an ID, redirect to last workspace
+    // Redirect if no workspaceId in route
     if (!workspaceId && cachedWs?.id) {
       navigate(`/board/${cachedWs.id}`, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load boards when workspaceId changes
+  /* ---------------- Auto-open Create Workspace modal if flagged ---------------- */
+  useEffect(() => {
+    const shouldOpen = localStorage.getItem("open_create_workspace");
+    if (shouldOpen === "true") {
+      setShowModal(true);
+      localStorage.removeItem("open_create_workspace");
+    }
+  }, []);
+
+  /* ---------------- Load boards when workspaceId changes ---------------- */
   useEffect(() => {
     if (!workspaceId) return;
 
     const loadBoards = async () => {
       setLoadingBoards(true);
       setBoardsError(null);
-      const boardsData = await fetchBoardsForWorkspace(workspaceId);
+      const boardsData = await fetchBoardsForWorkspace(Number(workspaceId));
       setBoards(boardsData);
       setLoadingBoards(false);
     };
@@ -126,7 +142,7 @@ export default function Board() {
     loadBoards();
   }, [workspaceId]);
 
-  // Fetch workspace detail + boards and persist
+  /* ---------------- Load workspace + boards ---------------- */
   useEffect(() => {
     if (!workspaceId) return;
 
@@ -140,7 +156,7 @@ export default function Board() {
         setWorkspace(workspaceData);
         setBoards(boardsData?._embedded?.boards || []);
 
-        // Persist
+        // ✅ Persist numeric ID
         localStorage.setItem("workspace", JSON.stringify(workspaceData));
         localStorage.setItem("last_workspace", JSON.stringify(workspaceData));
         localStorage.setItem(
@@ -152,6 +168,7 @@ export default function Board() {
           JSON.stringify(boardsData?._embedded?.boards || [])
         );
       } catch (error) {
+        console.error("Failed to load workspace or boards:", error);
         setWsError(error.message || "Failed to load workspace or boards");
       }
     };
@@ -159,7 +176,7 @@ export default function Board() {
     loadWorkspaceAndBoards();
   }, [workspaceId]);
 
-  // Close sidebar automatically below lg
+  /* ---------------- Sidebar auto-close ---------------- */
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const handleChange = (e) => {
@@ -169,109 +186,102 @@ export default function Board() {
     mq.addEventListener("change", handleChange);
     return () => mq.removeEventListener("change", handleChange);
   }, []);
+  // ✅ Auto-refresh when new board is created or updated
+useEffect(() => {
+  const refreshBoards = async () => {
+    if (!workspaceId) return;
+    const boardsData = await fetchBoardsForWorkspace(Number(workspaceId));
+    setBoards(boardsData);
+  };
 
-  // Create Workspace (modal)
+  window.addEventListener("board:changed", refreshBoards);
+  window.addEventListener("storage", (e) => {
+    if (e.key === "refresh_boards") refreshBoards();
+  });
+
+  return () => {
+    window.removeEventListener("board:changed", refreshBoards);
+    window.removeEventListener("storage", refreshBoards);
+  };
+}, [workspaceId]);
+
+  /* ---------------- Create Workspace ---------------- */
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceTheme, setWorkspaceTheme] = useState("ANGKOR");
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [createMsg, setCreateMsg] = useState(null);
   const [createErr, setCreateErr] = useState(null);
 
-  const handleCreateWorkspace = async (e) => {
-    e?.preventDefault?.();
+  async function handleCreateWorkspace(e) {
+    e.preventDefault();
     setCreateErr(null);
-    setCreateMsg(null);
-
-    const name = workspaceName.trim();
-    if (!name) {
-      setCreateErr("Workspace name is required.");
-      return;
-    }
-    const theme = (workspaceTheme || "").trim() || "ANGKOR";
-
     setLoadingCreate(true);
+
     try {
-      // Try the canonical route (matches your Postman)
-      let data;
-      try {
-        data = await http.post("/workspaces", { name, theme });
-      } catch (err) {
-        const status =
-          err?.response?.status ??
-          err?.status ??
-          (typeof err?.code === "number" ? err.code : undefined);
+      const userId = localStorage.getItem("user_id");
+      if (!userId) throw new Error("User ID missing — please login again.");
 
-        if (status !== 404) throw err;
-        data = await http.post("/workspaces/createNew", { name, theme });
-      }
+      // 1️⃣ Create workspace
+      const workspaceRes = await http.post("/workspaces", {
+        name: workspaceName,
+        theme: workspaceTheme,
+      });
 
-      const selfHref = data?._links?.self?.href || data?.links?.self?.href || "";
-      let newId =
-        data?.id ||
-        data?.workspaceId ||
-        (selfHref ? getIdFromHref(selfHref) : null);
+      const workspaceUrl = workspaceRes?._links?.self?.href;
+      const workspaceId = workspaceUrl?.split("/").pop();
+      if (!workspaceId) throw new Error("Workspace ID missing in response");
+      // console.log("✅ Workspace created:", workspaceId);
 
-      const normalized = {
-        id: newId ?? Math.random().toString(36).slice(2),
-        name: data?.name || name,
-        theme: data?.theme || theme,
-        ...data,
+      // 2️⃣ Add creator as owner (correct endpoint)
+      const payload = {
+        user: `/users/${userId}`,
+        workspace: `/workspaces/${workspaceId}`,
+        permission: "OWNER",
+        isAccepted: true,
       };
 
-      setWorkspaces((prev) => [normalized, ...prev]);
+      // console.log("📦 AddMember Payload:", payload);
 
-      // Persist for other pages / sidebar
-      localStorage.setItem("last_workspace", JSON.stringify(normalized));
-      localStorage.setItem("current_workspace_id", String(normalized.id));
-      localStorage.setItem("current_workspace_name", normalized.name);
-      localStorage.setItem("current_workspace_theme", normalized.theme);
+      // ✅ Correct endpoint (no /addMembers)
+      const addMemberRes = await http.post("/workspaceMembers", payload);
+      // console.log("👑 Member added:", addMemberRes);
 
-      try {
-        notifyWorkspacesChanged();
-      } catch {
-        localStorage.setItem("refresh_workspaces", String(Date.now()));
-      }
-
-      setCreateMsg("Workspace created successfully!");
-      setWorkspaceName("");
-      setWorkspaceTheme("ANGKOR");
+      // 3️⃣ Refresh user workspace list
+      notifyWorkspacesChanged();
+      toast.success("Workspace created successfully!");
       setShowModal(false);
-
-      // Go to the new workspace
-      navigate(`/board/${normalized.id}`);
+      navigate(`/board/${workspaceId}`);
     } catch (err) {
-      const status = err?.response?.status ?? err?.status;
-      const message = status
-        ? `Error ${status}: ${
-            err?.response?.data?.message || err?.statusText || "Request failed"
-          }`
-        : err?.message || "Network error";
-      console.error("Create workspace error:", err);
-      setCreateErr(message);
+      console.error("❌ Create workspace failed:", err);
+      setCreateErr(err.message || "Network or CORS error");
     } finally {
       setLoadingCreate(false);
     }
-  };
+  }
 
   /* -------- When a board is created, navigate to its ProjectManagement page -------- */
-  const handleBoardCreated = (created) => {
-    const id =
-      created?.id ??
-      created?.boardId ??
-      getIdFromHref(created?._links?.self?.href) ??
-      getIdFromHref(created?.links?.self?.href);
+const handleBoardCreated = (created) => {
+  const id =
+    created?.id ??
+    created?.boardId ??
+    getIdFromHref(created?._links?.self?.href, "boards") ??
+    getIdFromHref(created?.links?.self?.href, "boards");
 
-    const wsId = getWorkspaceIdFromBoard(created, workspaceId, workspace);
+  const wsId = Number(getWorkspaceIdFromBoard(created, workspaceId, workspace));
 
-    // Add to UI list
-    setBoards((prev) => [created, ...prev]);
+  setBoards((prev) => [created, ...prev]);
 
-    if (id && wsId) {
-      navigate(`/board/${wsId}/${id}`);
-    } else {
-      console.warn("Missing workspaceId or boardId after create:", { created });
-    }
-  };
+  // ✅ Trigger global auto-refresh for all pages
+  notifyBoardsChanged();
+  toast.success("Board created successfully!");  // optional feedback
+
+  if (id && wsId) {
+    navigate(`/board/${wsId}/${id}`);
+  } else {
+    console.warn("Missing workspaceId or boardId after create:", { created });
+  }
+};
+
 
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 dark:text-white">
@@ -292,13 +302,7 @@ export default function Board() {
         />
 
         {/* Main Content */}
-        <main
-          className="relative flex-1 overflow-y-auto 
-            px-3 sm:px-6 lg:px-10 
-            pt-5 sm:pt-8 lg:pt-10 
-            bg-gray-100 dark:bg-gray-950 
-            transition-all duration-300 ease-in-out"
-        >
+        <main className="relative flex-1 overflow-y-auto px-3 sm:px-6 lg:px-10 pt-5 sm:pt-8 lg:pt-10 bg-gray-100 dark:bg-gray-950 transition-all duration-300 ease-in-out">
           {/* Hamburger (Mobile) */}
           <button
             className="lg:hidden p-2 mb-4 rounded-md bg-blue-600 text-white"
@@ -428,9 +432,8 @@ export default function Board() {
                     {wsInitial}
                   </div>
                   <span className="font-semibold text-base sm:text-lg">
-                    {workspace?.name || "TaskFlow Workspace"}
+                    {workspace?.name || "Workspace"}
                   </span>
-                  <span className="font-semibold">Workspaces</span>
                 </div>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 flex-nowrap">
                   {["Boards", "Member", "Setting", "Update"].map((item, i) => (
@@ -460,7 +463,11 @@ export default function Board() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {boards.map((board) => {
                     const id = getBoardId(board);
-                    const wsId = getWorkspaceIdFromBoard(board, workspaceId, workspace);
+                    const wsId = getWorkspaceIdFromBoard(
+                      board,
+                      workspaceId,
+                      workspace
+                    );
 
                     // No id yet → render disabled card to avoid bad routes
                     if (!id || !wsId) {
@@ -501,7 +508,7 @@ export default function Board() {
                         </div>
                         <button
                           className="absolute inset-0"
-                          onClick={() => navigate(`/board/${wsId}/${id}`)} // ✅ correct route
+                          onClick={() => navigate(`/projectmanagement/${id}`)} // ✅ go to ProjectManagement page
                           aria-label={`Open ${board.title || id}`}
                         />
                       </div>
@@ -669,6 +676,18 @@ export default function Board() {
           </>
         )}
       </AnimatePresence>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: "#1E40AF",
+            color: "#fff",
+            borderRadius: "8px",
+            padding: "10px 16px",
+            fontSize: "14px",
+          },
+        }}
+      />
     </div>
   );
 }
