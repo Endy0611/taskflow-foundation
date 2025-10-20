@@ -9,6 +9,10 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "clean": "rimraf node_modules .vite dist"
+    
+  },
+  "engines": {
+  "node": "18.x"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -34,6 +38,7 @@
     "swiper": "^12.0.2",
     "zod": "^4.1.11"
   },
+  
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.0.4",
