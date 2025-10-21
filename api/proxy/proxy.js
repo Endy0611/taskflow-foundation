@@ -1,21 +1,32 @@
 export default async function handler(req, res) {
-  const { path } = req.query;
-  const subPath = Array.isArray(path) ? path.join("/") : "";
-  const target = `https://taskflow-api.istad.co/${subPath}`;
+  // ✅ Read the body properly (important for Vercel)
+  let bodyData = null;
+  try {
+    if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      const raw = Buffer.concat(chunks).toString();
+      bodyData = raw ? JSON.parse(raw) : null;
+    }
+  } catch {
+    bodyData = null;
+  }
+
+  const target = "https://taskflow-api.istad.co" + req.url.replace("/api/proxy", "");
 
   try {
     const response = await fetch(target, {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
-        ...(req.headers.authorization
-          ? { Authorization: req.headers.authorization }
-          : {}),
+        ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
       },
-      body: req.method === "GET" ? undefined : JSON.stringify(req.body),
+      body: req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS"
+        ? undefined
+        : JSON.stringify(bodyData),
     });
 
-    const data = await response.text();
+    const text = await response.text();
 
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -23,11 +34,9 @@ export default async function handler(req, res) {
 
     if (req.method === "OPTIONS") return res.status(200).end();
 
-    res.status(response.status).send(data);
+    res.status(response.status).send(text);
   } catch (err) {
-    res.status(500).json({
-      message: "Proxy request failed",
-      error: err.message,
-    });
+    console.error("❌ Proxy error:", err);
+    res.status(500).json({ message: "Proxy request failed", error: err.message });
   }
 }
