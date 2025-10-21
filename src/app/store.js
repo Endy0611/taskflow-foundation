@@ -4,7 +4,7 @@ import workspaceReducer from '../features/workspace/WorkspaceSlice';
 import taskReducer from '../features/task/TaskSlice'
 import boadsReducer from '../features/board/BoardSlice';
 import cardReducer from '../features/cards/CardSlice';
-import checklistReducer from "../features/checkList/ChecklistSlice.js";
+import checklistReducer from "../features/checkList/CheckListSlice.js";
 import { workspaceApi } from '../features/workspace/workspaceApi';
 
 
