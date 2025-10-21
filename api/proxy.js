@@ -1,9 +1,18 @@
 // api/proxy.js
 export default async function handler(req, res) {
-  // build target URL
+  // ✅ 1. Build the target URL correctly (no double slashes)
   const target = "https://taskflow-api.istad.co" + req.url.replace("/api/proxy", "");
 
   try {
+    // ✅ 2. Handle preflight (must come before fetch)
+    if (req.method === "OPTIONS") {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      return res.status(200).end();
+    }
+
+    // ✅ 3. Forward the real request
     const response = await fetch(target, {
       method: req.method,
       headers: {
@@ -13,21 +22,21 @@ export default async function handler(req, res) {
       body: req.method === "GET" ? undefined : JSON.stringify(req.body),
     });
 
-    // copy response body
-    const data = await response.text();
+    const text = await response.text();
 
-    // allow your Vercel domain to access this endpoint
+    // ✅ 4. Allow browser access (CORS)
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-    // handle preflight
-    if (req.method === "OPTIONS") {
-      return res.status(200).end();
-    }
-
-    res.status(response.status).send(data);
+    // ✅ 5. Return backend response to frontend
+    res.status(response.status).send(text);
   } catch (err) {
-    res.status(500).json({ message: "Proxy request failed", error: err.message });
+    // ✅ 6. Catch errors clearly
+    res.status(500).json({
+      message: "Proxy request failed",
+      error: err.message,
+      hint: "Check if backend API URL is correct or if backend is down.",
+    });
   }
 }
