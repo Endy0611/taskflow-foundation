@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // ✅ Read the body properly (important for Vercel)
   let bodyData = null;
   try {
     if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
