@@ -1,5 +1,6 @@
 // src/pages/auth/LoginPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -51,7 +52,20 @@ const safeParseJSON = async (res) => {
 
 /* ---------------- component ---------------- */
 export default function LoginPage() {
+  // 🚀 Auto-redirect if already logged in
+
   const navigate = useNavigate();
+  useEffect(() => {
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("accessToken");
+
+  if (role === "admin") {
+    navigate("/admin");
+  } else if (token) {
+    navigate("/board");
+  }
+}, [navigate]);
+
   const [form, setForm] = useState({ username: "", password: "" });
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -144,8 +158,19 @@ export default function LoginPage() {
           wsRes?._embedded?.workspaces ||
           Object.values(wsRes || {}).filter((x) => x?.id);
 
-      // Step 5️⃣: Redirect based on workspace availability
-      // Step 5️⃣: Redirect based on workspace availability
+      // Step 5️⃣: Role-based redirect (frontend-only logic)
+      if (form.username === "taskflowAdmin") {
+        // ✅ Admin login shortcut (frontend role assignment)
+        localStorage.setItem("role", "admin");
+        setMessage("Welcome back, Admin!");
+        navigate("/admin");
+        return;
+      } else {
+        // Default user role
+        localStorage.setItem("role", "user");
+      }
+
+      // Step 6️⃣: Redirect based on workspace availability
       if (Array.isArray(workspaces) && workspaces.length > 0) {
         const first = workspaces[0];
         localStorage.setItem("current_workspace_id", String(first.id));

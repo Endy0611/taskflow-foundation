@@ -1,5 +1,13 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
+/* Admin pages */
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import WorkspaceManagement from "./pages/admin/WorkspaceManagement";
+import BoardManagement from "./pages/admin/BoardManagement";
+import Analytics from "./pages/admin/Analytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 /* Layouts */
 import RootLayout from "./components/layout/RootLayout";
 import UserLayout from "./components/layout/UserLayout";
@@ -59,6 +67,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ------------------------- Admin Routes ------------------------- */}
+        <Route
+          path="/admin"
+          element={<ProtectedRoute allowedRoles={["admin"]} />}
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="workspaces" element={<WorkspaceManagement />} />
+          <Route path="boards" element={<BoardManagement />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+
         {/* ------------------------- Guest Routes ------------------------- */}
         <Route element={<RootLayout />}>
           <Route path="/" element={<GuestHomePage />} />
@@ -82,31 +103,23 @@ function App() {
 
         {/* ----------------------- Workspace Routes ----------------------- */}
         <Route element={<WorkspaceLayout />}>
-          {/* ✅ Unified Board route */}
           <Route path="/board" element={<Board />} />
           <Route path="/board/:workspaceId" element={<Board />} />
-
-          {/* ✅ Workspace-level pages */}
           <Route path="/workspaceboard" element={<WorkspaceBoard />} />
-
-          {/* ✅ Correct param for WorkspaceMember */}
-          {/* (Your WorkspaceMember.jsx uses useParams().workspaceId) */}
           <Route
             path="/workspacemember/:workspaceId"
             element={<WorkspaceMember />}
           />
-
-          {/* ✅ Project management inside board */}
           <Route
             path="/projectmanagement/:boardId"
             element={<ProjectManagement />}
           />
-
-          {/* ✅ Settings (two paths for compatibility) */}
           <Route path="/workspacesetting/:id" element={<WorkspaceSetting />} />
-
           <Route path="/settingworkspace" element={<SettingWorkspace />} />
-          <Route path="/workspaces/:id/settings" element={<SettingWorkspace />} />
+          <Route
+            path="/workspaces/:id/settings"
+            element={<SettingWorkspace />}
+          />
         </Route>
 
         {/* ---------------------- Offline & NotFound ---------------------- */}

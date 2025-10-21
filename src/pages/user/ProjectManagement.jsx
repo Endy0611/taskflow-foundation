@@ -69,18 +69,17 @@ export default function ProjectManagement() {
     fetchWorkspaceName();
   }, [location.pathname]);
   /* ===== Random Background Logic ===== */
-useEffect(() => {
-  const selectedBg = localStorage.getItem("selectedBackground");
-  if (selectedBg) {
-    setBackgroundImage(selectedBg);
-    localStorage.setItem("boardBackground", selectedBg);
-    localStorage.removeItem("selectedBackground"); // clear after applying
-  } else {
-    const savedBg = localStorage.getItem("boardBackground");
-    if (savedBg) setBackgroundImage(savedBg);
-  }
-}, []);
-
+  useEffect(() => {
+    const selectedBg = localStorage.getItem("selectedBackground");
+    if (selectedBg) {
+      setBackgroundImage(selectedBg);
+      localStorage.setItem("boardBackground", selectedBg);
+      localStorage.removeItem("selectedBackground"); // clear after applying
+    } else {
+      const savedBg = localStorage.getItem("boardBackground");
+      if (savedBg) setBackgroundImage(savedBg);
+    }
+  }, []);
 
   /* ===== Fetch Cards & Tasks ===== */
   const fetchCards = async () => {
@@ -385,26 +384,27 @@ useEffect(() => {
                           Edit
                         </button>
                         <button
-  onClick={async () => {
-    try {
-      // 1️⃣ Call API to delete on backend
-      await http.delete(`/cards/${list.id}`);
+                          onClick={async () => {
+                            try {
+                              // 1️⃣ Call API to delete on backend
+                              await http.delete(`/cards/${list.id}`);
 
-      // 2️⃣ Remove from frontend immediately
-      setLists((prev) => prev.filter((l) => l.id !== list.id));
+                              // 2️⃣ Remove from frontend immediately
+                              setLists((prev) =>
+                                prev.filter((l) => l.id !== list.id)
+                              );
 
-      // 3️⃣ Show confirmation
-      toast.success("Card deleted successfully!");
-    } catch (error) {
-      console.error("❌ Failed to delete card:", error);
-      toast.error("Failed to delete card");
-    }
-  }}
-  className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
->
-  Delete
-</button>
-
+                              // 3️⃣ Show confirmation
+                              toast.success("Card deleted successfully!");
+                            } catch (error) {
+                              console.error("❌ Failed to delete card:", error);
+                              toast.error("Failed to delete card");
+                            }
+                          }}
+                          className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                        >
+                          Delete
+                        </button>
                       </div>
                     )}
                   </div>
