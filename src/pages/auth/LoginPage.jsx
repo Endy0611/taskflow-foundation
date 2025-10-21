@@ -29,11 +29,9 @@ import {
 import { z } from "zod";
 
 /* ---------------- env + utils ---------------- */
-const API_BASE = (
-  import.meta.env.VITE_API_BASE ||
-  import.meta.env.VITE_BASE_URL ||
-  "http://localhost:4000"
-).replace(/\/+$/, "");
+const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/+$/, "") || "";
+const LOGIN_PATH = import.meta.env.VITE_LOGIN_PATH || "/auth/login";
+
 
 const loginSchema = z.object({
   username: z.string().min(3, { message: "Username is required" }),
@@ -98,7 +96,7 @@ export default function LoginPage() {
 
     try {
       // Step 1️⃣: Login to get token
-      const res = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE}${LOGIN_PATH}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

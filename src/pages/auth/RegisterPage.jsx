@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
-const registerImage = "assets/general/register-pic.png";
+const registerImage = "/assets/general/register-pic.png";
+
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 
@@ -36,11 +37,11 @@ const firstError = (d) => {
 
 const isEmail = (v) => /\S+@\S+\.\S+/.test(String(v || ""));
 const sanitizeUsername = (u) =>
-  (String(u || "")
+  String(u || "")
     .replace(/\s+/g, "_")
     .replace(/[^a-zA-Z0-9._]/g, "")
     .toLowerCase()
-    .slice(0, 32)) || "";
+    .slice(0, 32) || "";
 const passwordStrong = (p) =>
   typeof p === "string" &&
   p.length >= 8 &&
@@ -50,7 +51,9 @@ const passwordStrong = (p) =>
   /[^A-Za-z0-9]/.test(p);
 
 const normalizeGender = (g) => {
-  const v = String(g || "").trim().toLowerCase();
+  const v = String(g || "")
+    .trim()
+    .toLowerCase();
   if (["male", "m"].includes(v)) return "MALE";
   if (["female", "f"].includes(v)) return "FEMALE";
   return "OTHER";
@@ -89,7 +92,10 @@ export default function RegisterPage() {
     [formData.username]
   );
   const cleanEmail = useMemo(
-    () => String(formData.email || "").trim().toLowerCase(),
+    () =>
+      String(formData.email || "")
+        .trim()
+        .toLowerCase(),
     [formData.email]
   );
 
@@ -119,7 +125,8 @@ export default function RegisterPage() {
     )
       return "Please fill in all fields.";
     if (!isEmail(cleanEmail)) return "Please enter a valid email address.";
-    if (isEmail(formData.username)) return "Username cannot be an email address.";
+    if (isEmail(formData.username))
+      return "Username cannot be an email address.";
     if (cleanUsername.length < 3)
       return "Username must be at least 3 characters (letters, numbers, . or _).";
     if (!passwordStrong(f.password))
@@ -145,7 +152,10 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE}${import.meta.env.VITE_REGISTER_PATH}`, {
+      const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/+$/, "") || "";
+      const REGISTER_PATH =
+        import.meta.env.VITE_REGISTER_PATH || "/auth/register";
+      const res = await fetch(`${API_BASE}${REGISTER_PATH}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -303,7 +313,11 @@ export default function RegisterPage() {
                   onClick={() => setShowPassword((s) => !s)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
@@ -324,7 +338,11 @@ export default function RegisterPage() {
                   onClick={() => setShowConfirmPassword((s) => !s)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
