@@ -531,7 +531,7 @@ const handleBoardCreated = (created) => {
 
           {/* Floating Chatbot Button */}
           <img
-            src="/src/assets/general/chatbot.png"
+            src="/assets/general/chatbot.png"
             alt="Chatbot"
             className="fixed bottom-4 right-4 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 z-40 rounded-full shadow-lg cursor-pointer bg-white dark:bg-gray-700"
             onClick={() => setShowChatbot(true)}

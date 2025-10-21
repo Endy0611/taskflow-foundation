@@ -135,7 +135,7 @@ const HomeUserPage = () => {
                 {...floatingAnimation}
               >
                 <motion.img
-                  src="/src/assets/home/image1.png"
+                  src="/assets/home/image1.png"
                   alt="TaskFlow productivity app"
                   className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl drop-shadow-xl"
                   whileHover={{ scale: 1.02 }}
@@ -223,7 +223,7 @@ const HomeUserPage = () => {
                 viewport={{ once: true }}
               >
                 <motion.img
-                  src="/src/assets/home/image2.png"
+                  src="/assets/home/image2.png"
                   alt="TaskFlow Board Preview"
                   className="w-full max-w-3xl rounded-xl shadow-lg"
                   whileHover={{ scale: 1.02, rotate: 1 }}
@@ -324,7 +324,7 @@ const HomeUserPage = () => {
                 viewport={{ once: true }}
               >
                 <motion.img
-                  src="/src/assets/home/image3.png"
+                  src="/assets/home/image3.png"
                   alt="Invite Preview"
                   className="rounded-lg shadow-md w-full"
                   whileHover={{ scale: 1.02 }}
@@ -379,7 +379,7 @@ const HomeUserPage = () => {
             >
               {[
                 {
-                  icon: "/src/assets/home/card1.png",
+                  icon: "/assets/home/card1.png",
                   bgColor: "bg-blue-100",
                   title: "Features",
                   description:
@@ -388,7 +388,7 @@ const HomeUserPage = () => {
                   path: "/features",
                 },
                 {
-                  icon: "/src/assets/home/card2.png",
+                  icon: "/assets/home/card2.png",
                   bgColor: "bg-purple-100",
                   title: "Templates",
                   description:
@@ -397,7 +397,7 @@ const HomeUserPage = () => {
                   path: "/templates",
                 },
                 {
-                  icon: "/src/assets/home/card3.png",
+                  icon: "/assets/home/card3.png",
                   bgColor: "bg-orange-100",
                   title: "Task Management",
                   description:
@@ -475,19 +475,19 @@ const HomeUserPage = () => {
               {[
                 {
                   name: "Koem Channy",
-                  image: "/src/assets/home/profile1.png",
+                  image: "/assets/home/profile1.png",
                   role: "Singer",
                   text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were absolutely amazing!",
                 },
                 {
                   name: "Mr. Beast",
-                  image: "/src/assets/home/profile2.png",
+                  image: "/assets/home/profile2.png",
                   role: "Youtuber",
                   text: "Want a smooth and stress-free workflow? TaskFlow has you covered! Their support team is super helpful and always ready with amazing solutions.",
                 },
                 {
                   name: "Panha Watt",
-                  image: "/src/assets/home/profile3.png",
+                  image: "/assets/home/profile3.png",
                   role: "Student",
                   text: "TaskFlow made task management effortless. The support team was always there with brilliant solutions! Smooth workflow, excellent solutions — thanks TaskFlow!",
                 },
@@ -568,37 +568,37 @@ const HomeUserPage = () => {
             >
               {[
                 {
-                  img: "/src/assets/About/Cholna.png",
+                  img: "/assets/About/Cholna.png",
                   name: "Tith Cholna",
                   role: "Student from ISTAD",
                   text: "ISTAD is the ideal place for anyone looking to improve their IT skills. Supportive environment, excellent teachers, and exposure to the latest technologies.",
                 },
                 {
-                  img: "/src/assets/About/Dana.png",
+                  img: "/assets/About/Dana.png",
                   name: "Dorn Dana",
                   role: "Student from ISTAD",
                   text: "If you want a smooth, well-organized task app, go with TaskFlow. Their support team was always available, and the solutions they suggested were amazing!",
                 },
                 {
-                  img: "/src/assets/About/Sreynet.png",
+                  img: "/assets/About/Sreynet.png",
                   name: "Mon Sreynet",
                   role: "Student",
                   text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
                 },
                 {
-                  img: "/src/assets/About/Manith.png",
+                  img: "/assets/About/Manith.png",
                   name: "Rith Saramanith",
                   role: "Student",
                   text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
                 },
                 {
-                  img: "/src/assets/About/Smey.png",
+                  img: "/assets/About/Smey.png",
                   name: "Lonh Raksmey",
                   role: "Student",
                   text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",
                 },
                 {
-                  img: "/src/assets/About/Endy.png",
+                  img: "/assets/About/Endy.png",
                   name: "Ong Endy",
                   role: "Student",
                   text: "TaskFlow made task management effortless. Smooth workflow, excellent support — highly recommend it!",

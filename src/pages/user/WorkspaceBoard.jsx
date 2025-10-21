@@ -190,7 +190,7 @@ export default function WorkspaceBoard() {
 
           {/* ===== Chatbot Icon ===== */}
           <img
-            src="/src/assets/general/chatbot.png"
+            src="/assets/general/chatbot.png"
             alt="Chatbot"
             className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-lg cursor-pointer bg-white z-40 hover:scale-105 transition-transform duration-200"
             onClick={() => setShowChatbot(true)}

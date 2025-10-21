@@ -26,7 +26,7 @@ export default function FeaturePage() {
         </div>
         <div className="mb-8 sm:mb-10 md:mb-0 flex justify-center">
           <img
-            src="/src/assets/home/feature1.png"
+            src="/assets/home/feature1.png"
             alt="Workspace Illustration"
             className="w-56 sm:w-72 md:w-96 lg:w-[28rem] drop-shadow-lg"
           />
@@ -37,7 +37,7 @@ export default function FeaturePage() {
       <section className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 gap-8 sm:gap-12">
         <div className="md:w-1/2 flex justify-center">
           <img
-            src="/src/assets/home/feature2.png"
+            src="/assets/home/feature2.png"
             alt="Dashboard Preview"
             className="rounded-xl shadow-lg w-64 sm:w-80 md:w-full max-w-md"
           />
@@ -63,7 +63,7 @@ export default function FeaturePage() {
         </div>
         <div className="md:w-1/2 flex justify-center order-1 md:order-2">
           <img
-            src="/src/assets/home/feature3.png"
+            src="/assets/home/feature3.png"
             alt="Project Management"
             className="rounded-xl shadow-lg w-64 sm:w-80 md:w-full max-w-md"
           />
@@ -74,7 +74,7 @@ export default function FeaturePage() {
       <section className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-12 py-12 sm:py-16 md:py-20 gap-8 sm:gap-12">
         <div className="md:w-1/2 flex justify-center">
           <img
-            src="/src/assets/home/feature4.png"
+            src="/assets/home/feature4.png"
             alt="Team Collaboration"
             className="rounded-xl shadow-lg w-64 sm:w-80 md:w-full max-w-md"
           />
@@ -100,7 +100,7 @@ export default function FeaturePage() {
         </div>
         <div className="md:w-1/2 flex justify-center order-1 md:order-2">
           <img
-            src="/src/assets/home/feature5.png"
+            src="/assets/home/feature5.png"
             alt="Invite by Email"
             className="rounded-xl shadow-lg w-64 sm:w-80 md:w-full max-w-md"
           />

@@ -233,7 +233,7 @@ export default function WorkspaceSetting() {
 
           {/* Chatbot */}
           <img
-            src="/src/assets/general/chatbot.png"
+            src="/assets/general/chatbot.png"
             alt="Chatbot"
             className="fixed bottom-6 right-6 w-14 h-14 z-40 rounded-full shadow-lg cursor-pointer bg-white dark:bg-gray-700"
             onClick={() => setShowChatbot(true)}

@@ -127,8 +127,8 @@ export default function NavbarComponent({
         <img
           src={
             darkMode
-              ? "/src/assets/logo/logopng.png" // bright logo for dark mode
-              : "/src/assets/logo/logopng.png" // default logo
+              ? "/assets/logo/logopng.png" // bright logo for dark mode
+              : "/assets/logo/logopng.png" // default logo
           }
           alt="TaskFlow Logo"
           className="h-7 sm:h-7 object-contain transition-all duration-300"

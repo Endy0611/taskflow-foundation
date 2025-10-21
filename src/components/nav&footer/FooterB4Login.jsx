@@ -18,7 +18,7 @@ export default function FooterB4Login() {
         <div className="md:col-span-1 lg:col-span-2 flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <img
-              src="/src/assets/logo/logopng.png"
+              src="/assets/logo/logopng.png"
             alt="TaskFLow Logo"
             className="h-10 sm:h-12 object-contain"
           />
@@ -59,7 +59,7 @@ export default function FooterB4Login() {
             Sponsor and Organize by
           </p>
           <img
-            src="/src/assets/logo/istad-logo-white.png"
+            src="/assets/logo/istad-logo-white.png"
             alt="ISTAD Logo"
             className="h-16 sm:h-20"
           />

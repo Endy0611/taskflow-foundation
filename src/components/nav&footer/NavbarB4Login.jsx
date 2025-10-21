@@ -44,8 +44,8 @@ export default function NavbarB4Login({ darkMode, toggleDarkMode }) {
               <img
           src={
             darkMode
-              ? "/src/assets/logo/logopng.png" // bright logo for dark mode
-              : "/src/assets/logo/logofinal1.png" // default logo
+              ? "/assets/logo/logopng.png" // bright logo for dark mode
+              : "/assets/logo/logofinal1.png" // default logo
           }
           alt="TaskFlow Logo"
           className="h-10 sm:h-12 object-contain transition-all duration-300"

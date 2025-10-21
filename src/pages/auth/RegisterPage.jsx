@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
-import registerImage from "../../assets/general/register-pic.png";
+const registerImage = "assets/general/register-pic.png";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 

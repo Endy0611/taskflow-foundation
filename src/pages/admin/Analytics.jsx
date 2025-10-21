@@ -236,7 +236,7 @@ const handleExportReport = async () => {
 
     /* ---------------- SIMPLE HEADER ---------------- */
     // Logo
-    const logoUrl = "/src/assets/logo/1234.png";
+    const logoUrl = "/assets/logo/1234.png";
     try {
       const img = await fetch(logoUrl);
       const blob = await img.blob();

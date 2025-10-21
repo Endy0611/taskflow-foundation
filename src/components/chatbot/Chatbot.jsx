@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Send, Loader2 } from "lucide-react";
-import Chatbot from "../../assets/general/chatbotWhite.png";
+const Chatbot="assets/general/chatbotWhite.png";
 
 const TaskFlowChatbot = ({ onClose }) => {
   const [messages, setMessages] = useState([

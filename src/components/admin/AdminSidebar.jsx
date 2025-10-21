@@ -16,7 +16,7 @@ export default function AdminSidebar() {
     <aside className="w-64 h-auto bg-gray-900 text-white flex flex-col p-6">
        <img
           src={
-"/src/assets/logo/logopng.png" // default logo
+"/assets/logo/logopng.png" // default logo
           }
           alt="TaskFlow Logo"
           className="h-10 sm:h-8 object-contain transition-all duration-300"

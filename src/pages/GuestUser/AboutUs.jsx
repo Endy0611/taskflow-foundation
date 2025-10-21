@@ -37,7 +37,7 @@ const AboutUs = () => {
     {
       name: "Ms. Dorn Dana",
       role: "Web Design",
-      img: "src/assets/About/dana.png",
+      img: "/assets/About/dana.png",
       github: "https://github.com/danadorn",
       linkedin: "#",
       email: "#",
@@ -47,7 +47,7 @@ const AboutUs = () => {
     {
       name: "Mr. Rith Saranamith",
       role: "Java App",
-      img: "src/assets/About/Manith.png",
+      img: "/assets/About/Manith.png",
       github: "https://github.com/Manith991",
       linkedin: "#",
       email: "#",
@@ -57,7 +57,7 @@ const AboutUs = () => {
     {
       name: "Mr. Ong Endy",
       role: "Java App",
-      img: "src/assets/About/endy.png",
+      img: "/assets/About/endy.png",
       github: "https://github.com/Endy0611",
       linkedin: "#",
       email: "endyong18@gmail.com",
@@ -67,7 +67,7 @@ const AboutUs = () => {
     {
       name: "Ms. Mon Sreynet",
       role: "Web Design",
-      img: "src/assets/About/sreynet.png",
+      img: "/assets/About/sreynet.png",
       github: "https://github.com/sreynetmon",
       linkedin: "#",
       email: "sreynet1409@gmail.com",
@@ -77,7 +77,7 @@ const AboutUs = () => {
     {
       name: "Ms. Tith Cholna",
       role: "Web Design",
-      img: "src/assets/About/cholna.png",
+      img: "/assets/About/cholna.png",
       github: "https://github.com/Activity007",
       linkedin: "#",
       email: "#",
@@ -87,7 +87,7 @@ const AboutUs = () => {
     {
       name: "Lonh Raksmey",
       role: "Web Design",
-      img: "/src/assets/About/Smey.png",
+      img: "/assets/About/Smey.png",
       github: "https://github.com/stupiqqsmey",
       linkedin: "#",
       email: "#",
@@ -116,7 +116,7 @@ const AboutUs = () => {
           </div>
           <div className="flex-1 flex justify-center">
             <img
-              src="/src/assets/home/about1.png"
+              src="/assets/home/about1.png"
               alt="Team collaboration"
               className="w-3/4 sm:w-2/3 md:w-full"
             />
@@ -129,7 +129,7 @@ const AboutUs = () => {
         <div className="container mx-auto px-4 sm:px-6 md:px-8 flex flex-col md:flex-row items-center gap-10 md:gap-8">
           <div className="flex-1 flex justify-center">
             <img
-              src="/src/assets/home/about2.png"
+              src="/assets/home/about2.png"
               alt="Mission illustration"
               className="w-3/4 sm:w-2/3 md:w-full max-w-md mx-auto"
             />

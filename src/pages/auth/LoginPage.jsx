@@ -8,7 +8,8 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub } from "react-icons/fa";
 import { http } from "../../services/http";
 
-import loginImage from "../../assets/general/Login-pic.png";
+const loginImage = "/assets/general/Login-pic.png";
+
 
 import {
   auth,
